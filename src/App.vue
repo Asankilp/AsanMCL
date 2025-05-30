@@ -88,7 +88,7 @@ const menuItems = [
 
 <style>
 :root {
-  color-scheme: dark;
+  color-scheme: light dark;
 }
 
 html {
@@ -96,12 +96,12 @@ html {
 }
 
 .v-application {
-  background: rgb(18, 18, 18) !important;
+  background: rgb(var(--v-theme-background)) !important;
 }
 
 :deep(.v-navigation-drawer),
 :deep(.v-card) {
-  background: rgb(30, 30, 30) !important;
+  background: rgb(var(--v-theme-surface)) !important;
 }
 
 .v-list-item {
@@ -114,7 +114,7 @@ html {
 }
 
 .v-list-item--active {
-  background: rgba(var(--v-theme-primary), 0.15) !important;
+  background: rgb(var(--v-theme-primary), 0.15) !important;
 }
 
 .account-item {
@@ -123,14 +123,22 @@ html {
 }
 
 .account-item:hover {
-  background: rgba(var(--v-theme-primary), 0.05) !important;
+  background: rgb(var(--v-theme-primary), 0.05) !important;
 }
 
 .account-item.v-list-item--active {
-  background: rgba(var(--v-theme-primary), 0.15) !important;
+  background: rgb(var(--v-theme-primary), 0.15) !important;
 }
 
 :deep(.v-list-item__content) {
   padding: 8px 0;
+}
+
+/* 主题切换动画 */
+.v-application,
+.v-card,
+.v-navigation-drawer,
+.v-list-item {
+  transition: background-color 0.3s ease, color 0.3s ease !important;
 }
 </style>
