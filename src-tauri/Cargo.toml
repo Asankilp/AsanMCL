@@ -19,7 +19,12 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 tauri = { version = "2", features = [] }
+reqwest = { version = "0.12.18", features = ["json"] }
+tokio = { version = "1.45.1", features = ["full"] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-
+minecraft-msa-auth = "0.4.0"
+oauth2 = "4.4.2"
+anyhow = "1.0.98"
+lazy_static = "1.5.0"

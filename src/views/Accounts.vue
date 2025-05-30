@@ -16,7 +16,7 @@
 
     <!-- 账户列表 -->
     <v-main>
-      <v-list lines="two" select-strategy="false">
+      <v-list lines="two">
         <v-list-item
           v-if="currentAccount"
           :key="currentAccount.username"
@@ -43,6 +43,7 @@
     <!-- 账户表单对话框 -->
     <account-dialog
       v-model="accountDialogVisible"
+      title="添加账户"
       :loading="loading"
       @submit="handleSubmit"
       @cancel="handleCancel"

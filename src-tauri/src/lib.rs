@@ -1,14 +1,23 @@
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+mod auth;
+mod mojang;
+
+use auth::command::*;
+use mojang::command::*;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![
+            get_device_code,
+            get_minecraft_profile,
+            check_game_ownership,
+            get_player_skins,
+            get_player_capes,
+            get_player_uuid,
+            get_player_avatar_url,
+            get_player_skin_preview_url
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -50,12 +50,31 @@
     <v-main>
       <router-view />
     </v-main>
+
+    <!-- 全局提示组件 -->
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="snackbarTimeout"
+      location="top"
+      :color="snackbarType"
+    >
+      {{ snackbarMessage }}
+      <template v-slot:actions>
+        <v-btn
+          variant="text"
+          @click="snackbar = false"
+        >
+          关闭
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useSnackbar } from './composables/useSnackbar'
 
 const router = useRouter()
 const route = useRoute()
@@ -84,6 +103,13 @@ const menuItems = [
     to: '/settings'
   }
 ]
+
+const {
+  snackbar,
+  snackbarMessage,
+  snackbarType,
+  snackbarTimeout
+} = useSnackbar()
 </script>
 
 <style>

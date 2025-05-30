@@ -47,8 +47,8 @@ const props = withDefaults(defineProps<{
   confirmText?: string
   cancelButtonColor?: string
   confirmButtonColor?: string
-  cancelButtonVariant?: string
-  confirmButtonVariant?: string
+  cancelButtonVariant?: 'flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain'
+  confirmButtonVariant?: 'flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain'
 }>(), {
   loading: false,
   maxWidth: '400px',
