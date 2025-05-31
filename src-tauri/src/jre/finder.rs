@@ -1,18 +1,28 @@
 use std::path::PathBuf;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum Architecture {
+    X86,
+    X86_64,
+    Arm64,
+    Unknown,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct JreInfo {
     /// JRE 目录的路径
     pub path: PathBuf,
     /// Java 版本号
     pub version: String,
-    /// 是否是 64 位
-    pub is_64bit: bool,
+    /// 系统架构
+    pub arch: Architecture,
 }
 
 /// 检查给定路径是否为有效的 JRE 安装
 fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
     use std::process::Command;
+    use std::fs::File;
+    use std::io::{BufRead, BufReader};
 
     #[cfg(target_os = "windows")]
     let java_bin = path.join("bin").join("java.exe");
@@ -28,7 +38,6 @@ fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
         .arg("-version")
         .output()
         .ok()?;
-
     let version_output = String::from_utf8_lossy(&output.stderr);
     
     // 解析版本信息
@@ -37,13 +46,71 @@ fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
         .next()?
         .split('"')
         .nth(1)?
-        .to_string();    // 检测是否是 64 位，通过解析 java -version 的输出
-    let is_64bit = version_output.to_lowercase().contains("64-bit");
+        .to_string();
+
+    // 检测系统架构：先从release文件获取，如果没有则从java -version输出获取
+    let arch = {
+        let release_file = path.join("release");
+        let mut detected_arch = None;
+
+        // 1. 尝试从release文件获取
+        if release_file.exists() {
+            if let Ok(file) = File::open(release_file) {
+                let reader = BufReader::new(file);
+                for line in reader.lines().flatten() {
+                    let line = line.to_lowercase();
+                    if line.starts_with("os_arch=") {
+                        let arch = line.trim_start_matches("os_arch=")
+                            .trim_matches('"')
+                            .trim();
+                        
+                        detected_arch = match arch {
+                            "amd64" | "x86_64" => Some(Architecture::X86_64),
+                            "x86" | "i386" | "i586" | "i686" => Some(Architecture::X86),
+                            "aarch64" | "arm64" => Some(Architecture::Arm64),
+                            _ => None
+                        };
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 2. 如果release文件中没有找到，尝试从java -version输出获取
+        if detected_arch.is_none() {
+            let output = version_output.to_lowercase();
+            detected_arch = if output.contains("aarch64") || output.contains("arm64") || output.contains("arm-64") {
+                Some(Architecture::Arm64)
+            } else if output.contains("amd64") || output.contains("x86_64") {
+                Some(Architecture::X86_64)
+            } else if output.contains("i386") || output.contains("i586") || output.contains("i686") {
+                Some(Architecture::X86)
+            } else {
+                None
+            };
+        }
+
+        // 3. 如果都没找到，使用系统架构作为默认值
+        detected_arch.unwrap_or_else(|| {
+            #[cfg(target_pointer_width = "64")]
+            {
+                #[cfg(target_arch = "aarch64")]
+                return Architecture::Arm64;
+                #[cfg(target_arch = "x86_64")]
+                return Architecture::X86_64;
+            }
+            #[cfg(target_pointer_width = "32")]
+            return Architecture::X86;
+            
+            #[allow(unreachable_code)]
+            Architecture::Unknown
+        })
+    };
 
     Some(JreInfo {
         path: path.to_owned(),
         version,
-        is_64bit,
+        arch,
     })
 }
 
@@ -96,6 +163,8 @@ fn get_potential_jre_paths() -> Vec<PathBuf> {
             r"C:\Program Files (x86)\Microsoft\jdk",
             r"C:\Program Files\Microsoft",
             r"C:\Program Files\Common Files\Oracle\Java",
+            r"C:\Program Files\BellSoft\",
+            r"C:\Program Files (x86)\BellSoft\",
             // format!("{}\\Packages\\Microsoft.4297127D64EC6_8wekyb3d8bbwe\\LocalCache\\Local\\runtime", std::env::var("LOCALAPPDATA").unwrap_or_default()).as_str(),
         ].iter().map(PathBuf::from));
     }
@@ -205,11 +274,10 @@ mod tests {
         //     println!("No JRE found");
         // }
         let all_jres = scan_jres();
-        for jre in all_jres {
-            println!("Found JRE:");
+        for jre in all_jres {            println!("Found JRE:");
             println!("  Path: {:?}", jre.path);
             println!("  Version: {}", jre.version);
-            println!("  64-bit: {}", jre.is_64bit);
+            println!("  Architecture: {:?}", jre.arch);
 }
     }
 }
