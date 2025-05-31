@@ -3,7 +3,8 @@ use super::api::*;
 #[tauri::command]
 pub async fn get_minecraft_profile(access_token: String) -> Result<MinecraftProfile, String> {
     let client = MinecraftClient::new();
-    client.get_minecraft_profile(&access_token)
+    client
+        .get_minecraft_profile(&access_token)
         .await
         .map_err(|e| e.to_string())
 }
@@ -11,7 +12,8 @@ pub async fn get_minecraft_profile(access_token: String) -> Result<MinecraftProf
 #[tauri::command]
 pub async fn check_game_ownership(access_token: String) -> Result<bool, String> {
     let client = MinecraftClient::new();
-    client.check_game_ownership(&access_token)
+    client
+        .check_game_ownership(&access_token)
         .await
         .map_err(|e| e.to_string())
 }
@@ -19,7 +21,8 @@ pub async fn check_game_ownership(access_token: String) -> Result<bool, String> 
 #[tauri::command]
 pub async fn get_player_skins(access_token: String) -> Result<Vec<SkinData>, String> {
     let client = MinecraftClient::new();
-    client.get_skins(&access_token)
+    client
+        .get_skins(&access_token)
         .await
         .map_err(|e| e.to_string())
 }
@@ -27,7 +30,8 @@ pub async fn get_player_skins(access_token: String) -> Result<Vec<SkinData>, Str
 #[tauri::command]
 pub async fn get_player_capes(access_token: String) -> Result<Vec<CapeData>, String> {
     let client = MinecraftClient::new();
-    client.get_capes(&access_token)
+    client
+        .get_capes(&access_token)
         .await
         .map_err(|e| e.to_string())
 }
@@ -35,7 +39,8 @@ pub async fn get_player_capes(access_token: String) -> Result<Vec<CapeData>, Str
 #[tauri::command]
 pub async fn get_player_uuid(username: String) -> Result<String, String> {
     let client = MinecraftClient::new();
-    client.get_player_uuid(&username)
+    client
+        .get_player_uuid(&username)
         .await
         .map_err(|e| e.to_string())
 }
