@@ -235,8 +235,8 @@ import {
   type OfflineAccountData, 
   type UserCodeResult,
   type MinecraftAuthResponse, 
-  LoginEvent
-} from '../types'
+} from '../types/account'
+import { LoginEvent } from '../types/event'
 import { Channel, invoke } from '@tauri-apps/api/core'
 import { MinecraftProfile, SkinData, CapeData } from '../types/mojang'
 

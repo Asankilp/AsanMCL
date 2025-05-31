@@ -20,17 +20,3 @@ export interface MinecraftAuthResponse {
     tokenType: string,
     expiresIn: number,
 }
-
-export type LoginEvent =
-  | {
-    event: 'started',
-    data: {
-      code: string;
-    };
-  }
-  | {
-    event: 'finished',
-    data: {
-      response: MinecraftAuthResponse;
-    };
-  }
