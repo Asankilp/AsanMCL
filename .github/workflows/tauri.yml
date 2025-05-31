@@ -20,10 +20,10 @@ jobs:
             args: '--target x86_64-apple-darwin'
             target: 'x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
-            args: ''
+            args: '--target x86_64-unknown-linux-gnu'
             target: 'x86_64-unknown-linux-gnu'
           - platform: 'windows-latest'
-            args: ''
+            args: '--target x86_64-pc-windows-msvc'
             target: 'x86_64-pc-windows-msvc'
 
     runs-on: ${{ matrix.platform }}
@@ -66,6 +66,6 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform }}-${{ matrix.target }}-artifacts
+          name: ${{ matrix.target }}-artifacts
           path: >-
             src-tauri/target/${{ matrix.target }}/release/asanmcl${{ matrix.platform == 'windows-latest' && '.exe' || '' }}
