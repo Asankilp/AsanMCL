@@ -1,10 +1,10 @@
 mod auth;
-mod mojang;
 mod jre;
+mod mojang;
 
 use auth::command::*;
+use jre::command::*;
 use mojang::command::*;
-use jre::finder::*;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -19,7 +19,8 @@ pub fn run() {
             get_player_capes,
             get_player_uuid,
             get_player_avatar_url,
-            get_player_skin_preview_url
+            get_player_skin_preview_url,
+            scan_all_jres,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

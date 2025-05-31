@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 pub enum Architecture {
     X86,
     X86_64,
@@ -9,6 +9,7 @@ pub enum Architecture {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct JreInfo {
     /// JRE 目录的路径
     pub path: PathBuf,
@@ -20,9 +21,9 @@ pub struct JreInfo {
 
 /// 检查给定路径是否为有效的 JRE 安装
 fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
-    use std::process::Command;
     use std::fs::File;
     use std::io::{BufRead, BufReader};
+    use std::process::Command;
 
     #[cfg(target_os = "windows")]
     let java_bin = path.join("bin").join("java.exe");
@@ -34,12 +35,9 @@ fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
     }
 
     // 运行 java -version 获取版本信息
-    let output = Command::new(&java_bin)
-        .arg("-version")
-        .output()
-        .ok()?;
+    let output = Command::new(&java_bin).arg("-version").output().ok()?;
     let version_output = String::from_utf8_lossy(&output.stderr);
-    
+
     // 解析版本信息
     let version = version_output
         .lines()
@@ -60,15 +58,13 @@ fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
                 for line in reader.lines().flatten() {
                     let line = line.to_lowercase();
                     if line.starts_with("os_arch=") {
-                        let arch = line.trim_start_matches("os_arch=")
-                            .trim_matches('"')
-                            .trim();
-                        
+                        let arch = line.trim_start_matches("os_arch=").trim_matches('"').trim();
+
                         detected_arch = match arch {
                             "amd64" | "x86_64" => Some(Architecture::X86_64),
                             "x86" | "i386" | "i586" | "i686" => Some(Architecture::X86),
                             "aarch64" | "arm64" => Some(Architecture::Arm64),
-                            _ => None
+                            _ => None,
                         };
                         break;
                     }
@@ -79,11 +75,15 @@ fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
         // 2. 如果release文件中没有找到，尝试从java -version输出获取
         if detected_arch.is_none() {
             let output = version_output.to_lowercase();
-            detected_arch = if output.contains("aarch64") || output.contains("arm64") || output.contains("arm-64") {
+            detected_arch = if output.contains("aarch64")
+                || output.contains("arm64")
+                || output.contains("arm-64")
+            {
                 Some(Architecture::Arm64)
             } else if output.contains("amd64") || output.contains("x86_64") {
                 Some(Architecture::X86_64)
-            } else if output.contains("i386") || output.contains("i586") || output.contains("i686") {
+            } else if output.contains("i386") || output.contains("i586") || output.contains("i686")
+            {
                 Some(Architecture::X86)
             } else {
                 None
@@ -101,7 +101,7 @@ fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
             }
             #[cfg(target_pointer_width = "32")]
             return Architecture::X86;
-            
+
             #[allow(unreachable_code)]
             Architecture::Unknown
         })
@@ -117,7 +117,7 @@ fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
 /// 获取系统中可能安装 JRE 的路径列表
 fn get_potential_jre_paths() -> Vec<PathBuf> {
     let mut paths = Vec::new();
-    
+
     // 检查 JAVA_HOME 环境变量
     if let Ok(java_home) = std::env::var("JAVA_HOME") {
         paths.push(PathBuf::from(java_home));
@@ -129,7 +129,8 @@ fn get_potential_jre_paths() -> Vec<PathBuf> {
     }
 
     // 系统特定的路径
-    #[cfg(target_os = "windows")] {
+    #[cfg(target_os = "windows")]
+    {
         use winreg::enums::*;
         use winreg::RegKey;
 
@@ -154,24 +155,29 @@ fn get_potential_jre_paths() -> Vec<PathBuf> {
         }
 
         // Windows 常见安装路径
-        paths.extend([
-            r"C:\Program Files\Java",
-            r"C:\Program Files (x86)\Java",
-            r"C:\Program Files\Eclipse Adoptium",
-            r"C:\Program Files (x86)\Eclipse Adoptium",
-            r"C:\Program Files\Microsoft\jdk",
-            r"C:\Program Files (x86)\Microsoft\jdk",
-            r"C:\Program Files\Microsoft",
-            r"C:\Program Files\Common Files\Oracle\Java",
-            r"C:\Program Files\BellSoft\",
-            r"C:\Program Files (x86)\BellSoft\",
-            // format!("{}\\Packages\\Microsoft.4297127D64EC6_8wekyb3d8bbwe\\LocalCache\\Local\\runtime", std::env::var("LOCALAPPDATA").unwrap_or_default()).as_str(),
-        ].iter().map(PathBuf::from));
+        paths.extend(
+            [
+                r"C:\Program Files\Java",
+                r"C:\Program Files (x86)\Java",
+                r"C:\Program Files\Eclipse Adoptium",
+                r"C:\Program Files (x86)\Eclipse Adoptium",
+                r"C:\Program Files\Microsoft\jdk",
+                r"C:\Program Files (x86)\Microsoft\jdk",
+                r"C:\Program Files\Microsoft",
+                r"C:\Program Files\Common Files\Oracle\Java",
+                r"C:\Program Files\BellSoft\",
+                r"C:\Program Files (x86)\BellSoft\",
+                // format!("{}\\Packages\\Microsoft.4297127D64EC6_8wekyb3d8bbwe\\LocalCache\\Local\\runtime", std::env::var("LOCALAPPDATA").unwrap_or_default()).as_str(),
+            ]
+            .iter()
+            .map(PathBuf::from),
+        );
     }
 
-    #[cfg(target_os = "linux")] {
+    #[cfg(target_os = "linux")]
+    {
         use std::process::Command;
-        
+
         // 通过 which 命令查找
         if let Ok(output) = Command::new("which").arg("java").output() {
             if let Ok(path) = String::from_utf8(output.stdout) {
@@ -184,15 +190,16 @@ fn get_potential_jre_paths() -> Vec<PathBuf> {
         }
 
         // Linux 常见安装路径
-        paths.extend([
-            "/usr/lib/jvm",
-            "/usr/java",
-            "/usr/local/java",
-            "/opt/java",
-        ].iter().map(PathBuf::from));
+        paths.extend(
+            ["/usr/lib/jvm", "/usr/java", "/usr/local/java", "/opt/java"]
+                .iter()
+                .map(PathBuf::from),
+        );
     }
 
-    #[cfg(target_os = "macos")] {
+    #[cfg(target_os = "macos")]
+    {
+        use std::process::Command;
         // 使用 java_home 命令
         if let Ok(output) = Command::new("/usr/libexec/java_home").output() {
             if let Ok(path) = String::from_utf8(output.stdout) {
@@ -201,10 +208,14 @@ fn get_potential_jre_paths() -> Vec<PathBuf> {
         }
 
         // macOS 常见安装路径
-        paths.extend([
-            "/Library/Java/JavaVirtualMachines",
-            "/System/Library/Java/JavaVirtualMachines",
-        ].iter().map(PathBuf::from));
+        paths.extend(
+            [
+                "/Library/Java/JavaVirtualMachines",
+                "/System/Library/Java/JavaVirtualMachines",
+            ]
+            .iter()
+            .map(PathBuf::from),
+        );
     }
 
     paths
@@ -217,11 +228,11 @@ pub fn find_jre() -> Option<JreInfo> {
 
 /// 扫描系统中所有可用的 JRE
 pub fn scan_jres() -> Vec<JreInfo> {
-    use std::fs;
     use std::collections::HashSet;
+    use std::fs;
 
     let mut result = HashSet::new();
-    
+
     // 获取所有可能的路径
     for base_path in get_potential_jre_paths() {
         if !base_path.exists() {
@@ -258,7 +269,6 @@ pub fn scan_jres() -> Vec<JreInfo> {
     result.into_iter().collect()
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -274,10 +284,11 @@ mod tests {
         //     println!("No JRE found");
         // }
         let all_jres = scan_jres();
-        for jre in all_jres {            println!("Found JRE:");
+        for jre in all_jres {
+            println!("Found JRE:");
             println!("  Path: {:?}", jre.path);
             println!("  Version: {}", jre.version);
             println!("  Architecture: {:?}", jre.arch);
-}
+        }
     }
 }

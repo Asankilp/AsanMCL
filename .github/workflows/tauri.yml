@@ -65,4 +65,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}-artifacts
-          path: ${{ fromJSON(steps.tauri-action.outputs.artifactPaths) }}
+          path: ${{ steps.tauri-action.outputs.artifactPaths }}
