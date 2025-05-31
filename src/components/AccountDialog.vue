@@ -138,11 +138,11 @@
     </v-card>
   </v-dialog>
   <!-- 设备码对话框 -->
-  <v-dialog v-model="showDeviceCode" max-width="400px" persistent>
+  <v-dialog v-model="showUserCode" max-width="400px" persistent>
     <v-card>
       <v-card-title class="text-h6">Microsoft 账户登录</v-card-title>
       <v-card-text class="text-center">
-        <p class="mb-4">请访问以下网址并输入设备码：</p>
+        <p class="mb-4">请访问以下网址并输入代码：</p>
         <v-btn
           block
           color="primary"
@@ -154,8 +154,8 @@
         >
           打开授权页面
         </v-btn>
-        <v-card variant="outlined" class="mb-4 pa-4 cursor-pointer" @click="copyToClipboard(deviceCode)">
-          <p class="text-h5 font-weight-bold">{{ deviceCode }}</p>
+        <v-card variant="outlined" class="mb-4 pa-4 cursor-pointer" @click="copyToClipboard(userCode)">
+          <p class="text-h5 font-weight-bold">{{ userCode }}</p>
           <v-icon icon="mdi-content-copy" size="small" class="ms-2"></v-icon>
         </v-card>
         <p class="text-caption">点击上方的代码可复制到剪贴板</p>
@@ -163,7 +163,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="error" variant="text" @click="showDeviceCode = false">
+        <v-btn color="error" variant="text" @click="showUserCode = false">
           取消
         </v-btn>
       </v-card-actions>
@@ -239,7 +239,7 @@ import {
 import { LoginEvent } from '../types/event'
 import { Channel, invoke } from '@tauri-apps/api/core'
 import { MinecraftProfile, SkinData, CapeData } from '../types/mojang'
-
+import { writeText } from '@tauri-apps/plugin-clipboard-manager';
 const { showSuccess, showError } = useSnackbar()
 
 const props = withDefaults(defineProps<{
@@ -284,9 +284,9 @@ const offlineData = reactive<OfflineAccountData>({
 })
 
 // Microsoft 登录相关
-const showDeviceCode = ref(false)
+const showUserCode = ref(false)
 const authUrl = ref('')
-const deviceCode = ref('')
+const userCode = ref('')
 
 // 玩家信息对话框
 const showPlayerInfo = ref(false)
@@ -330,7 +330,7 @@ const submitButtonText = computed(() => {
 
 const copyToClipboard = async (text: string) => {
   try {
-    // await writeText(text)
+    await writeText(text)
     showSuccess('已复制到剪贴板')
   } catch (err) {
     console.error('Failed to copy text:', err)
@@ -350,10 +350,10 @@ const handleMicrosoftLogin = async () => {
     onEvent.onmessage = async (message: LoginEvent) => {
       if (message.event === 'started') {
         authUrl.value = 'https://microsoft.com/link'
-        deviceCode.value = message.data.code
-        showDeviceCode.value = true
+        userCode.value = message.data.code
+        showUserCode.value = true
       } else if (message.event === 'finished') {
-        showDeviceCode.value = false
+        showUserCode.value = false
         const result = message.data.response
         
         try {
@@ -410,7 +410,7 @@ const handleMicrosoftLogin = async () => {
     await invoke('get_device_code', { onEvent })
 
   } catch (error) {
-    console.error('获取设备码失败:', error)
+    console.error('获取代码失败:', error)
     showError('获取登录代码失败，请稍后重试')
   } finally {
     isLoading.value = false
