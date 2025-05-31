@@ -233,12 +233,10 @@ import { useSnackbar } from '../composables/useSnackbar'
 import { 
   type CustomAccountData, 
   type OfflineAccountData, 
-  type UserCodeResult,
-  type MinecraftAuthResponse, 
 } from '../types/account'
 import { LoginEvent } from '../types/event'
 import { Channel, invoke } from '@tauri-apps/api/core'
-import { MinecraftProfile, SkinData, CapeData } from '../types/mojang'
+import { MinecraftProfile } from '../types/mojang'
 import { writeText } from '@tauri-apps/plugin-clipboard-manager';
 const { showSuccess, showError } = useSnackbar()
 
