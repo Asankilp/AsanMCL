@@ -63,5 +63,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}-artifacts
-          path: |
-            ${{ steps.tauri-action.outputs.artifactPaths[0] }}
+          path: ${{ matrix.platform == 'windows-latest' && './src-tauri/target/release/asanmcl.exe' || './src-tauri/target/release/asanmcl' }}
