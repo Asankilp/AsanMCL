@@ -1,8 +1,10 @@
 mod auth;
 mod mojang;
+mod jre;
 
 use auth::command::*;
 use mojang::command::*;
+use jre::finder::*;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
