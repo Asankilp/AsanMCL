@@ -50,7 +50,7 @@
                   <td>{{ jre.arch }}</td>
                   <td>{{ jre.implementor }}</td>
                   <td>
-                    <v-btn icon="mdi-close" variant="text" color="error" density="comfortable"
+                    <v-btn v-if="jre.manual" icon="mdi-close" variant="text" color="error" density="comfortable"
                       @click="removeJre(jre)"></v-btn>
                   </td>
                 </tr>
@@ -64,6 +64,32 @@
         </v-window>
       </v-card-text>
     </v-card>
+
+    <!-- 移除确认对话框 -->
+    <v-dialog v-model="showDeleteDialog" max-width="400">
+      <v-card>
+        <v-card-title class="text-h6">
+          确认移除
+        </v-card-title>
+        <v-card-text>
+          确定要移除此 JRE 吗？
+          <div class="mt-2">
+            <strong>路径：</strong>{{ jreToDelete?.path }}
+            <br>
+            <strong>版本：</strong>{{ jreToDelete?.version }}
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" variant="text" @click="showDeleteDialog = false">
+            取消
+          </v-btn>
+          <v-btn color="error" variant="text" @click="confirmDeleteJre">
+            移除
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -72,6 +98,7 @@ import { ref, watch } from 'vue'
 import { invoke } from '@tauri-apps/api/core'
 import type { JreInfo } from '../types/jre'
 import { open } from '@tauri-apps/plugin-dialog'
+import { JreConfig } from '../types/config'
 
 // 当前激活的选项卡
 const activeTab = ref('launcher')
@@ -83,11 +110,13 @@ const closeAfterLaunch = ref(false)
 
 // JRE 列表
 const jreList = ref<JreInfo[]>([])
+const showDeleteDialog = ref(false)
+const jreToDelete = ref<JreInfo | null>(null)
 
 // 加载 JRE 列表
 const loadJreList = async () => {
   try {
-    const jres = await invoke<JreInfo[]>('scan_all_jres')
+    const jres = await invoke<JreInfo[]>('get_all_jres')
     jreList.value = jres
   } catch (error) {
     console.error('Failed to load JRE list:', error)
@@ -111,6 +140,26 @@ const addJre = async () => {
   try {
     const result = await invoke<JreInfo>('get_jre_info', { path: jre_directory })
     console.log(result)
+
+    // 检查是否已存在相同的JRE
+    const isDuplicate = jreList.value.some(jre =>
+      jre.path === result.path &&
+      jre.version === result.version &&
+      jre.arch === result.arch
+    )
+
+    if (!isDuplicate) {
+      // 设置为手动添加的JRE
+      result.manual = true
+
+      const jre_config = await invoke<JreConfig>('get_jre_config_command')
+      jre_config.jres.push(result)
+      await invoke('save_jre_config_command', { config: jre_config })
+      // 重新加载列表以显示新添加的JRE
+      await loadJreList()
+    } else {
+      console.log('JRE already exists, skipping...')
+    }
   } catch (error) {
     console.error('Failed to add JRE:', error)
   }
@@ -118,11 +167,22 @@ const addJre = async () => {
 
 // 移除 JRE
 const removeJre = async (jre: JreInfo) => {
+  jreToDelete.value = jre
+  showDeleteDialog.value = true
+}
+
+// 确认移除 JRE
+const confirmDeleteJre = async () => {
+  if (!jreToDelete.value) return
+
   try {
-    await invoke('remove_jre', { path: jre.path })
+    await invoke('remove_jre', { jre: jreToDelete.value })
     await loadJreList()
   } catch (error) {
     console.error('Failed to remove JRE:', error)
+  } finally {
+    showDeleteDialog.value = false
+    jreToDelete.value = null
   }
 }
 </script>

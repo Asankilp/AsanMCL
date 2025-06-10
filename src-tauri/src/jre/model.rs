@@ -18,4 +18,6 @@ pub struct JreInfo {
     pub arch: Architecture,
     /// 提供者
     pub implementor: Option<String>,
+    /// 是否为手动添加
+    pub manual: Option<bool>,
 }

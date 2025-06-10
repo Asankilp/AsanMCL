@@ -4,6 +4,7 @@ mod jre;
 mod mojang;
 
 use auth::command::*;
+use config::command::*;
 use jre::command::*;
 use mojang::command::*;
 
@@ -23,7 +24,11 @@ pub fn run() {
             get_player_avatar_url,
             get_player_skin_preview_url,
             scan_all_jres,
-            get_jre_info
+            get_jre_info,
+            get_jre_config_command,
+            save_jre_config_command,
+            get_all_jres,
+            remove_jre
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

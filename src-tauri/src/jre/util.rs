@@ -74,18 +74,21 @@ mod tests {
                 version: "1.8.0".to_string(),
                 arch: Architecture::X86_64,
                 implementor: Some("Oracle".to_string()),
+                manual: Some(false),
             },
             JreInfo {
                 path: PathBuf::from("/path/to/java17"),
                 version: "17.0.1".to_string(),
                 arch: Architecture::X86_64,
                 implementor: Some("Oracle".to_string()),
+                manual: Some(false),
             },
             JreInfo {
                 path: PathBuf::from("/path/to/java11"),
                 version: "11.0.2".to_string(),
                 arch: Architecture::X86_64,
                 implementor: Some("Oracle".to_string()),
+                manual: Some(false),
             },
         ];
 

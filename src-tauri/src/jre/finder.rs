@@ -26,6 +26,7 @@ pub fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
     let mut version = None;
     let mut detected_arch = None;
     let mut implementor = None;
+    let manual = Some(false);
 
     // 从release文件获取版本和架构信息
     for line in reader.lines().flatten() {
@@ -80,6 +81,7 @@ pub fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
         version,
         arch,
         implementor,
+        manual
     })
 }
 
@@ -265,5 +267,13 @@ mod tests {
     fn test_unknown_jre() {
         let jre = verify_jre_path(&PathBuf::from(r"/path/to/aaa"));
         assert!(jre.is_none());
+    }
+    #[test]
+    fn test_potential_jre_paths() {
+        let paths = get_potential_jre_paths();
+        assert!(!paths.is_empty(), "Expected some potential JRE paths");
+        for path in paths {
+            println!("Potential JRE path: {:?}", path);
+        }
     }
 }

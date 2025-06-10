@@ -20,4 +20,6 @@ export interface JreInfo {
     arch: Architecture;
     /** 提供者 */
     implementor?: string;
+    /** 是否为手动添加 */
+    manual?: boolean;
 }
