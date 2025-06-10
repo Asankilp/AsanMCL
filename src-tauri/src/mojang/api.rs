@@ -1,7 +1,7 @@
-use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
 use super::model::{
-    MinecraftProfile, SkinData, CapeData, GameOwnershipResponse, PlayerUuidResponse,
+    CapeData, GameOwnershipResponse, MinecraftProfile, PlayerUuidResponse, SkinData,
 };
+use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
 pub struct MinecraftClient {
     client: reqwest::Client,
 }

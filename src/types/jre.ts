@@ -18,4 +18,6 @@ export interface JreInfo {
     version: string;
     /** 系统架构 */
     arch: Architecture;
+    /** 提供者 */
+    implementor?: string;
 }

@@ -1,12 +1,10 @@
+use super::model::{Architecture, JreInfo};
 use std::path::PathBuf;
-use super::model::{JreInfo, Architecture};
-
 
 /// 检查给定路径是否为有效的 JRE 安装
-fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
+pub fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
     use std::fs::File;
     use std::io::{BufRead, BufReader};
-    use std::process::Command;
 
     #[cfg(target_os = "windows")]
     let java_bin = path.join("bin").join("java.exe");
@@ -17,83 +15,71 @@ fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
         return None;
     }
 
-    // 运行 java -version 获取版本信息
-    let output = Command::new(&java_bin).arg("-version").output().ok()?;
-    let version_output = String::from_utf8_lossy(&output.stderr);
+    let release_file = path.join("release");
+    if !release_file.exists() {
+        return None;
+    }
 
-    // 解析版本信息
-    let version = version_output
-        .lines()
-        .next()?
-        .split('"')
-        .nth(1)?
-        .to_string();
+    let file = File::open(release_file).ok()?;
+    let reader = BufReader::new(file);
 
-    // 检测系统架构：先从release文件获取，如果没有则从java -version输出获取
-    let arch = {
-        let release_file = path.join("release");
-        let mut detected_arch = None;
+    let mut version = None;
+    let mut detected_arch = None;
+    let mut implementor = None;
 
-        // 1. 尝试从release文件获取
-        if release_file.exists() {
-            if let Ok(file) = File::open(release_file) {
-                let reader = BufReader::new(file);
-                for line in reader.lines().flatten() {
-                    let line = line.to_lowercase();
-                    if line.starts_with("os_arch=") {
-                        let arch = line.trim_start_matches("os_arch=").trim_matches('"').trim();
-
-                        detected_arch = match arch {
-                            "amd64" | "x86_64" => Some(Architecture::X86_64),
-                            "x86" | "i386" | "i586" | "i686" => Some(Architecture::X86),
-                            "aarch64" | "arm64" => Some(Architecture::Arm64),
-                            _ => None,
-                        };
-                        break;
-                    }
-                }
-            }
+    // 从release文件获取版本和架构信息
+    for line in reader.lines().flatten() {
+        let line = line.to_lowercase();
+        if line.starts_with("implementor=") {
+            implementor = Some(
+                line.trim_start_matches("implementor=")
+                    .trim_matches('"')
+                    .trim()
+                    .to_string(),
+            );
         }
-
-        // 2. 如果release文件中没有找到，尝试从java -version输出获取
-        if detected_arch.is_none() {
-            let output = version_output.to_lowercase();
-            detected_arch = if output.contains("aarch64")
-                || output.contains("arm64")
-                || output.contains("arm-64")
-            {
-                Some(Architecture::Arm64)
-            } else if output.contains("amd64") || output.contains("x86_64") {
-                Some(Architecture::X86_64)
-            } else if output.contains("i386") || output.contains("i586") || output.contains("i686")
-            {
-                Some(Architecture::X86)
-            } else {
-                None
+        if line.starts_with("java_version=") {
+            version = Some(
+                line.trim_start_matches("java_version=")
+                    .trim_matches('"')
+                    .trim()
+                    .to_string(),
+            );
+        } else if line.starts_with("os_arch=") {
+            let arch = line.trim_start_matches("os_arch=").trim_matches('"').trim();
+            detected_arch = match arch {
+                "amd64" | "x86_64" => Some(Architecture::X86_64),
+                "x86" | "i386" | "i586" | "i686" => Some(Architecture::X86),
+                "aarch64" | "arm64" => Some(Architecture::Arm64),
+                _ => None,
             };
         }
+    }
 
-        // 3. 如果都没找到，使用系统架构作为默认值
-        detected_arch.unwrap_or_else(|| {
-            #[cfg(target_pointer_width = "64")]
-            {
-                #[cfg(target_arch = "aarch64")]
-                return Architecture::Arm64;
-                #[cfg(target_arch = "x86_64")]
-                return Architecture::X86_64;
-            }
-            #[cfg(target_pointer_width = "32")]
-            return Architecture::X86;
+    // 如果没有找到架构信息，使用系统默认架构
+    let arch = detected_arch.unwrap_or_else(|| {
+        #[cfg(target_pointer_width = "64")]
+        {
+            #[cfg(target_arch = "aarch64")]
+            return Architecture::Arm64;
+            #[cfg(target_arch = "x86_64")]
+            return Architecture::X86_64;
+        }
+        #[cfg(target_pointer_width = "32")]
+        return Architecture::X86;
 
-            #[allow(unreachable_code)]
-            Architecture::Unknown
-        })
-    };
+        #[allow(unreachable_code)]
+        Architecture::Unknown
+    });
+
+    // 如果找不到版本信息，返回None
+    let version = version?;
 
     Some(JreInfo {
         path: path.to_owned(),
         version,
         arch,
+        implementor,
     })
 }
 
@@ -272,6 +258,12 @@ mod tests {
             println!("  Path: {:?}", jre.path);
             println!("  Version: {}", jre.version);
             println!("  Architecture: {:?}", jre.arch);
+            println!("  Implementor: {:?}", jre.implementor);
         }
+    }
+    #[test]
+    fn test_unknown_jre() {
+        let jre = verify_jre_path(&PathBuf::from(r"/path/to/aaa"));
+        assert!(jre.is_none());
     }
 }

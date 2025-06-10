@@ -15,6 +15,7 @@
     "@mdi/font": "^7.4.47",
     "@tauri-apps/api": "^2.5.0",
     "@tauri-apps/plugin-clipboard-manager": "~2",
+    "@tauri-apps/plugin-dialog": "~2",
     "@tauri-apps/plugin-opener": "^2",
     "element-plus": "^2.9.11",
     "sass": "^1.89.0",

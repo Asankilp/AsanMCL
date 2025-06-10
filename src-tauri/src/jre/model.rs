@@ -8,8 +8,7 @@ pub enum Architecture {
     Unknown,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 pub struct JreInfo {
     /// JRE 目录的路径
     pub path: PathBuf,
@@ -17,4 +16,6 @@ pub struct JreInfo {
     pub version: String,
     /// 系统架构
     pub arch: Architecture,
+    /// 提供者
+    pub implementor: Option<String>,
 }

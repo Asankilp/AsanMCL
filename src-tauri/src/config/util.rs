@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-
 pub async fn get_global_config_path() -> Result<PathBuf, String> {
     let mut path = dirs::config_dir().ok_or("Unable to get global config dir")?;
     path.push("asanmcl");
