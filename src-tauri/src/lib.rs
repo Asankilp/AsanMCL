@@ -1,6 +1,7 @@
 mod auth;
 mod jre;
 mod mojang;
+mod config;
 
 use auth::command::*;
 use jre::command::*;
