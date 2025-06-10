@@ -1,23 +1,6 @@
 use std::path::PathBuf;
+use super::model::{JreInfo, Architecture};
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-pub enum Architecture {
-    X86,
-    X86_64,
-    Arm64,
-    Unknown,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[derive(serde::Serialize, serde::Deserialize)]
-pub struct JreInfo {
-    /// JRE 目录的路径
-    pub path: PathBuf,
-    /// Java 版本号
-    pub version: String,
-    /// 系统架构
-    pub arch: Architecture,
-}
 
 /// 检查给定路径是否为有效的 JRE 安装
 fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {

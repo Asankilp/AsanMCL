@@ -1,4 +1,5 @@
 use super::api::*;
+use super::model::{CapeData, MinecraftProfile, SkinData};
 
 #[tauri::command]
 pub async fn get_minecraft_profile(access_token: String) -> Result<MinecraftProfile, String> {
