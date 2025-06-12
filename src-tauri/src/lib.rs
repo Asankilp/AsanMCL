@@ -2,6 +2,7 @@ mod auth;
 mod config;
 mod jre;
 mod mojang;
+mod game;
 
 use auth::command::*;
 use config::command::*;

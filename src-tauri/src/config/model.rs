@@ -46,6 +46,7 @@ pub struct ProxyConfig {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct LauncherConfig {
+    #[serde(default = "default_last_game_path")]
     pub last_game_path: String,
     #[serde(default = "default_false")]
     pub close_after_launch: bool,
@@ -61,6 +62,10 @@ pub struct LauncherConfig {
 
 fn default_false() -> bool {
     false
+}
+
+fn default_last_game_path() -> String {
+    "当前目录".to_string()
 }
 
 fn default_download_source() -> DownloadSources {
@@ -84,7 +89,7 @@ fn default_game_paths() -> HashMap<String, PathBuf> {
 impl Default for LauncherConfig {
     fn default() -> Self {
         LauncherConfig {
-            last_game_path: "当前目录".to_string(),
+            last_game_path: default_last_game_path(),
             close_after_launch: false,
             download_source: default_download_source(),
             enable_proxy: false,
