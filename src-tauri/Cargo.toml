@@ -33,6 +33,7 @@ winreg = { version = "0.11", optional = true }
 dirs = "5.0"
 tauri-plugin-dialog = "2"
 config = "0.15.11"
+tauri-plugin-store = "2"
 
 [target.'cfg(windows)'.dependencies]
 winreg = "0.11"

@@ -103,7 +103,6 @@ impl Default for LauncherConfig {
 mod tests {
     use super::*;
 
-
     #[test]
     fn test_default_launcher_config() {
         let config = LauncherConfig::default();

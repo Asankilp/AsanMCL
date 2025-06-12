@@ -46,10 +46,7 @@ pub fn get_default_game_paths() -> HashMap<String, PathBuf> {
     {
         minecraft_path = dirs::home_dir().unwrap_or_default().join(".minecraft");
     }
-    paths.insert(
-        "当前目录".to_string(),
-        PathBuf::from(".minecraft")
-    );
+    paths.insert("当前目录".to_string(), PathBuf::from(".minecraft"));
     paths.insert("官方启动器目录".to_string(), minecraft_path);
     paths
 }

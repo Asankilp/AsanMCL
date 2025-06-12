@@ -1,8 +1,8 @@
 mod auth;
 mod config;
+mod game;
 mod jre;
 mod mojang;
-mod game;
 
 use auth::command::*;
 use config::command::*;
@@ -12,6 +12,7 @@ use mojang::command::*;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_opener::init())
