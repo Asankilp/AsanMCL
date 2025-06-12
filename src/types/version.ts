@@ -22,7 +22,7 @@ export type Arg = string | {
 // 规则接口
 export interface Rule {
     /** 动作，可为 "allow" 或 "disallow" */
-    action: string;
+    action?: string;
     /** 操作系统条件 */
     os?: OsRule;
     /** 功能 */
@@ -44,7 +44,7 @@ export interface JavaVersion {
     /** 官方启动器使用的 Java 运行环境名称 */
     component?: string;
     /** Java 版本号，通常为 8、16、17 或 21 */
-    majorVersion: number;
+    majorVersion?: number;
 }
 
 // 启动参数接口
@@ -58,15 +58,15 @@ export interface Arguments {
 // 资产索引接口
 export interface AssetIndex {
     /** 资产版本 */
-    id: string;
+    id?: string;
     /** 资产 SHA1 哈希值 */
-    sha1: string;
+    sha1?: string;
     /** 资产大小 */
-    size: number;
+    size?: number;
     /** 资产总大小 */
     totalSize?: number;
     /** 资产 URL */
-    url: string;
+    url?: string;
 }
 
 // 下载文件接口
@@ -74,17 +74,17 @@ export interface ArtifactFile {
     /** 文件名 */
     id?: string;
     /** 文件 SHA-1 哈希值 */
-    sha1: string;
+    sha1?: string;
     /** 文件大小 */
-    size: number;
+    size?: number;
     /** 文件 URL */
-    url: string;
+    url?: string;
 }
 
 // 下载信息接口
 export interface Downloads {
     /** client.jar 下载信息 */
-    client: ArtifactFile;
+    client?: ArtifactFile;
     /** 客户端混淆映射表下载信息 */
     client_mappings?: ArtifactFile;
     /** server.jar 下载信息 */
@@ -96,7 +96,7 @@ export interface Downloads {
 // 库下载信息接口
 export interface DownloadsInfo {
     /** 文件信息 */
-    artifact: ArtifactFile;
+    artifact?: ArtifactFile;
     /** 分类器文件信息 */
     classifiers?: Record<string, ArtifactFile>;
 }
@@ -104,17 +104,17 @@ export interface DownloadsInfo {
 // 提取规则接口
 export interface ExtractRule {
     /** 排除的文件路径 */
-    exclude: string[];
+    exclude?: string[];
 }
 
 // 库接口
 export interface Library {
     /** 库的 Maven 名称，通常为 "groupId:artifactId:version" */
-    name: string;
+    name?: string;
     /** 库的 Maven 仓库 URL */
     url?: string;
     /** 库的下载信息 */
-    downloads: DownloadsInfo;
+    downloads?: DownloadsInfo;
     /** 库的原生文件信息 */
     natives?: Record<string, string>;
     /** 库的提取规则 */
@@ -126,20 +126,20 @@ export interface Library {
 // 日志客户端接口
 export interface LoggingClient {
     /** Log4j JVM 参数 */
-    argument: string;
+    argument?: string;
     /** Log4j XML 配置文件信息 */
-    file: ArtifactFile;
+    file?: ArtifactFile;
 }
 
 // 日志接口
 export interface Logging {
-    client: LoggingClient;
+    client?: LoggingClient;
 }
 
 // 客户端JSON配置接口
 export interface ClientJson {
     /** 版本名称 */
-    id: string;
+    id?: string;
     /** 继承自的版本名称 */
     inheritsFrom?: string;
     /** 版本发布时间，格式为 ISO 8601 */
@@ -147,11 +147,11 @@ export interface ClientJson {
     /** 版本发布时间，格式为 ISO 8601 */
     time?: string;
     /** 版本类型 */
-    type: VersionType;
+    type?: VersionType;
     /** 最低启动器版本 */
     minimumLauncherVersion?: number;
     /** 主类名 */
-    mainClass: string;
+    mainClass?: string;
     /** Java 版本信息 */
     javaVersion?: JavaVersion;
     /** 合规级别 */
