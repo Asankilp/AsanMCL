@@ -1,4 +1,4 @@
 pub mod command;
-pub mod configs;
+pub mod model;
 pub mod saveload;
 pub mod util;

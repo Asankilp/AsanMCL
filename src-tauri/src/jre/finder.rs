@@ -81,7 +81,7 @@ pub fn verify_jre_path(path: &PathBuf) -> Option<JreInfo> {
         version,
         arch,
         implementor,
-        manual
+        manual,
     })
 }
 

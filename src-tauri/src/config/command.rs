@@ -1,4 +1,4 @@
-use crate::config::{configs::JreConfig, saveload::save_jre_config};
+use crate::config::{model::JreConfig, saveload::save_jre_config};
 
 use super::saveload::get_jre_config;
 

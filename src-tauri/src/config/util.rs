@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
@@ -28,4 +29,27 @@ pub fn get_workdir_config_file_path(filename: &str) -> Result<PathBuf, String> {
     let mut path = get_workdir_config_path()?;
     path.push(filename);
     Ok(path)
+}
+
+pub fn get_default_game_paths() -> HashMap<String, PathBuf> {
+    let mut paths = HashMap::new();
+    let minecraft_path: PathBuf;
+    #[cfg(target_os = "windows")]
+    {
+        minecraft_path = dirs::config_dir().unwrap_or_default().join(".minecraft");
+    }
+    #[cfg(target_os = "macos")]
+    {
+        minecraft_path = dirs::config_dir().unwrap_or_default().join("minecraft");
+    }
+    #[cfg(target_os = "linux")]
+    {
+        minecraft_path = dirs::home_dir().unwrap_or_default().join(".minecraft");
+    }
+    paths.insert(
+        "当前目录".to_string(),
+        PathBuf::from(".minecraft")
+    );
+    paths.insert("官方启动器目录".to_string(), minecraft_path);
+    paths
 }

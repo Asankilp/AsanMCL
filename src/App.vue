@@ -1,5 +1,11 @@
 <template>
   <v-app>
+    <!-- 欢迎页 -->
+    <Hello
+      v-if="showWelcome"
+      @close="showWelcome = false"
+    />
+
     <!-- 侧边导航栏 -->
     <v-navigation-drawer
       v-model="drawer"
@@ -72,13 +78,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSnackbar } from './composables/useSnackbar'
+import Hello from './components/Hello.vue'
 
 const router = useRouter()
 const drawer = ref(true)
 const isRail = ref(true)
+const showWelcome = ref(false)
 
 const currentUser = ref({
   name: 'Player',
@@ -109,6 +117,11 @@ const {
   snackbarType,
   snackbarTimeout
 } = useSnackbar()
+
+onMounted(() => {
+  
+  // showWelcome.value = true
+})
 </script>
 
 <style>

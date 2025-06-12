@@ -1,3 +1,7 @@
+export interface JreConfig {
+    jres: JreInfo[];
+}
+
 /**
  * Java运行时环境的架构
  */

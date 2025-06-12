@@ -13,12 +13,6 @@
           <!-- 启动器设置 -->
           <v-window-item value="launcher">
             <v-form class="mt-4">
-              <v-text-field v-model="maxMemory" label="最大内存 (MB)" type="number" variant="outlined"
-                density="comfortable"></v-text-field>
-
-              <v-text-field v-model="javaArgs" label="Java 参数" variant="outlined" density="comfortable"
-                hint="添加自定义 Java 启动参数" persistent-hint></v-text-field>
-
               <v-switch v-model="closeAfterLaunch" label="启动游戏后关闭启动器" color="primary" inset class="mt-4"></v-switch>
             </v-form>
           </v-window-item>
@@ -96,16 +90,14 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { invoke } from '@tauri-apps/api/core'
-import type { JreInfo } from '../types/jre'
+import type { JreInfo } from '../types/config/jre'
 import { open } from '@tauri-apps/plugin-dialog'
-import { JreConfig } from '../types/config'
+import { JreConfig } from '../types/config/jre'
 
 // 当前激活的选项卡
 const activeTab = ref('launcher')
 
 // 启动器设置
-const maxMemory = ref(2048)
-const javaArgs = ref('')
 const closeAfterLaunch = ref(false)
 
 // JRE 列表

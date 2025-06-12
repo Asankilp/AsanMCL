@@ -3,7 +3,7 @@
     <v-alert
       type="info"
       variant="tonal"
-      :text="'使用 Microsoft 账户登录可以：\n- 进入正版服务器\n- 使用皮肤功能\n- 使用跨平台同步'"
+      :text="'使用 Microsoft 账户登录可以：\n- 进入正版服务器\n- 使用皮肤/披风'"
       class="mb-4"
     ></v-alert>
     <v-btn

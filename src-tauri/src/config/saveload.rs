@@ -3,7 +3,7 @@ use std::fs;
 use config::Config;
 
 use super::util::get_workdir_config_file_path;
-use crate::config::configs::JreConfig;
+use crate::config::model::JreConfig;
 
 pub async fn get_jre_config() -> Result<JreConfig, String> {
     let config_path = get_workdir_config_file_path("jres.json")?;
