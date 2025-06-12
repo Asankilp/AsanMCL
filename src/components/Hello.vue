@@ -86,9 +86,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const emit = defineEmits(['close'])
 const currentStep = ref(0)
 
@@ -110,10 +108,6 @@ const skipAll = () => {
 }
 
 
-const setupJRE = async () => {
-  // TODO: 调用自动搜索JRE的功能
-  nextStep()
-}
 
 const complete = () => {
   localStorage.setItem('welcomed', 'true')
