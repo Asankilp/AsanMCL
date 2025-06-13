@@ -10,6 +10,40 @@ export enum VersionType {
     Other = 'other'
 }
 
+// 最新版本接口
+export interface LatestVersion {
+    /** 最新正式版 */
+    release: string;
+    /** 最新快照版 */
+    snapshot: string;
+}
+
+// 版本信息接口
+export interface VersionInfo {
+    /** 版本号 */
+    id: string;
+    /** 版本类型 */
+    type: VersionType;
+    /** 版本发布时间，格式为 ISO 8601 */
+    releaseTime: string;
+    /** 版本更新时间，格式为 ISO 8601 */
+    time: string;
+    /** 版本的 SHA1 哈希值 */
+    sha1?: string;
+    /** 版本 JSON 文件的 URL */
+    url: string;
+    /** 版本的合规级别，1.16.4-pre2 之前为 0，之后的所有版本为 1 */
+    complianceLevel?: number;
+}
+
+// 版本清单接口
+export interface VersionManifest {
+    /** 最新版本 */
+    latest: LatestVersion;
+    /** 版本列表的版本信息 */
+    versions: VersionInfo[];
+}
+
 // 值或列表类型
 export type ValueOrList = string | string[];
 
@@ -138,9 +172,9 @@ export interface Logging {
 
 // 客户端JSON配置接口
 export interface ClientJson {
-    /** 版本名称 */
+    /** 版本号 */
     id?: string;
-    /** 继承自的版本名称 */
+    /** 继承自的版本号 */
     inheritsFrom?: string;
     /** 版本发布时间，格式为 ISO 8601 */
     releaseTime?: string;

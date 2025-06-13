@@ -17,11 +17,47 @@ pub enum VersionType {
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]
+pub struct LatestVersion {
+    /// 最新正式版
+    pub release: String,
+    /// 最新快照版
+    pub snapshot: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct VersionInfo {
+    /// 版本号
+    pub id: String,
+    /// 版本类型
+    #[serde(rename = "type")]
+    pub version_type: VersionType,
+    #[serde(rename = "releaseTime")]
+    /// 版本发布时间，格式为 ISO 8601
+    pub release_time: String,
+    /// 版本更新时间，格式为 ISO 8601
+    pub time: String,
+    /// 版本的 SHA1 哈希值
+    pub sha1: Option<String>,
+    /// 版本 JSON 文件的 URL
+    pub url: String,
+    #[serde(rename = "complianceLevel")]
+    /// 版本的合规级别，1.16.4-pre2 之前为 0，之后的所有版本为 1
+    pub compliance_level: Option<u32>,
+}
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct VersionManifest {
+    /// 最新版本
+    pub latest: LatestVersion,
+    /// 版本列表的版本信息
+    pub versions: Vec<VersionInfo>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default)]
 pub struct ClientJson {
-    /// 版本名称
+    /// 版本号
     pub id: Option<String>,
     #[serde(rename = "inheritsFrom")]
-    /// 继承自的版本名称
+    /// 继承自的版本号
     pub inherits_from: Option<String>,
     #[serde(rename = "releaseTime")]
     /// 版本发布时间，格式为 ISO 8601
@@ -237,5 +273,14 @@ mod tests {
             let client_json: ClientJson = serde_json::from_str(&content).expect("Failed to parse JSON");
             println!("{:#?}", client_json);
         }
+    }
+
+    #[test]
+    fn test_parse_version_manifest() {
+        let resp = reqwest::blocking::get("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json")
+            .expect("Failed to get version manifest");
+        let content = resp.text().expect("Failed to read response");
+        let version_manifest: VersionManifest = serde_json::from_str(&content).expect("Failed to parse JSON");
+        println!("{:#?}", version_manifest);
     }
 }
