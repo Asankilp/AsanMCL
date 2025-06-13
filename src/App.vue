@@ -84,7 +84,6 @@ import { useSnackbar } from './composables/useSnackbar'
 import Hello from './components/Hello.vue'
 import { LauncherConfig } from './types/config/launcher'
 import { invoke } from '@tauri-apps/api/core'
-import { launcherConfigStore } from './store'
 import { useAppTheme } from './composables/useTheme'
 
 const router = useRouter()
@@ -129,9 +128,7 @@ onMounted(() => {
 })
 
 onMounted(async () => {
-  const config = await invoke<LauncherConfig>("get_launcher_config_command");
-  launcherConfigStore.set('config', config);
-  console.log(await launcherConfigStore.get('config'));
+  // const config = await invoke<LauncherConfig>("get_launcher_config_command");
   // showWelcome.value = true
 })
 </script>
