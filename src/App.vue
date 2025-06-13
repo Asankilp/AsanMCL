@@ -82,8 +82,6 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSnackbar } from './composables/useSnackbar'
 import Hello from './components/Hello.vue'
-import { LauncherConfig } from './types/config/launcher'
-import { invoke } from '@tauri-apps/api/core'
 import { useAppTheme } from './composables/useTheme'
 
 const router = useRouter()
