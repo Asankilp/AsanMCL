@@ -21,7 +21,7 @@ const vuetify = createVuetify({
     },
   },
   theme: {
-    defaultTheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+    // defaultTheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
     themes: {
       light: {
         colors: {
@@ -52,16 +52,16 @@ const vuetify = createVuetify({
 });
 
 // 监听系统主题变化
-const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-const handleThemeChange = (e: MediaQueryListEvent | MediaQueryList) => {
-  if (vuetify) {
-    vuetify.theme.global.name.value = e.matches ? 'dark' : 'light';
-  }
-};
+// const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+// const handleThemeChange = (e: MediaQueryListEvent | MediaQueryList) => {
+//   if (vuetify) {
+//     vuetify.theme.global.name.value = e.matches ? 'dark' : 'light';
+//   }
+// };
 
-// 初始化和监听主题变化
-handleThemeChange(mediaQuery);
-mediaQuery.addEventListener('change', handleThemeChange);
+// // 初始化和监听主题变化
+// handleThemeChange(mediaQuery);
+// mediaQuery.addEventListener('change', handleThemeChange);
 
 const app = createApp(App);
 app.use(vuetify);
