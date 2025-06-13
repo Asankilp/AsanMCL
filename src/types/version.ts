@@ -107,6 +107,8 @@ export interface AssetIndex {
 export interface ArtifactFile {
     /** 文件名 */
     id?: string;
+    /** 文件路径 */
+    path?: string;
     /** 文件 SHA-1 哈希值 */
     sha1?: string;
     /** 文件大小 */

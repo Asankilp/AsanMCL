@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::{collections::HashMap, path::PathBuf};
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
@@ -236,6 +236,8 @@ pub struct ArtifactFile {
     #[serde(default)]
     /// 文件名
     pub id: Option<String>,
+    /// 文件路径
+    pub path: Option<PathBuf>,
     /// 文件 SHA-1 哈希值
     pub sha1: Option<String>,
     /// 文件大小
