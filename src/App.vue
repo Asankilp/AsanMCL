@@ -128,13 +128,7 @@ onMounted(() => {
 })
 
 onMounted(async () => {
-<<<<<<< HEAD
-  const config = await invoke<LauncherConfig>("get_launcher_config_command");
-  (await launcherConfigStore).set('config', config);
-  console.log(await (await launcherConfigStore).get('config'));
-=======
   // const config = await invoke<LauncherConfig>("get_launcher_config_command");
->>>>>>> 716d4c7f4725ad17af74374c2560409885300beb
   // showWelcome.value = true
 })
 </script>
