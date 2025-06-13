@@ -20,7 +20,7 @@ impl Default for JreConfig {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum DownloadSources {
-    Mojang,
+    Official,
     BmclApi,
 }
 
@@ -81,7 +81,7 @@ fn default_last_game_path() -> String {
 }
 
 fn default_download_source() -> DownloadSources {
-    DownloadSources::Mojang
+    DownloadSources::Official
 }
 
 fn default_color_theme() -> ColorTheme {

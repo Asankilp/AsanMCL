@@ -1,6 +1,6 @@
 // 下载源
 export enum DownloadSources {
-    Mojang = 'mojang',
+    Official = 'official',
     BmclApi = 'bmclapi'
 }
 
@@ -52,7 +52,7 @@ export const defaultLauncherConfig = (): LauncherConfig => ({
     last_game_path: '当前目录',
     close_after_launch: false,
     color_theme: ColorTheme.FollowSystem,
-    download_source: DownloadSources.Mojang,
+    download_source: DownloadSources.Official,
     enable_proxy: false,
     proxy: defaultProxyConfig(),
     game_path: {} // 在实际使用时会从 Tauri 后端获取默认值
