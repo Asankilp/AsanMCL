@@ -13,7 +13,7 @@ export const useAppTheme = () => {
   // 加载主题设置
   const loadTheme = async () => {
     try {
-      const config = await launcherConfigStore.get('config') as LauncherConfig
+      const config = await (await launcherConfigStore).get('config') as LauncherConfig
       colorTheme.value = config.color_theme
       applyTheme(config.color_theme)
     } catch (error) {
@@ -24,10 +24,10 @@ export const useAppTheme = () => {
   // 保存主题设置
   const saveTheme = async (newTheme: ColorTheme) => {
     try {
-      const config = await launcherConfigStore.get('config') as LauncherConfig
+      const config = await (await launcherConfigStore).get('config') as LauncherConfig
       config.color_theme = newTheme
       await invoke('save_launcher_config_command', { config })
-      await launcherConfigStore.set('config', config)
+      await (await launcherConfigStore).set('config', config)
     } catch (error) {
       console.error('Failed to save theme setting:', error)
     }

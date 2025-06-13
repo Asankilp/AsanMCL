@@ -130,8 +130,8 @@ onMounted(() => {
 
 onMounted(async () => {
   const config = await invoke<LauncherConfig>("get_launcher_config_command");
-  launcherConfigStore.set('config', config);
-  console.log(await launcherConfigStore.get('config'));
+  (await launcherConfigStore).set('config', config);
+  console.log(await (await launcherConfigStore).get('config'));
   // showWelcome.value = true
 })
 </script>
