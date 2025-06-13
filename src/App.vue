@@ -82,6 +82,10 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSnackbar } from './composables/useSnackbar'
 import Hello from './components/Hello.vue'
+import { LauncherConfig } from './types/config/launcher'
+import { invoke } from '@tauri-apps/api/core'
+import { launcherConfigStore } from './store'
+import { useAppTheme } from './composables/useTheme'
 
 const router = useRouter()
 const drawer = ref(true)
@@ -118,8 +122,16 @@ const {
   snackbarTimeout
 } = useSnackbar()
 
+// 初始化主题
+const { loadTheme } = useAppTheme()
 onMounted(() => {
-  
+  loadTheme()
+})
+
+onMounted(async () => {
+  const config = await invoke<LauncherConfig>("get_launcher_config_command");
+  launcherConfigStore.set('config', config);
+  console.log(await launcherConfigStore.get('config'));
   // showWelcome.value = true
 })
 </script>

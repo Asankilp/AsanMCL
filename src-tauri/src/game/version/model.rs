@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::fs;
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
@@ -70,7 +69,6 @@ pub struct ClientJson {
     pub version_type: Option<VersionType>,
     #[serde(rename = "minimumLauncherVersion")]
     /// 最低启动器版本
-    #[serde(default)]
     pub minimum_launcher_version: Option<u32>,
     #[serde(rename = "mainClass")]
     /// 主类名，通常为 "net.minecraft.client.main.Main"
@@ -265,22 +263,26 @@ mod tests {
             r"C:\Users\asank\AppData\Roaming\.minecraft\versions\1.20.2-forge-48.1.0\1.20.2-forge-48.1.0.json",
             r"C:\Users\asank\AppData\Roaming\.minecraft\versions\25w21a\25w21a.json",
             r"C:\Users\asank\AppData\Roaming\.minecraft\versions\25w14craftmine\25w14craftmine.json",
-            r"C:\Users\asank\AppData\Roaming\.minecraft\versions\rd-132211\rd-132211.json"
+            r"C:\Users\asank\AppData\Roaming\.minecraft\versions\rd-132211\rd-132211.json",
         ];
 
         for file in test_files.iter() {
-            let content = fs::read_to_string(file).expect("Failed to read file");
-            let client_json: ClientJson = serde_json::from_str(&content).expect("Failed to parse JSON");
+            let content = std::fs::read_to_string(file).expect("Failed to read file");
+            let client_json: ClientJson =
+                serde_json::from_str(&content).expect("Failed to parse JSON");
             println!("{:#?}", client_json);
         }
     }
 
     #[test]
     fn test_parse_version_manifest() {
-        let resp = reqwest::blocking::get("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json")
-            .expect("Failed to get version manifest");
+        let resp = reqwest::blocking::get(
+            "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json",
+        )
+        .expect("Failed to get version manifest");
         let content = resp.text().expect("Failed to read response");
-        let version_manifest: VersionManifest = serde_json::from_str(&content).expect("Failed to parse JSON");
+        let version_manifest: VersionManifest =
+            serde_json::from_str(&content).expect("Failed to parse JSON");
         println!("{:#?}", version_manifest);
     }
 }

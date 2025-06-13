@@ -18,15 +18,25 @@ impl Default for JreConfig {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
 pub enum DownloadSources {
     Mojang,
     BmclApi,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
 pub enum ProxyType {
     Http,
     Socks5,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "snake_case")]
+pub enum ColorTheme {
+    FollowSystem,
+    Light,
+    Dark,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -50,6 +60,8 @@ pub struct LauncherConfig {
     pub last_game_path: String,
     #[serde(default = "default_false")]
     pub close_after_launch: bool,
+    #[serde(default = "default_color_theme")]
+    pub color_theme: ColorTheme,
     #[serde(default = "default_download_source")]
     pub download_source: DownloadSources,
     #[serde(default = "default_false")]
@@ -72,6 +84,10 @@ fn default_download_source() -> DownloadSources {
     DownloadSources::Mojang
 }
 
+fn default_color_theme() -> ColorTheme {
+    ColorTheme::FollowSystem
+}
+
 fn default_proxy_config() -> ProxyConfig {
     ProxyConfig {
         r#type: ProxyType::Http,
@@ -91,6 +107,7 @@ impl Default for LauncherConfig {
         LauncherConfig {
             last_game_path: default_last_game_path(),
             close_after_launch: false,
+            color_theme: default_color_theme(),
             download_source: default_download_source(),
             enable_proxy: false,
             proxy: default_proxy_config(),

@@ -1,13 +1,20 @@
 // 下载源
 export enum DownloadSources {
-    Mojang = 'Mojang',
-    BmclApi = 'BmclApi'
+    Mojang = 'mojang',
+    BmclApi = 'bmclapi'
 }
 
 // 代理类型
 export enum ProxyType {
-    Http = 'Http',
-    Socks5 = 'Socks5'
+    Http = 'http',
+    Socks5 = 'socks5'
+}
+
+// 颜色主题
+export enum ColorTheme {
+    Light = 'light',
+    Dark = 'dark',
+    FollowSystem = 'follow_system'
 }
 
 // 代理配置
@@ -24,6 +31,7 @@ export interface ProxyConfig {
 export interface LauncherConfig {
     last_game_path: string;
     close_after_launch: boolean;
+    color_theme: ColorTheme;
     download_source: DownloadSources;
     enable_proxy: boolean;
     proxy: ProxyConfig;
@@ -43,6 +51,7 @@ export const defaultProxyConfig = (): ProxyConfig => ({
 export const defaultLauncherConfig = (): LauncherConfig => ({
     last_game_path: '当前目录',
     close_after_launch: false,
+    color_theme: ColorTheme.FollowSystem,
     download_source: DownloadSources.Mojang,
     enable_proxy: false,
     proxy: defaultProxyConfig(),

@@ -14,6 +14,22 @@
           <v-window-item value="launcher">
             <v-form class="mt-4">
               <v-switch v-model="closeAfterLaunch" label="启动游戏后关闭启动器" color="primary" inset class="mt-4"></v-switch>
+              
+              <v-divider class="my-4"></v-divider>
+              
+              <h3 class="text-h6 mb-2">颜色主题</h3>
+              <v-btn-group rounded="pill" class="mt-2">
+                <v-btn
+                  v-for="option in themeOptions"
+                  :key="option.value"
+                  :prepend-icon="option.icon"
+                  :color="colorTheme === option.value ? 'primary' : undefined"
+                  :variant="colorTheme === option.value ? 'flat' : 'text'"
+                  @click="colorTheme = option.value"
+                >
+                  {{ option.text }}
+                </v-btn>
+              </v-btn-group>
             </v-form>
           </v-window-item>
 
@@ -88,22 +104,59 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { invoke } from '@tauri-apps/api/core'
 import type { JreInfo } from '../types/config/jre'
 import { open } from '@tauri-apps/plugin-dialog'
 import { JreConfig } from '../types/config/jre'
+import { ColorTheme, type LauncherConfig } from '../types/config/launcher'
+import { useAppTheme } from '../composables/useTheme'
 
 // 当前激活的选项卡
 const activeTab = ref('launcher')
 
 // 启动器设置
 const closeAfterLaunch = ref(false)
+const { colorTheme } = useAppTheme()
+
+// 主题选项
+const themeOptions = [
+  { text: '跟随系统', value: ColorTheme.FollowSystem, icon: 'mdi-desktop-mac' },
+  { text: '浅色', value: ColorTheme.Light, icon: 'mdi-white-balance-sunny' },
+  { text: '深色', value: ColorTheme.Dark, icon: 'mdi-weather-night' }
+]
 
 // JRE 列表
 const jreList = ref<JreInfo[]>([])
 const showDeleteDialog = ref(false)
 const jreToDelete = ref<JreInfo | null>(null)
+
+// 加载启动器配置
+const loadLauncherConfig = async () => {
+  try {
+    const config = await invoke<LauncherConfig>('get_launcher_config_command')
+    closeAfterLaunch.value = config.close_after_launch
+    colorTheme.value = config.color_theme
+  } catch (error) {
+    console.error('Failed to load launcher config:', error)
+  }
+}
+
+// 监听关闭启动器设置变化
+watch(closeAfterLaunch, async (newValue) => {
+  try {
+    const config = await invoke<LauncherConfig>('get_launcher_config_command')
+    config.close_after_launch = newValue
+    await invoke('save_launcher_config_command', { config })
+  } catch (error) {
+    console.error('Failed to save close after launch setting:', error)
+  }
+})
+
+// 组件挂载时加载配置
+onMounted(() => {
+  loadLauncherConfig()
+})
 
 // 加载 JRE 列表
 const loadJreList = async () => {

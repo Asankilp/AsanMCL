@@ -8,7 +8,7 @@ use std::path::PathBuf;
 //     Ok(path)
 // }
 
-// 获取工作目录下配置文件存放目录
+/// 获取工作目录下配置文件存放目录
 pub fn get_workdir_config_path() -> Result<PathBuf, String> {
     let mut path = std::env::current_dir().expect("Unable to get workdir config dir");
     path.push(".asanmcl");
@@ -24,7 +24,7 @@ pub fn get_workdir_config_path() -> Result<PathBuf, String> {
     Ok(path)
 }
 
-// 获取工作目录下指定文件的目录位置
+/// 获取工作目录下指定文件的目录位置
 pub fn get_workdir_config_file_path(filename: &str) -> Result<PathBuf, String> {
     let mut path = get_workdir_config_path()?;
     path.push(filename);
