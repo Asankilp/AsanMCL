@@ -15,7 +15,7 @@ export interface UserCodeResult {
 }
 
 export interface MinecraftAuthResponse {
-    username: string,
+    userId: string,
     accessToken: string,
     tokenType: string,
     expiresIn: number,

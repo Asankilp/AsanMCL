@@ -12,11 +12,12 @@ import { useSnackbar } from '../composables/useSnackbar'
 import { LoginEvent } from '../types/event'
 import { Channel, invoke } from '@tauri-apps/api/core'
 import { MinecraftProfile } from '../types/mojang'
+import { AccountInfo, AccountType } from '../types/config/account'
 
 const { showSuccess, showError } = useSnackbar()
 
 const emit = defineEmits<{
-  (e: 'login-success', data: any): void
+  (e: 'login-success', data: AccountInfo): void
   (e: 'show-user-code', data: { authUrl: string, userCode: string, close?: boolean }): void
   (e: 'show-player-info', data: any): void
 }>()
@@ -40,63 +41,60 @@ const handleMicrosoftLogin = async () => {
         })
       } else if (message.event === 'finished') {
         const result = message.data.response
-
         try {
           const profile: MinecraftProfile = await invoke("get_minecraft_profile", {
-            accessToken: result.accessToken
+              accessToken: result.accessToken
           })
-          const avatarUrl: string = await invoke('get_player_avatar_url', { uuid: profile.id })
-          const skinPreviewUrl: string = await invoke('get_player_skin_preview_url', { uuid: profile.id })
+          try {
+            const avatarUrl: string = await invoke('get_player_avatar_url', { uuid: profile.id })
+            const skinPreviewUrl: string = await invoke('get_player_skin_preview_url', { uuid: profile.id })
 
-          // 更新玩家信息
-          emit('show-player-info', {
-            username: profile.name,
-            uuid: profile.id,
-            avatarUrl,
-            skinPreviewUrl,
-            skins: profile.skins,
-            capes: profile.capes
-          })
-
-          showSuccess('登录成功！')
-          // 成功后关闭代码对话框
-          emit('show-user-code', {
-            authUrl: '',
-            userCode: '',
-            close: true
-          })
-          emit('login-success', {
-            type: 'microsoft',
-            data: {
+            // 更新玩家信息
+            emit('show-player-info', {
               username: profile.name,
-              accessToken: result.accessToken,
-              tokenType: result.tokenType,
-              expiresIn: result.expiresIn,
               uuid: profile.id,
               avatarUrl,
               skinPreviewUrl,
               skins: profile.skins,
               capes: profile.capes
-            }
-          })
-        } catch (err) {
-          console.error('获取玩家信息失败:', err)
-          showError('获取玩家信息失败，但登录已成功')
-          // 成功后关闭代码对话框
-          emit('show-user-code', {
-            authUrl: '',
-            userCode: '',
-            close: true
-          })
-          emit('login-success', {
-            type: 'microsoft',
-            data: {
-              username: result.username,
+            })
+
+            showSuccess('登录成功！')
+            // 成功后关闭代码对话框
+            emit('show-user-code', {
+              authUrl: '',
+              userCode: '',
+              close: true
+            })
+            emit('login-success', {
+              accountType: AccountType.Microsoft,
+              name: profile.name,
+              uuid: profile.id,
               accessToken: result.accessToken,
-              tokenType: result.tokenType,
-              expiresIn: result.expiresIn
-            }
-          })
+              userId: result.userId,
+              expiresIn: message.data.response.expiresIn,
+            })
+          } catch (err) {
+            console.error('获取玩家信息失败:', err)
+            showError('获取玩家信息失败，但登录已成功')
+            // 成功后关闭代码对话框
+            emit('show-user-code', {
+              authUrl: '',
+              userCode: '',
+              close: true
+            })
+            emit('login-success', {
+              accountType: AccountType.Microsoft,
+              name: profile.name,
+              uuid: profile.id,
+              accessToken: result.accessToken,
+              userId: result.userId,
+              expiresIn: message.data.response.expiresIn,
+            })
+          }
+        } catch (error) {
+          console.error('获取玩家信息失败:', error)
+          showError('获取玩家信息失败：' + (error instanceof Error ? error.message : '未知错误'))
         }
       }
     }

@@ -31,7 +31,7 @@ pub struct UserCodeResult {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct MinecraftAuthResponse {
-    username: String,
+    user_id: String,
     access_token: String,
     token_type: MinecraftTokenType,
     expires_in: u32,
@@ -91,12 +91,12 @@ pub async fn get_device_code(on_event: Channel<LoginEvent>) -> Result<(), String
         .await
         .map_err(|e| e.to_string())?;
     let result = MinecraftAuthResponse {
-        username: mc_token.username().to_string(),
+        user_id: mc_token.username().to_string(),
         access_token: mc_token.access_token().clone().into_inner(),
         token_type: mc_token.token_type().clone(),
         expires_in: mc_token.expires_in(),
     };
-    println!("Login successful for user: {}", result.username);
+    println!("Login successful for user: {}", result.user_id);
     on_event
         .send(LoginEvent::Finished {
             response: result.clone(),
