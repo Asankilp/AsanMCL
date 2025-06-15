@@ -25,10 +25,12 @@ export function useSnackbar() {
 
   const showError = (message: string, timeout?: number) => {
     showSnackbar({ message, type: 'error', timeout })
+    console.error(message)
   }
 
   const showWarning = (message: string, timeout?: number) => {
     showSnackbar({ message, type: 'warning', timeout })
+    console.warn(message)
   }
 
   const showInfo = (message: string, timeout?: number) => {

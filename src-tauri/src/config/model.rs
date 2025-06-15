@@ -40,6 +40,7 @@ pub enum ColorTheme {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct ProxyConfig {
     pub r#type: ProxyType,
     pub host: String,
@@ -55,9 +56,11 @@ pub struct ProxyConfig {
 // }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct LauncherConfig {
     #[serde(default = "default_last_game_path")]
     pub last_game_path: String,
+    pub selected_account: Option<String>,
     #[serde(default = "default_false")]
     pub close_after_launch: bool,
     #[serde(default = "default_color_theme")]
@@ -106,12 +109,46 @@ impl Default for LauncherConfig {
     fn default() -> Self {
         LauncherConfig {
             last_game_path: default_last_game_path(),
+            selected_account: None,
             close_after_launch: false,
             color_theme: default_color_theme(),
             download_source: default_download_source(),
             enable_proxy: false,
             proxy: default_proxy_config(),
             game_path: default_game_paths(),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+pub enum AccountType {
+    Microsoft,
+    Offline,
+    External
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct AccountInfo {
+    pub account_type: AccountType,
+    pub name: String, // 玩家名
+    pub uuid: String,     // 存储玩家的 UUID
+    pub access_token: Option<String>, // 访问令牌
+    pub refresh_token: Option<String>, // 刷新令牌
+    pub user_id: Option<String>, // Microsoft 账号的用户 ID
+    pub expires_in: Option<u64>, // 访问令牌的过期时间
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AccountConfig {
+    pub accounts: Vec<AccountInfo>, // 存储多个账号信息的列表
+}
+impl Default for AccountConfig {
+    fn default() -> Self {
+        AccountConfig {
+            accounts: Vec::new(), // 初始化为空列表
         }
     }
 }

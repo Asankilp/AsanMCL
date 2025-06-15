@@ -121,7 +121,7 @@ const { colorTheme } = useAppTheme()
 
 // 主题选项
 const themeOptions = [
-  { text: '跟随系统', value: ColorTheme.FollowSystem, icon: 'mdi-desktop-mac' },
+  { text: '跟随系统', value: ColorTheme.FollowSystem, icon: 'mdi-theme-light-dark' },
   { text: '浅色', value: ColorTheme.Light, icon: 'mdi-white-balance-sunny' },
   { text: '深色', value: ColorTheme.Dark, icon: 'mdi-weather-night' }
 ]
@@ -135,8 +135,8 @@ const jreToDelete = ref<JreInfo | null>(null)
 const loadLauncherConfig = async () => {
   try {
     const config = await invoke<LauncherConfig>('get_launcher_config_command')
-    closeAfterLaunch.value = config.close_after_launch
-    colorTheme.value = config.color_theme
+    closeAfterLaunch.value = config.closeAfterLaunch
+    colorTheme.value = config.colorTheme
   } catch (error) {
     console.error('Failed to load launcher config:', error)
   }
@@ -146,7 +146,7 @@ const loadLauncherConfig = async () => {
 watch(closeAfterLaunch, async (newValue) => {
   try {
     const config = await invoke<LauncherConfig>('get_launcher_config_command')
-    config.close_after_launch = newValue
+    config.closeAfterLaunch = newValue
     await invoke('save_launcher_config_command', { config })
   } catch (error) {
     console.error('Failed to save close after launch setting:', error)

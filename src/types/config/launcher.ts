@@ -22,20 +22,21 @@ export interface ProxyConfig {
     type: ProxyType;
     host: string;
     port: number;
-    enable_auth: boolean;
+    enableAuth: boolean;
     username?: string;
     password?: string;
 }
 
 // 启动器配置
 export interface LauncherConfig {
-    last_game_path: string;
-    close_after_launch: boolean;
-    color_theme: ColorTheme;
-    download_source: DownloadSources;
-    enable_proxy: boolean;
+    lastGamePath: string;
+    selectedAccount?: string; // 选中的账号
+    closeAfterLaunch: boolean;
+    colorTheme: ColorTheme;
+    downloadSource: DownloadSources;
+    enableProxy: boolean;
     proxy: ProxyConfig;
-    game_path: Record<string, string>;
+    gamePath: Record<string, string>;
 }
 
 // 默认值
@@ -43,17 +44,17 @@ export const defaultProxyConfig = (): ProxyConfig => ({
     type: ProxyType.Http,
     host: '',
     port: 0,
-    enable_auth: false,
+    enableAuth: false,
     username: undefined,
     password: undefined
 });
 
 export const defaultLauncherConfig = (): LauncherConfig => ({
-    last_game_path: '当前目录',
-    close_after_launch: false,
-    color_theme: ColorTheme.FollowSystem,
-    download_source: DownloadSources.Official,
-    enable_proxy: false,
+    lastGamePath: '当前目录',
+    closeAfterLaunch: false,
+    colorTheme: ColorTheme.FollowSystem,
+    downloadSource: DownloadSources.Official,
+    enableProxy: false,
     proxy: defaultProxyConfig(),
-    game_path: {} // 在实际使用时会从 Tauri 后端获取默认值
+    gamePath: {} // 在实际使用时会从 Tauri 后端获取默认值
 });

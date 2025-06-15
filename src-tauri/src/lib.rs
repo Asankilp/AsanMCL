@@ -32,7 +32,9 @@ pub fn run() {
             get_all_jres,
             remove_jre,
             get_launcher_config_command,
-            save_launcher_config_command
+            save_launcher_config_command,
+            get_account_config_command,
+            save_account_config_command,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

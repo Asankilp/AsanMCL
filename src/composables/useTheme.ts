@@ -13,8 +13,8 @@ export const useAppTheme = () => {
   const loadTheme = async () => {
     try {
       const config = await invoke<LauncherConfig>('get_launcher_config_command')
-      colorTheme.value = config.color_theme
-      applyTheme(config.color_theme)
+      colorTheme.value = config.colorTheme
+      applyTheme(config.colorTheme)
     } catch (error) {
       console.error('Failed to load theme setting:', error)
     }
@@ -24,7 +24,7 @@ export const useAppTheme = () => {
   const saveTheme = async (newTheme: ColorTheme) => {
     try {
       const config = await invoke<LauncherConfig>('get_launcher_config_command')
-      config.color_theme = newTheme
+      config.colorTheme = newTheme
       await invoke('save_launcher_config_command', { config })
     } catch (error) {
       console.error('Failed to save theme setting:', error)

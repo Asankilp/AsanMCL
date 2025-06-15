@@ -1,22 +1,9 @@
 <template>
-  <v-window-item value="microsoft">
-    <v-alert
-      type="info"
-      variant="tonal"
-      :text="'使用 Microsoft 账户登录可以：\n- 进入正版服务器\n- 使用皮肤/披风'"
-      class="mb-4"
-    ></v-alert>
-    <v-btn
-      color="primary"
-      block
-      prepend-icon="mdi-microsoft"
-      variant="elevated"
-      @click="handleMicrosoftLogin"
-      :loading="isLoading"
-    >
-      使用 Microsoft 账户登录
-    </v-btn>
-  </v-window-item>
+  <v-alert type="info" variant="tonal" :text="'使用 Microsoft 账户登录可以：\n- 进入正版服务器\n- 使用皮肤/披风'" class="mb-4"></v-alert>
+  <v-btn color="primary" block prepend-icon="mdi-microsoft" variant="elevated" @click="handleMicrosoftLogin"
+    :loading="isLoading">
+    使用 Microsoft 账户登录
+  </v-btn>
 </template>
 
 <script setup lang="ts">
@@ -36,21 +23,14 @@ const emit = defineEmits<{
 
 const isLoading = ref(false)
 
-// 暴露 isLoading 以便父组件可以修改它
-defineExpose({
-  setLoading: (value: boolean) => {
-    isLoading.value = value
-  }
-})
-
 const handleMicrosoftLogin = async () => {
   try {
     // 显示加载状态
     isLoading.value = true
-    
+
     // 创建事件通道
     const onEvent = new Channel<LoginEvent>()
-    
+
     // 监听事件
     onEvent.onmessage = async (message: LoginEvent) => {
       if (message.event === 'started') {
@@ -60,11 +40,11 @@ const handleMicrosoftLogin = async () => {
         })
       } else if (message.event === 'finished') {
         const result = message.data.response
-        
+
         try {
           const profile: MinecraftProfile = await invoke("get_minecraft_profile", {
             accessToken: result.accessToken
-          }) 
+          })
           const avatarUrl: string = await invoke('get_player_avatar_url', { uuid: profile.id })
           const skinPreviewUrl: string = await invoke('get_player_skin_preview_url', { uuid: profile.id })
 
@@ -77,7 +57,8 @@ const handleMicrosoftLogin = async () => {
             skins: profile.skins,
             capes: profile.capes
           })
-            showSuccess('登录成功！')
+
+          showSuccess('登录成功！')
           // 成功后关闭代码对话框
           emit('show-user-code', {
             authUrl: '',
@@ -136,4 +117,12 @@ const handleMicrosoftLogin = async () => {
     isLoading.value = false
   }
 }
+
+// 暴露方法给父组件
+defineExpose({
+  setLoading: (value: boolean) => {
+    isLoading.value = value
+  },
+  handleMicrosoftLogin
+})
 </script>

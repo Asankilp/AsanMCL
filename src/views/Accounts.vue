@@ -18,14 +18,14 @@
     <v-main>
       <v-list lines="two">
         <v-list-item
-          v-if="currentAccount"
-          :key="currentAccount.username"
-          :title="currentAccount.username"
-          :subtitle="currentAccount.email"
+          v-for="account in accounts"
+          :key="account.uuid"
+          :title="account.name"
+          :subtitle="getAccountTypeText(account.accountType)"
           rounded="lg"
         >
           <template v-slot:prepend>
-            <v-avatar :image="currentAccount.avatar" size="40"></v-avatar>
+            <v-avatar :image="getAvatarUrl(account.uuid)" size="40"></v-avatar>
           </template>
           
           <template v-slot:append>
@@ -33,9 +33,14 @@
               variant="text"
               color="error"
               icon="mdi-delete"
-              @click="handleDelete(currentAccount)"
+              @click="handleDelete(account)"
             ></v-btn>
           </template>
+        </v-list-item>
+
+        <v-list-item v-if="accounts.length === 0" class="text-center">
+          <v-list-item-title>暂无账户</v-list-item-title>
+          <v-list-item-subtitle>点击右上角的加号添加账户</v-list-item-subtitle>
         </v-list-item>
       </v-list>
     </v-main>
@@ -45,7 +50,6 @@
       v-model="accountDialogVisible"
       title="添加账户"
       :loading="loading"
-      @submit="handleSubmit"
       @cancel="handleCancel"
     />
 
@@ -63,28 +67,69 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import AccountDialog from '../components/AccountDialog.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
+import { AccountConfig, AccountInfo, AccountType } from '../types/config/account'
+import { useSnackbar } from '../composables/useSnackbar'
+import { invoke } from '@tauri-apps/api/core'
 
-interface Account {
-  username: string
-  email: string
-  avatar: string
-}
+const { showSuccess, showError } = useSnackbar()
 
-const currentAccount = ref<Account | null>({
-  username: "Player",
-  email: "player@example.com",
-  avatar: "https://crafatar.com/avatars/steve"
-})
-
+const accounts = ref<AccountInfo[]>([])
 const accountDialogVisible = ref(false)
 const deleteDialogVisible = ref(false)
 const loading = ref(false)
-const accountToDelete = ref<Account | null>(null)
+const accountToDelete = ref<AccountInfo | null>(null)
 
-const handleDelete = (account: Account) => {
+// 获取账户类型的显示文本
+const getAccountTypeText = (type: AccountType): string => {
+  const typeMap = {
+    [AccountType.Microsoft]: '微软账户',
+    [AccountType.Offline]: '离线账户',
+    [AccountType.External]: '外置登录'
+  }
+  return typeMap[type]
+}
+
+// 获取头像URL
+const getAvatarUrl = (uuid: string): string => {
+  return `https://crafatar.com/avatars/${uuid}`
+}
+
+// 添加账户
+// const handleSubmit = async (data: { type: "microsoft" | "offline" | "custom"; data: any }) => {
+//   loading.value = true
+//   try {
+//     const account: AccountInfo = {
+//       uuid: data.data.uuid,
+//       name: data.data.name,
+//       accountType: data.type as AccountType
+//     }
+    
+//     // 检查是否已存在相同UUID的账户
+//     if (accounts.value.some(a => a.uuid === account.uuid)) {
+//       throw new Error('该账户已存在')
+//     }
+    
+//     accounts.value.push(account)
+//     await writeAccountConfig()
+//     accountDialogVisible.value = false
+//     showSuccess('账户添加成功')
+//   } catch (error) {
+//     showError((error as Error).message)
+//   } finally {
+//     loadAccounts()
+//     loading.value = false
+//   }
+// }
+
+const handleCancel = () => {
+  accountDialogVisible.value = false
+}
+
+// 删除账户
+const handleDelete = (account: AccountInfo) => {
   accountToDelete.value = account
   deleteDialogVisible.value = true
 }
@@ -94,40 +139,39 @@ const confirmDelete = async () => {
   
   loading.value = true
   try {
-    // TODO: 实现删除逻辑
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    deleteDialogVisible.value = false
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleSubmit = async (data: { type: 'microsoft' | 'offline' | 'custom', data: any }) => {
-  loading.value = true
-  try {
-    switch (data.type) {
-      case 'microsoft':
-        console.log('处理 Microsoft 登录...')
-        // TODO: 实现 Microsoft OAuth 登录
-        break
-      case 'offline':
-        console.log('创建离线账户:', data.data)
-        // TODO: 保存离线账户信息
-        break
-      case 'custom':
-        console.log('添加自定义账户:', data.data)
-        // TODO: 保存自定义账户信息
-        break
+    const index = accounts.value.findIndex(a => a.uuid === accountToDelete.value?.uuid)
+    if (index !== -1) {
+      accounts.value.splice(index, 1)
+      await writeAccountConfig()
+      showSuccess('账户删除成功')
     }
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    accountDialogVisible.value = false
+    deleteDialogVisible.value = false
+  } catch (error) {
+    showError((error as Error).message)
   } finally {
     loading.value = false
+    loadAccounts()
+    accountToDelete.value = null
   }
 }
 
-const handleCancel = () => {
-  // 可以在这里添加取消时的额外逻辑
+onMounted(() => {
+  // 初始化账户列表
+  loadAccounts()
+})
+
+const loadAccounts = async () => {
+  // 模拟加载账户数据
+  const accountConfig = await invoke<AccountConfig>('get_account_config_command')
+  accounts.value = accountConfig.accounts
+}
+
+const writeAccountConfig = async () => {
+  // 将账户数据写入配置文件
+  const accountConfig: AccountConfig = {
+    accounts: accounts.value
+  }
+  await invoke('save_account_config_command', { config: accountConfig })
 }
 </script>
 
