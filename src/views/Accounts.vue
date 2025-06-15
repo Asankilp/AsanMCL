@@ -74,6 +74,8 @@ import ConfirmDialog from '../components/ConfirmDialog.vue'
 import { AccountConfig, AccountInfo, AccountType } from '../types/config/account'
 import { useSnackbar } from '../composables/useSnackbar'
 import { invoke } from '@tauri-apps/api/core'
+import { parse as uuidParse } from 'uuid'
+import { convertToCompactUUID } from '../utils/converter'
 
 const { showSuccess, showError } = useSnackbar()
 
@@ -99,9 +101,15 @@ const getAvatarUrl = (uuid: string): string => {
 }
 
 const handleSubmit = (account: AccountInfo) => {
-  accounts.value.push(account)
-  writeAccountConfig()
-  loadAccounts()
+      // 检查是否已存在相同UUID的账户
+  if (accounts.value.some(a => convertToCompactUUID(a.uuid) === convertToCompactUUID(account.uuid))) {
+    showError('该账户已存在')
+    throw new Error('该账户已存在')
+  } else {
+    accounts.value.push(account)
+    writeAccountConfig()
+    loadAccounts()
+  }
 }
 
 const handleCancel = () => {

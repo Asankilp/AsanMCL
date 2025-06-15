@@ -30,7 +30,7 @@
 
               <v-text-field v-model="offlineData.uuid" label="UUID (可选)" variant="outlined" placeholder="不填将自动生成"
                 :rules="[
-                  v => !v || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v) || 'UUID 格式不正确'
+                  v => !v || /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{32})$/i.test(v) || 'UUID 格式不正确'
                 ]" hide-details="auto"></v-text-field>
             </v-form>
           </v-window-item>
@@ -83,7 +83,7 @@ import UserCodeDialog from './UserCodeDialog.vue'
 import PlayerInfoDialog from './PlayerInfoDialog.vue'
 import { load } from '@tauri-apps/plugin-store'
 import { AccountInfo, AccountType } from '../types/config/account'
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, parse as uuidParse } from 'uuid';
 
 const microsoftLoginRef = ref<InstanceType<typeof MicrosoftLoginDialog> | null>(null)
 
