@@ -51,6 +51,7 @@
       title="添加账户"
       :loading="loading"
       @cancel="handleCancel"
+      @submit="handleSubmit"
     />
 
     <!-- 确认删除对话框 -->
@@ -97,32 +98,11 @@ const getAvatarUrl = (uuid: string): string => {
   return `https://crafatar.com/avatars/${uuid}`
 }
 
-// 添加账户
-// const handleSubmit = async (data: { type: "microsoft" | "offline" | "custom"; data: any }) => {
-//   loading.value = true
-//   try {
-//     const account: AccountInfo = {
-//       uuid: data.data.uuid,
-//       name: data.data.name,
-//       accountType: data.type as AccountType
-//     }
-    
-//     // 检查是否已存在相同UUID的账户
-//     if (accounts.value.some(a => a.uuid === account.uuid)) {
-//       throw new Error('该账户已存在')
-//     }
-    
-//     accounts.value.push(account)
-//     await writeAccountConfig()
-//     accountDialogVisible.value = false
-//     showSuccess('账户添加成功')
-//   } catch (error) {
-//     showError((error as Error).message)
-//   } finally {
-//     loadAccounts()
-//     loading.value = false
-//   }
-// }
+const handleSubmit = (account: AccountInfo) => {
+  accounts.value.push(account)
+  writeAccountConfig()
+  loadAccounts()
+}
 
 const handleCancel = () => {
   accountDialogVisible.value = false

@@ -30,7 +30,7 @@
 
               <v-text-field v-model="offlineData.uuid" label="UUID (可选)" variant="outlined" placeholder="不填将自动生成"
                 :rules="[
-                  v => !v || /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v) || 'UUID 格式不正确'
+                  v => !v || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v) || 'UUID 格式不正确'
                 ]" hide-details="auto"></v-text-field>
             </v-form>
           </v-window-item>
@@ -82,6 +82,8 @@ import MicrosoftLoginDialog from './MicrosoftLoginDialog.vue'
 import UserCodeDialog from './UserCodeDialog.vue'
 import PlayerInfoDialog from './PlayerInfoDialog.vue'
 import { load } from '@tauri-apps/plugin-store'
+import { AccountInfo, AccountType } from '../types/config/account'
+import { v4 as uuidv4 } from 'uuid';
 
 const microsoftLoginRef = ref<InstanceType<typeof MicrosoftLoginDialog> | null>(null)
 
@@ -117,7 +119,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
   (e: 'update:loading', value: boolean): void
-  (e: 'submit', data: { type: 'microsoft' | 'offline' | 'custom', data: any }): void
+  (e: 'submit', data: AccountInfo): void
   (e: 'cancel'): void
 }>()
 
@@ -138,7 +140,7 @@ const customData = reactive<CustomAccountData>({
 // 离线模式数据
 const offlineData = reactive<OfflineAccountData>({
   playerName: '',
-  uuid: undefined
+  uuid: undefined,
 })
 
 const isFormValid = computed(() => {
@@ -167,7 +169,7 @@ const submitButtonText = computed(() => {
   }
 })
 
-const handleLoginSuccess = (data: any) => {
+const handleLoginSuccess = (data: AccountInfo) => {
   emit('submit', data)
   emit('update:modelValue', false)
   // 处理登录成功事件
@@ -205,13 +207,19 @@ const handleSubmit = async () => {
         break
       case 'offline':
         if (offlineFormValid.value) {
-          emit('submit', { type: 'offline', data: { ...offlineData } })
+          const offlineInfo: AccountInfo = {
+            accountType: AccountType.Offline,
+            name: offlineData.playerName,
+            uuid: offlineData.uuid?? uuidv4(),
+          }
+          console.log(offlineInfo)
+          emit('submit', offlineInfo)
           emit('update:modelValue', false)
         }
         break
       case 'custom':
         if (customFormValid.value) {
-          emit('submit', { type: 'custom', data: { ...customData } })
+          // emit('submit', { type: 'custom', data: { ...customData } })
           emit('update:modelValue', false)
         }
         break
@@ -235,6 +243,7 @@ const handleCancel = () => {
   offlineData.uuid = undefined
   showPassword.value = false
 }
+
 </script>
 
 <style scoped>
