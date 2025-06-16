@@ -172,9 +172,7 @@ const submitButtonText = computed(() => {
 const handleLoginSuccess = (data: AccountInfo) => {
   emit('submit', data)
   emit('update:modelValue', false)
-  // 处理登录成功事件
   console.log('登录成功:', data)
-  // 可以在这里添加更多的逻辑，例如保存用户信息到本地存储等
 }
 
 const handleShowUserCode = (data: { authUrl: string, userCode: string, close?: boolean }) => {

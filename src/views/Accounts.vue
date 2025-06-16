@@ -98,7 +98,7 @@ const selectedAccount = ref<AccountInfo | null>(null)
 // 获取账户类型的显示文本
 const getAccountTypeText = (type: AccountType): string => {
   const typeMap = {
-    [AccountType.Microsoft]: '微软账户',
+    [AccountType.Microsoft]: 'Microsoft 账户',
     [AccountType.Offline]: '离线账户',
     [AccountType.External]: '外置登录'
   }
@@ -118,7 +118,6 @@ const handleSubmit = (account: AccountInfo) => {
   } else {
     accounts.value.push(account)
     writeAccountConfig()
-    loadAccounts()
   }
 }
 
@@ -155,7 +154,6 @@ const confirmDelete = async () => {
     showError((error as Error).message)
   } finally {
     loading.value = false
-    loadAccounts()
     accountToDelete.value = null
   }
 }
@@ -166,7 +164,6 @@ onMounted(() => {
 })
 
 const loadAccounts = async () => {
-  // 模拟加载账户数据
   const accountConfig = await invoke<AccountConfig>('get_account_config_command')
   const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
   accounts.value = accountConfig.accounts
