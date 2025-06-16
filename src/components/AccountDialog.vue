@@ -207,6 +207,9 @@ const handleSubmit = async () => {
         break
       case 'offline':
         if (offlineFormValid.value) {
+          if (offlineData.uuid === "") {
+            offlineData.uuid = uuidv4()
+          }
           const offlineInfo: AccountInfo = {
             accountType: AccountType.Offline,
             name: offlineData.playerName,

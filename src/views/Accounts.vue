@@ -25,6 +25,15 @@
           rounded="lg"
         >
           <template v-slot:prepend>
+            <v-radio-group v-model="selectedAccount" hide-details @change="handleSelectionChange"> 
+            <v-radio
+              name="account-radio"
+              v-model="selectedAccount"
+              :value="account"
+              color="primary"
+              hide-details
+            />
+          </v-radio-group>
             <v-avatar :image="getAvatarUrl(account.uuid)" size="40"></v-avatar>
           </template>
           
@@ -74,8 +83,8 @@ import ConfirmDialog from '../components/ConfirmDialog.vue'
 import { AccountConfig, AccountInfo, AccountType } from '../types/config/account'
 import { useSnackbar } from '../composables/useSnackbar'
 import { invoke } from '@tauri-apps/api/core'
-import { parse as uuidParse } from 'uuid'
 import { convertToCompactUUID } from '../utils/converter'
+import { LauncherConfig } from '../types/config/launcher'
 
 const { showSuccess, showError } = useSnackbar()
 
@@ -84,6 +93,7 @@ const accountDialogVisible = ref(false)
 const deleteDialogVisible = ref(false)
 const loading = ref(false)
 const accountToDelete = ref<AccountInfo | null>(null)
+const selectedAccount = ref<AccountInfo | null>(null)
 
 // 获取账户类型的显示文本
 const getAccountTypeText = (type: AccountType): string => {
@@ -101,7 +111,7 @@ const getAvatarUrl = (uuid: string): string => {
 }
 
 const handleSubmit = (account: AccountInfo) => {
-      // 检查是否已存在相同UUID的账户
+  // 检查是否已存在相同UUID的账户
   if (accounts.value.some(a => convertToCompactUUID(a.uuid) === convertToCompactUUID(account.uuid))) {
     showError('该账户已存在')
     throw new Error('该账户已存在')
@@ -120,6 +130,13 @@ const handleCancel = () => {
 const handleDelete = (account: AccountInfo) => {
   accountToDelete.value = account
   deleteDialogVisible.value = true
+}
+
+const handleSelectionChange = async () => {
+  const selectedUUID = selectedAccount.value?.uuid
+  const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
+  launcherConfig.selectedAccount = selectedUUID
+  await invoke('save_launcher_config_command', { config: launcherConfig })
 }
 
 const confirmDelete = async () => {
@@ -151,7 +168,9 @@ onMounted(() => {
 const loadAccounts = async () => {
   // 模拟加载账户数据
   const accountConfig = await invoke<AccountConfig>('get_account_config_command')
+  const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
   accounts.value = accountConfig.accounts
+  selectedAccount.value = accountConfig.accounts.find(a => a.uuid === launcherConfig.selectedAccount) ?? null
 }
 
 const writeAccountConfig = async () => {
