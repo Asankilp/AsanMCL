@@ -6,9 +6,8 @@
       <v-spacer></v-spacer>
       <v-btn
         icon
-        color="primary"
+        color="grey lighten-1"
         @click="accountDialogVisible = true"
-        elevation="2"
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>

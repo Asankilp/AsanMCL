@@ -129,7 +129,7 @@ pub fn get_player_avatar_url(uuid: &str, size: Option<u32>) -> String {
     let clean_uuid = uuid.replace('-', "");
     let size_param = size.map_or(String::from("64"), |s| s.to_string());
     format!(
-        "https://crafatar.com/avatars/{}?size={}&overlay=true",
+        "https://crafatar.com/avatars/{}?size={}",
         clean_uuid, size_param
     )
 }
