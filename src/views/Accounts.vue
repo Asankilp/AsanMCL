@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, inject } from 'vue'
 import AccountDialog from '../components/AccountDialog.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import { AccountConfig, AccountInfo, AccountType } from '../types/config/account'
@@ -94,6 +94,8 @@ const deleteDialogVisible = ref(false)
 const loading = ref(false)
 const accountToDelete = ref<AccountInfo | null>(null)
 const selectedAccount = ref<AccountInfo | null>(null)
+
+const loadAvatar = inject('loadAvatar') as () => Promise<void>
 
 // 获取账户类型的显示文本
 const getAccountTypeText = (type: AccountType): string => {
@@ -136,6 +138,7 @@ const handleSelectionChange = async () => {
   const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
   launcherConfig.selectedAccount = selectedUUID
   await invoke('save_launcher_config_command', { config: launcherConfig })
+  await loadAvatar()
 }
 
 const confirmDelete = async () => {

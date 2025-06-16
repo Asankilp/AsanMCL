@@ -13,7 +13,7 @@
       permanent
       color="surface"
     >
-      <div class="px-2">
+      <div>
         <v-list>
           <v-list-item
             :prepend-avatar="currentUser.avatar"
@@ -34,7 +34,7 @@
         </v-list>
       </div>
 
-      <v-divider class="my-2"></v-divider>
+      <v-divider></v-divider>
 
       <!-- 导航菜单 -->
       <v-list density="compact" nav>
@@ -46,7 +46,7 @@
           :prepend-icon="item.icon"
           :title="item.title"
           :active="$route.path === item.to"
-          rounded="lg"
+          rounded="mx-2 my-1"
           class="mx-2"
         ></v-list-item>
       </v-list>
@@ -78,11 +78,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, provide } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSnackbar } from './composables/useSnackbar'
 import Hello from './components/Hello.vue'
 import { useAppTheme } from './composables/useTheme'
+import { invoke } from '@tauri-apps/api/core'
+import { LauncherConfig } from './types/config/launcher'
 
 const router = useRouter()
 const drawer = ref(true)
@@ -121,14 +123,18 @@ const {
 
 // 初始化主题
 const { loadTheme } = useAppTheme()
-onMounted(() => {
+onMounted(async () => {
   loadTheme()
+  loadAvatar()
 })
 
-onMounted(async () => {
-  // const config = await invoke<LauncherConfig>("get_launcher_config_command");
-  // showWelcome.value = true
-})
+const loadAvatar = async () => {
+  const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
+  currentUser.value.avatar = await invoke<string>('get_player_avatar_url', { uuid: launcherConfig.selectedAccount })
+}
+
+// 提供 loadAvatar 方法给子组件
+provide('loadAvatar', loadAvatar)
 </script>
 
 <style>
