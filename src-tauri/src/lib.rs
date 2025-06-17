@@ -8,6 +8,7 @@ use auth::command::*;
 use config::command::*;
 use jre::command::*;
 use mojang::command::*;
+use game::command::*;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -35,6 +36,7 @@ pub fn run() {
             save_launcher_config_command,
             get_account_config_command,
             save_account_config_command,
+            get_local_versions_command,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -36,6 +36,11 @@ export interface VersionInfo {
     complianceLevel?: number;
 }
 
+export interface LocalVersionInfo {
+    name: string;
+    info: ClientJson;
+}
+
 // 版本清单接口
 export interface VersionManifest {
     /** 最新版本 */
