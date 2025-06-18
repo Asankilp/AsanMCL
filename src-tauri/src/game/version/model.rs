@@ -24,14 +24,6 @@ pub struct LatestVersion {
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]
-pub struct LocalVersionInfo {
-    /// 版本名
-    pub name: String,
-    /// 版本信息
-    pub info: ClientJson,
-}
-
-#[derive(Debug, Serialize, Deserialize, Default)]
 pub struct VersionInfo {
     /// 版本号
     pub id: String,

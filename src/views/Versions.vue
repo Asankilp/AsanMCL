@@ -18,9 +18,9 @@
         </template>
         <v-list>
           <v-list-item
-            v-for="(path, pathName) in gamePaths"
+            v-for="(pathName, path) in gamePaths"
             :key="pathName"
-            @click="switchGamePath(path, pathName)"
+            @click="switchGamePath(path)"
             :title=pathName
             :subtitle=path
           >
@@ -34,7 +34,7 @@
       <v-list lines="two">
         <v-list-item
           v-for="version in versions"
-          :key="version.name"
+          :key="version.id"
           :title="version.name"
           rounded="lg"
         >
@@ -86,13 +86,9 @@
 import { invoke } from '@tauri-apps/api/core'
 import { ref, onMounted } from 'vue'
 import { LauncherConfig } from '../types/config/launcher'
-import { LocalVersionInfo } from '../types/version'
-import { useSnackbar } from '../composables/useSnackbar'
-const { showError } = useSnackbar()
 
-const versions = ref<LocalVersionInfo[]>([])
+const versions = ref<any[]>([])
 const gamePaths = ref<Record<string, string>>({})
-const currentGamePath = ref('')
 
 const getVersionIcon = (version: any): string => {
   return `https://placehold.co/40x40?text=${encodeURIComponent(version.name)}`
@@ -109,33 +105,14 @@ const handleMoreOptions = (version: any) => {
 }
 
 // 切换游戏目录
-const switchGamePath = async (gamePath: string, gamePathName: string) => {
-  try{
-    console.log('切换游戏目录:', gamePath)
-    versions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath })
-    currentGamePath.value = gamePathName
-    writeLauncherConfig()
-  } catch (error: string | any) {
-    showError(error)
-  }
+const switchGamePath = (gamePath: any) => {
+  console.log('切换游戏目录:', gamePath)
 }
 
 onMounted(async () => {
-  try {
-    const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
-    gamePaths.value = launcherConfig.gamePath
-    currentGamePath.value = launcherConfig.lastGamePath
-    versions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath: launcherConfig.gamePath[launcherConfig.lastGamePath] })
-  } catch (error: string | any) {
-    showError(error)
-  }
-})
-
-const writeLauncherConfig = async () => {
   const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
-  launcherConfig.lastGamePath = currentGamePath.value
-  await invoke('save_launcher_config_command', { config: launcherConfig })
-}
+  gamePaths.value = launcherConfig.gamePath
+})
 </script>
 
 <style scoped>
