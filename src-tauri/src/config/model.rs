@@ -135,9 +135,13 @@ pub struct AccountInfo {
     pub account_type: AccountType,
     pub name: String, // 玩家名
     pub uuid: String,     // 存储玩家的 UUID
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub access_token: Option<String>, // 访问令牌
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub refresh_token: Option<String>, // 刷新令牌
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>, // Microsoft 账号的用户 ID
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub expires_in: Option<u64>, // 访问令牌的过期时间
 }
 
