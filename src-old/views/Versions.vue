@@ -46,18 +46,11 @@
 
           <template v-slot:append>
             <div class="d-flex align-center">
-              <v-btn
-                icon
-                color="primary"
-                @click="launchVersion(version)"
-              >
-                <v-icon>mdi-play</v-icon>
-              </v-btn>
               <v-menu offset-y>
                 <template v-slot:activator="{ props }">
                   <v-btn
                     icon
-                    color="grey lighten-1"
+                    color="lighten-1"
                     v-bind="props"
                   >
                     <v-icon>mdi-dots-vertical</v-icon>
