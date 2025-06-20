@@ -125,16 +125,15 @@ impl Default for LauncherConfig {
 pub enum AccountType {
     Microsoft,
     Offline,
-    External
+    External,
 }
-
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AccountInfo {
     pub account_type: AccountType,
     pub name: String, // 玩家名
-    pub uuid: String,     // 存储玩家的 UUID
+    pub uuid: String, // 存储玩家的 UUID
     #[serde(skip_serializing_if = "Option::is_none")]
     pub access_token: Option<String>, // 访问令牌
     #[serde(skip_serializing_if = "Option::is_none")]

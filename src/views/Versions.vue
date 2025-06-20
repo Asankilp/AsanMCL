@@ -18,12 +18,42 @@
         </template>
         <v-list>
           <v-list-item
-            v-for="(path, pathName) in gamePaths"
+            v-for="(path, pathName) in launcherConfig?.gamePath"
             :key="pathName"
             @click="switchGamePath(path, pathName)"
-            :title=pathName
-            :subtitle=path
+            :title="pathName"
+            :subtitle="path"
           >
+            <template v-slot:prepend>
+              <v-radio
+                :model-value="launcherConfig?.lastGamePath === pathName"
+                readonly
+                hide-details
+                density="compact"
+              ></v-radio>
+            </template>
+
+            <!-- 新增：删除按钮 -->
+            <template v-slot:append>
+              <v-btn
+                icon
+                variant="plain"
+                color="transparent"
+                @click.stop="deleteGamePath(pathName)"
+              >
+                <v-icon color="error">mdi-delete</v-icon>
+              </v-btn>
+            </template>
+          </v-list-item>
+          <!-- 添加游戏目录菜单项 -->
+          <v-list-item
+            @click="addGamePath"
+            class="add-game-path-item"
+          >
+            <template v-slot:prepend>
+              <v-icon color="primary">mdi-folder-plus</v-icon>
+            </template>
+            <v-list-item-title>添加游戏目录</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -72,6 +102,20 @@
         </v-list-item>
       </v-list>
     </v-main>
+    <!-- 新增：添加游戏目录名称对话框 -->
+    <v-dialog v-model="showNameDialog" persistent max-width="400">
+      <v-card>
+        <v-card-title>请输入该目录的名称</v-card-title>
+        <v-card-text>
+          <v-text-field v-model="newGamePathName" label="目录名称" autofocus @keyup.enter="confirmAddGamePath" />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="confirmAddGamePath">确定</v-btn>
+          <v-btn text @click="cancelAddGamePath">取消</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -81,11 +125,14 @@ import { ref, onMounted } from 'vue'
 import { LauncherConfig } from '../types/config/launcher'
 import { LocalVersionInfo } from '../types/version'
 import { useSnackbar } from '../composables/useSnackbar'
+import { open, ask } from '@tauri-apps/plugin-dialog'
 const { showError } = useSnackbar()
 
 const versions = ref<LocalVersionInfo[]>([])
-const gamePaths = ref<Record<string, string>>({})
-const currentGamePath = ref('')
+const launcherConfig = ref<LauncherConfig>()
+const showNameDialog = ref(false)
+const newGamePathName = ref('')
+const pendingGamePath = ref<string | null>(null)
 
 const getVersionIcon = (version: any): string => {
   return `https://placehold.co/40x40?text=${encodeURIComponent(version.name)}`
@@ -106,18 +153,86 @@ const switchGamePath = async (gamePath: string, gamePathName: string) => {
   try{
     console.log('切换游戏目录:', gamePath)
     versions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath })
-    currentGamePath.value = gamePathName
+    if (launcherConfig.value) {
+      launcherConfig.value.lastGamePath = gamePathName
+    }
     writeLauncherConfig()
   } catch (error: string | any) {
     showError(error)
   }
 }
 
+// 添加游戏目录
+const addGamePath = async () => {
+  try {
+    const gamePath = await open({
+      directory: true,
+      multiple: false,
+      title: '选择游戏目录'
+    })
+    if (!gamePath) return
+    pendingGamePath.value = gamePath as string
+    newGamePathName.value = ''
+    showNameDialog.value = true
+  } catch (error: string | any) {
+    showError(error)
+  }
+}
+
+const confirmAddGamePath = async () => {
+  const name = newGamePathName.value.trim()
+  if (!name || !pendingGamePath.value) return
+  if (launcherConfig.value) {
+    if (!launcherConfig.value.gamePath) launcherConfig.value.gamePath = {}
+    console.log(pendingGamePath.value)
+    launcherConfig.value.gamePath[name] = pendingGamePath.value
+    launcherConfig.value.lastGamePath = name
+    await writeLauncherConfig()
+    await invoke("init_game_path_command", { path: pendingGamePath.value })
+    // await loadLauncherConfig()
+    versions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath: pendingGamePath.value })
+  }
+  showNameDialog.value = false
+  pendingGamePath.value = null
+  newGamePathName.value = ''
+}
+
+const cancelAddGamePath = () => {
+  showNameDialog.value = false
+  pendingGamePath.value = null
+  newGamePathName.value = ''
+}
+
+// 删除游戏目录
+const deleteGamePath = async (pathName: string) => {
+  if (!launcherConfig.value?.gamePath) return
+  const keys = Object.keys(launcherConfig.value.gamePath)
+  // 防止删除唯一一个游戏目录
+  if (keys.length <= 1) {
+    showError('至少需要保留一个游戏目录')
+    return
+  }
+  const confirmed = await ask(`确定要删除游戏目录 "${pathName}" 吗？`, { title: "删除确认" })
+  if (!confirmed) return
+  // 删除目录
+  delete launcherConfig.value.gamePath[pathName]
+  if (launcherConfig.value.lastGamePath === pathName) {
+    const newKeys = Object.keys(launcherConfig.value.gamePath)
+    if (newKeys.length > 0) {
+      launcherConfig.value.lastGamePath = newKeys[0]
+      versions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath: launcherConfig.value.gamePath[newKeys[0]] })
+    } else {
+      launcherConfig.value.lastGamePath = ''
+      versions.value = []
+    }
+  }
+  await writeLauncherConfig()
+}
+
 onMounted(async () => {
   try {
+    loadLauncherConfig()
     const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
-    gamePaths.value = launcherConfig.gamePath
-    currentGamePath.value = launcherConfig.lastGamePath
     versions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath: launcherConfig.gamePath[launcherConfig.lastGamePath] })
   } catch (error: string | any) {
     showError(error)
@@ -125,9 +240,11 @@ onMounted(async () => {
 })
 
 const writeLauncherConfig = async () => {
-  const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
-  launcherConfig.lastGamePath = currentGamePath.value
-  await invoke('save_launcher_config_command', { config: launcherConfig })
+  await invoke('save_launcher_config_command', { config: launcherConfig.value })
+}
+
+const loadLauncherConfig = async () => {
+  launcherConfig.value = await invoke<LauncherConfig>('get_launcher_config_command')
 }
 </script>
 

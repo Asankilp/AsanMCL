@@ -45,6 +45,15 @@ pub enum LoginEvent {
 }
 
 #[tauri::command]
+pub fn check_microsoft_login_availability() -> bool {
+    if CLIENT_ID.is_empty() || CLIENT_ID == "1145141919810" {
+        return false;
+    }
+    true
+}
+
+
+#[tauri::command]
 pub async fn get_device_code(on_event: Channel<LoginEvent>) -> Result<(), String> {
     let client = BasicClient::new(
         ClientId::new(CLIENT_ID.to_string()),

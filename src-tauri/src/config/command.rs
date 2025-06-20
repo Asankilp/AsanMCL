@@ -1,6 +1,9 @@
 use crate::config::{
     model::{AccountConfig, JreConfig, LauncherConfig},
-    saveload::{get_account_config, get_launcher_config, save_account_config, save_jre_config, save_launcher_config},
+    saveload::{
+        get_account_config, get_launcher_config, save_account_config, save_jre_config,
+        save_launcher_config,
+    },
 };
 
 use super::saveload::get_jre_config;

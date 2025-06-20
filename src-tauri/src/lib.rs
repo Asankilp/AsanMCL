@@ -3,15 +3,20 @@ mod config;
 mod game;
 mod jre;
 mod mojang;
+mod util;
 
 use auth::command::*;
 use config::command::*;
+use game::command::*;
 use jre::command::*;
 use mojang::command::*;
-use game::command::*;
+use util::command::*;
+
+use crate::util::init::init_launcher;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    init_launcher();
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
@@ -19,6 +24,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             get_device_code,
+            check_microsoft_login_availability,
             get_minecraft_profile,
             check_game_ownership,
             get_player_skins,
@@ -37,6 +43,8 @@ pub fn run() {
             get_account_config_command,
             save_account_config_command,
             get_local_versions_command,
+            init_game_path_command,
+            init_launcher_command,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -27,6 +27,10 @@ const isLoading = ref(false)
 const handleMicrosoftLogin = async () => {
   try {
     // 显示加载状态
+    if (await invoke<boolean>('check_microsoft_login_availability') === false) {
+      showError('Microsoft 登录在此构建不可用')
+      return
+    }
     isLoading.value = true
 
     // 创建事件通道
