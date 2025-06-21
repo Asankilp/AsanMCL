@@ -35,6 +35,7 @@
                   <v-btn
                     icon
                     color="lighten-1"
+                    variant="plain"
                     v-bind="props"
                   >
                     <v-icon>mdi-dots-vertical</v-icon>

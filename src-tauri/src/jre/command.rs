@@ -17,10 +17,10 @@ pub async fn scan_all_jres() -> Result<Vec<JreInfo>, String> {
 }
 
 #[tauri::command]
-pub async fn get_jre_info(path: String) -> Result<Option<JreInfo>, ()> {
+pub async fn get_jre_info(path: String) -> Result<Option<JreInfo>, String> {
     let jre_info = verify_jre_path(&PathBuf::from(path));
     if jre_info.is_none() {
-        Err(())
+        Err("JRE not found".into())
     } else {
         Ok(jre_info)
     }
