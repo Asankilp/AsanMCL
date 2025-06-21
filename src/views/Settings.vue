@@ -38,6 +38,7 @@
             <v-table class="mt-4">
               <thead>
                 <tr>
+                  <th>选择</th>
                   <th>路径</th>
                   <th>版本</th>
                   <th>架构</th>
@@ -47,6 +48,15 @@
               </thead>
               <tbody>
                 <tr v-for="jre in jreList" :key="jre.path">
+                  <td>
+                    <v-radio-group v-model="selectedJrePath" class="ma-0 pa-0" hide-details>
+                      <v-radio
+                        :value="jre.path"
+                        color="primary"
+                        density="compact"
+                      />
+                    </v-radio-group>
+                  </td>
                   <td class="text-no-wrap">
                     <v-tooltip :text="jre.path">
                       <template v-slot:activator="{ props }">
@@ -128,8 +138,16 @@ const themeOptions = [
 
 // JRE 列表
 const jreList = ref<JreInfo[]>([])
+const selectedJrePath = ref<string | null>(null)
 const showDeleteDialog = ref(false)
 const jreToDelete = ref<JreInfo | null>(null)
+
+// 监听选中JRE变化
+watch(selectedJrePath, async (newPath) => {
+  // 这里可以保存到配置或做其他处理
+  // 例如：await invoke('set_selected_jre', { path: newPath })
+  console.log('JRE切换为:', newPath)
+})
 
 // 加载启动器配置
 const loadLauncherConfig = async () => {
@@ -163,6 +181,14 @@ const loadJreList = async () => {
   try {
     const jres = await invoke<JreInfo[]>('get_all_jres')
     jreList.value = jres
+    // 如果当前选中的JRE被移除，则自动选择第一个
+    if (jreList.value.length > 0) {
+      if (!jreList.value.some(jre => jre.path === selectedJrePath.value)) {
+        selectedJrePath.value = jreList.value[0].path
+      }
+    } else {
+      selectedJrePath.value = null
+    }
   } catch (error) {
     console.error('Failed to load JRE list:', error)
   }

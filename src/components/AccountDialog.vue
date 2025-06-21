@@ -95,13 +95,15 @@ const showPlayerInfo = ref(false)
 const playerInfo = ref<{
   username: string
   uuid: string
+  type: AccountType
   avatarUrl?: string
   skinPreviewUrl?: string
   skins?: any[]
   capes?: any[]
 }>({
   username: '',
-  uuid: ''
+  uuid: '',
+  type: AccountType.Offline
 })
 
 const props = withDefaults(defineProps<{
@@ -216,12 +218,14 @@ const handleSubmit = async () => {
           console.log(offlineInfo)
           emit('submit', offlineInfo)
           emit('update:modelValue', false)
+          resetForm()
         }
         break
       case 'custom':
         if (customFormValid.value) {
           // emit('submit', { type: 'custom', data: { ...customData } })
           emit('update:modelValue', false)
+          resetForm()
         }
         break
     }
@@ -230,6 +234,16 @@ const handleSubmit = async () => {
   } finally {
     emit('update:loading', false)
   }
+}
+
+const resetForm = () => {
+  activeTab.value = 'microsoft'
+  customData.username = ''
+  customData.email = ''
+  customData.password = ''
+  offlineData.playerName = ''
+  offlineData.uuid = undefined
+  showPassword.value = false
 }
 
 const handleCancel = () => {

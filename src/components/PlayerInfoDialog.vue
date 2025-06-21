@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" max-width="560">
+  <v-dialog :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" max-width="600">
     <v-card>
       <v-card-title class="text-h6">玩家信息</v-card-title>
       <v-card-text>
@@ -27,6 +27,10 @@
                 <v-list-item>
                   <v-list-item-title>UUID</v-list-item-title>
                   <v-list-item-subtitle>{{ playerInfo.uuid }}</v-list-item-subtitle>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>账户类型</v-list-item-title>
+                  <v-list-item-subtitle>{{ playerInfo.type }}</v-list-item-subtitle>
                 </v-list-item>
                 <v-list-item v-if="playerInfo.skins?.length">
                   <v-list-item-title>皮肤数量</v-list-item-title>
@@ -56,11 +60,14 @@
 </template>
 
 <script setup lang="ts">
+import { AccountType } from '../types/config/account';
+
 defineProps<{
   modelValue: boolean
   playerInfo: {
     username: string
     uuid: string
+    type: AccountType
     avatarUrl?: string
     skinPreviewUrl?: string
     skins?: any[]

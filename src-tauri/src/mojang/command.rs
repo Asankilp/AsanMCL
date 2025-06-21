@@ -47,8 +47,8 @@ pub async fn get_player_uuid(username: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-pub fn get_player_avatar_url(uuid: String, size: Option<u32>) -> String {
-    super::api::get_player_avatar_url(&uuid, size)
+pub fn get_player_avatar_url(uuid: Option<String>, size: Option<u32>) -> String {
+    super::api::get_player_avatar_url(uuid, size)
 }
 
 #[tauri::command]

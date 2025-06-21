@@ -125,8 +125,8 @@ impl MinecraftClient {
 }
 
 /// 生成玩家头像URL
-pub fn get_player_avatar_url(uuid: &str, size: Option<u32>) -> String {
-    let clean_uuid = uuid.replace('-', "");
+pub fn get_player_avatar_url(uuid: Option<String>, size: Option<u32>) -> String {
+    let clean_uuid = uuid.map_or(String::from("null"), |u| u.replace('-', ""));
     let size_param = size.map_or(String::from("64"), |s| s.to_string());
     format!(
         "https://crafatar.com/avatars/{}?size={}",
