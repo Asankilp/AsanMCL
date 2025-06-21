@@ -103,6 +103,11 @@ const menuItems = [
     to: '/'
   },
   {
+    title: '配置管理',
+    icon: 'mdi-account',
+    to: '/profiles'
+  },
+  {
     title: '版本管理',
     icon: 'mdi-package-variant',
     to: '/versions'

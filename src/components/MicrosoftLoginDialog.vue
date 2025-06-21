@@ -57,6 +57,7 @@ const handleMicrosoftLogin = async () => {
             emit('show-account-info', {
               username: profile.name,
               uuid: profile.id,
+              type: AccountType.Microsoft,
               avatarUrl,
               skinPreviewUrl,
               skins: profile.skins,

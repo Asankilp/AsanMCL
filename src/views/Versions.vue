@@ -23,8 +23,8 @@
           rounded="lg"
         >
           <template v-slot:prepend>
-            <v-avatar size="40">
-              <img :src="getVersionIcon(version)" alt="版本图标">
+            <v-avatar size="40" rounded="lg">
+              <img width="40" height="40" :src="getVersionIcon(version)" alt="版本图标">
             </v-avatar>
           </template>
 
@@ -63,17 +63,28 @@
 import { invoke } from '@tauri-apps/api/core'
 import { ref, onMounted } from 'vue'
 import { LauncherConfig } from '../types/config/launcher'
-import { LocalVersionInfo } from '../types/version'
+import { LocalVersionInfo, VersionType } from '../types/version'
 import { useSnackbar } from '../composables/useSnackbar'
-import { open, ask } from '@tauri-apps/plugin-dialog'
 import GamePathMenu from '../components/GamePathMenu.vue'
+import { getProfileIconUrl } from '../utils/icon'
 const { showError } = useSnackbar()
 
 const versions = ref<LocalVersionInfo[]>([])
 const launcherConfig = ref<LauncherConfig>()
 
-const getVersionIcon = (version: any): string => {
-  return `https://placehold.co/40x40?text=${encodeURIComponent(version.name)}`
+const getVersionIcon = (version: LocalVersionInfo): string => {
+  const versionType = version.info?.type;
+  switch (versionType) {
+    case VersionType.Release:
+      return getProfileIconUrl('grassblock');
+    case VersionType.Snapshot:
+      return getProfileIconUrl('dirt');
+    case undefined:
+    case null:
+      return getProfileIconUrl('cobblestone');
+    default:
+      return getProfileIconUrl('cobblestone');
+  }
 }
 
 // 启动版本
