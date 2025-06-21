@@ -42,7 +42,7 @@
               icon
               color="info"
               variant="text"
-              @click.stop="showPlayerInfo(account)"
+              @click.stop="showAccountInfo(account)"
             >
               <v-icon>mdi-account-circle</v-icon>
             </v-btn>
@@ -83,9 +83,9 @@
     />
 
     <!-- 玩家信息对话框 -->
-    <player-info-dialog
-      v-model="playerInfoDialogVisible"
-      :playerInfo="playerInfo"
+    <account-info-dialog
+      v-model="accountInfoDialogVisible"
+      :accountInfo="accountInfo"
     />
   </v-container>
 </template>
@@ -94,7 +94,7 @@
 import { onMounted, ref, inject } from 'vue'
 import AccountDialog from '../components/AccountDialog.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
-import PlayerInfoDialog from '../components/PlayerInfoDialog.vue'
+import AccountInfoDialog from '../components/AccountInfoDialog.vue'
 import { AccountConfig, AccountInfo, AccountType } from '../types/config/account'
 import { useSnackbar } from '../composables/useSnackbar'
 import { invoke } from '@tauri-apps/api/core'
@@ -109,8 +109,8 @@ const deleteDialogVisible = ref(false)
 const loading = ref(false)
 const accountToDelete = ref<AccountInfo | null>(null)
 const selectedAccount = ref<AccountInfo | null>(null)
-const playerInfoDialogVisible = ref(false)
-const playerInfo = ref({
+const accountInfoDialogVisible = ref(false)
+const accountInfo = ref({
   username: '',
   uuid: '',
   type: AccountType.Offline,
@@ -193,8 +193,8 @@ const confirmDelete = async () => {
   }
 }
 
-const showPlayerInfo = async (account: AccountInfo) => {
-  playerInfo.value = {
+const showAccountInfo = async (account: AccountInfo) => {
+  accountInfo.value = {
     username: account.name,
     uuid: account.uuid,
     type: account.accountType,
@@ -203,7 +203,7 @@ const showPlayerInfo = async (account: AccountInfo) => {
     skins: [],
     capes: []
   }
-  playerInfoDialogVisible.value = true
+  accountInfoDialogVisible.value = true
 }
 
 onMounted(() => {

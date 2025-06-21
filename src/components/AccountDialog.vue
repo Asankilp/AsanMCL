@@ -19,7 +19,7 @@
           <!-- Microsoft 登录 -->
           <v-window-item value="microsoft">
             <microsoft-login-dialog ref="microsoftLoginRef" @login-success="handleLoginSuccess"
-              @show-user-code="handleShowUserCode" @show-player-info="handleShowPlayerInfo" />
+              @show-user-code="handleShowUserCode" @show-account-info="handleShowAccountInfo" />
           </v-window-item>
 
           <!-- 离线模式 -->
@@ -69,7 +69,7 @@
     @loading="value => microsoftLoginRef?.setLoading(value)" />
 
   <!-- 玩家信息对话框 -->
-  <player-info-dialog v-model="showPlayerInfo" :player-info="playerInfo" />
+  <account-info-dialog v-model="showAccountInfo" :account-info="accountInfo" />
 </template>
 
 <script setup lang="ts">
@@ -80,7 +80,7 @@ import {
 } from '../types/account'
 import MicrosoftLoginDialog from './MicrosoftLoginDialog.vue'
 import UserCodeDialog from './UserCodeDialog.vue'
-import PlayerInfoDialog from './PlayerInfoDialog.vue'
+import AccountInfoDialog from './AccountInfoDialog.vue'
 import { load } from '@tauri-apps/plugin-store'
 import { AccountInfo, AccountType } from '../types/config/account'
 import { v4 as uuidv4, parse as uuidParse } from 'uuid';
@@ -91,8 +91,8 @@ const microsoftLoginRef = ref<InstanceType<typeof MicrosoftLoginDialog> | null>(
 const showUserCode = ref(false)
 const authUrl = ref('')
 const userCode = ref('')
-const showPlayerInfo = ref(false)
-const playerInfo = ref<{
+const showAccountInfo = ref(false)
+const accountInfo = ref<{
   username: string
   uuid: string
   type: AccountType
@@ -192,9 +192,9 @@ const handleUserCodeCancel = () => {
   emit('update:loading', false)
 }
 
-const handleShowPlayerInfo = (data: any) => {
-  playerInfo.value = data
-  showPlayerInfo.value = true
+const handleShowAccountInfo = (data: any) => {
+  accountInfo.value = data
+  showAccountInfo.value = true
 }
 const handleSubmit = async () => {
   emit('update:loading', true)

@@ -19,7 +19,7 @@ const { showSuccess, showError } = useSnackbar()
 const emit = defineEmits<{
   (e: 'login-success', data: AccountInfo): void
   (e: 'show-user-code', data: { authUrl: string, userCode: string, close?: boolean }): void
-  (e: 'show-player-info', data: any): void
+  (e: 'show-account-info', data: any): void
 }>()
 
 const isLoading = ref(false)
@@ -54,7 +54,7 @@ const handleMicrosoftLogin = async () => {
             const skinPreviewUrl: string = await invoke('get_player_skin_preview_url', { uuid: profile.id })
 
             // 更新玩家信息
-            emit('show-player-info', {
+            emit('show-account-info', {
               username: profile.name,
               uuid: profile.id,
               avatarUrl,

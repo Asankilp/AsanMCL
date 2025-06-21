@@ -121,6 +121,7 @@ import { open } from '@tauri-apps/plugin-dialog'
 import { JreConfig } from '../types/config/jre'
 import { ColorTheme, type LauncherConfig } from '../types/config/launcher'
 import { useAppTheme } from '../composables/useTheme'
+import { useSnackbar } from '../composables/useSnackbar'
 
 // 当前激活的选项卡
 const activeTab = ref('launcher')
@@ -128,6 +129,7 @@ const activeTab = ref('launcher')
 // 启动器设置
 const closeAfterLaunch = ref(false)
 const { colorTheme } = useAppTheme()
+const { showError } = useSnackbar()
 
 // 主题选项
 const themeOptions = [
@@ -155,8 +157,8 @@ const loadLauncherConfig = async () => {
     const config = await invoke<LauncherConfig>('get_launcher_config_command')
     closeAfterLaunch.value = config.closeAfterLaunch
     colorTheme.value = config.colorTheme
-  } catch (error) {
-    console.error('Failed to load launcher config:', error)
+  } catch (error: string | any) {
+    showError(error)
   }
 }
 
@@ -166,8 +168,8 @@ watch(closeAfterLaunch, async (newValue) => {
     const config = await invoke<LauncherConfig>('get_launcher_config_command')
     config.closeAfterLaunch = newValue
     await invoke('save_launcher_config_command', { config })
-  } catch (error) {
-    console.error('Failed to save close after launch setting:', error)
+  } catch (error: string | any) {
+    showError(error)
   }
 })
 
@@ -189,8 +191,8 @@ const loadJreList = async () => {
     } else {
       selectedJrePath.value = null
     }
-  } catch (error) {
-    console.error('Failed to load JRE list:', error)
+  } catch (error: string | any) {
+    showError(error)
   }
 }
 
@@ -231,8 +233,8 @@ const addJre = async () => {
     } else {
       console.log('JRE already exists, skipping...')
     }
-  } catch (error) {
-    console.error('Failed to add JRE:', error)
+  } catch (error: string | any) {
+    showError(error)
   }
 }
 
@@ -249,8 +251,8 @@ const confirmDeleteJre = async () => {
   try {
     await invoke('remove_jre', { jre: jreToDelete.value })
     await loadJreList()
-  } catch (error) {
-    console.error('Failed to remove JRE:', error)
+  } catch (error: string | any) {
+    showError(error)
   } finally {
     showDeleteDialog.value = false
     jreToDelete.value = null
