@@ -35,7 +35,10 @@
                                 </v-avatar>
                                 <v-radio :value="version.id" @click.stop />
                             </template>
-                            <v-list-item-title>{{ version.id }}</v-list-item-title>
+                            <v-list-item-title>
+                                {{ version.id }}
+                                <span v-if="versionThemes[version.id]" style="font-size: 12px; color: #888; margin-left: 8px;">{{ versionThemes[version.id] }}</span>
+                            </v-list-item-title>
                             <v-list-item-subtitle>{{ version.releaseTime }}</v-list-item-subtitle>
                         </v-list-item>
                     </v-list>
@@ -56,6 +59,7 @@ import { invoke } from '@tauri-apps/api/core'
 import { VersionManifest, VersionType } from '../types/version'
 import { LauncherConfig } from '../types/config/launcher'
 import { getVersionIcon } from '../utils/icon'
+import { getMajorUpdateThemeById } from '../utils/version'
 
 const props = defineProps({
     modelValue: Boolean,
@@ -77,6 +81,7 @@ const remoteVersions = ref<VersionManifest>()
 const selectedVersionId = ref<string | null>(null)
 const searchText = ref('')
 const selectedTypes = ref([VersionType.Release])
+const versionThemes = ref<Record<string, string>>({})
 
 watch(() => props.modelValue, async (val) => {
     if (val) {
@@ -101,6 +106,14 @@ const filteredVersions = computed(() => {
     })
 })
 
+watch(filteredVersions, async (versions) => {
+  const themes: Record<string, string> = {}
+  await Promise.all(versions.map(async v => {
+    themes[v.id] = await getMajorUpdateThemeById(v.id)
+  }))
+  versionThemes.value = themes
+}, { immediate: true })
+
 function confirmSelect() {
     if (selectedVersionId.value) {
         // emit('add', selectedVersionId.value)
@@ -108,5 +121,6 @@ function confirmSelect() {
         emit('close')
     }
 }
+
 
 </script>
