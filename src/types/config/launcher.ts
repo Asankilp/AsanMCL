@@ -1,5 +1,5 @@
 // 下载源
-export enum DownloadSources {
+export enum DownloadSource {
     Official = 'official',
     BmclApi = 'bmclapi'
 }
@@ -33,7 +33,7 @@ export interface LauncherConfig {
     selectedAccount?: string; // 选中的账号
     closeAfterLaunch: boolean;
     colorTheme: ColorTheme;
-    downloadSource: DownloadSources;
+    downloadSource: DownloadSource;
     enableProxy: boolean;
     proxy: ProxyConfig;
     gamePath: Record<string, string>;
@@ -53,7 +53,7 @@ export const defaultLauncherConfig = (): LauncherConfig => ({
     lastGamePath: '当前目录',
     closeAfterLaunch: false,
     colorTheme: ColorTheme.FollowSystem,
-    downloadSource: DownloadSources.Official,
+    downloadSource: DownloadSource.Official,
     enableProxy: false,
     proxy: defaultProxyConfig(),
     gamePath: {} // 在实际使用时会从 Tauri 后端获取默认值

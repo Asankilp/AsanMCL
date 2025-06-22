@@ -1,3 +1,5 @@
+use crate::{config::model::DownloadSource, game::version::model::VersionManifest};
+
 use super::model::{
     CapeData, GameOwnershipResponse, MinecraftProfile, PlayerUuidResponse, SkinData,
 };
@@ -5,6 +7,9 @@ use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
 pub struct MinecraftClient {
     client: reqwest::Client,
 }
+
+const MOJANG_LAUNCHERMETA_ROOT: &str = "https://launchermeta.mojang.com";
+const BMCLAPI_LAUNCHERMETA_ROOT: &str = "https://bmclapi2.bangbang93.com";
 
 impl MinecraftClient {
     pub fn new() -> Self {
@@ -141,4 +146,32 @@ pub fn get_player_skin_preview_url(uuid: &str) -> String {
         "https://crafatar.com/renders/body/{}?overlay=true",
         clean_uuid
     )
+}
+
+pub async fn get_version_manifest(
+    download_source: DownloadSource,
+) -> Result<VersionManifest, String> {
+    let url = match download_source {
+        DownloadSource::Official => format!(
+            "{}/mc/game/version_manifest_v2.json",
+            MOJANG_LAUNCHERMETA_ROOT
+        ),
+        DownloadSource::BmclApi => format!(
+            "{}/mc/game/version_manifest_v2.json",
+            BMCLAPI_LAUNCHERMETA_ROOT
+        ),
+    };
+    println!("Fetching version manifest from: {}", url);
+    let response = reqwest::get(&url)
+        .await
+        .map_err(|e| format!("Failed to fetch version manifest: {}", e))?;
+    if !response.status().is_success() {
+        return Err(format!("Failed to fetch version manifest: {}", response.status()).into());
+    }
+
+    let manifest: VersionManifest = response
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse version manifest: {}", e))?;
+    Ok(manifest)
 }

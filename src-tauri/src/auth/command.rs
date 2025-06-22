@@ -52,7 +52,6 @@ pub fn check_microsoft_login_availability() -> bool {
     true
 }
 
-
 #[tauri::command]
 pub async fn get_device_code(on_event: Channel<LoginEvent>) -> Result<(), String> {
     let client = BasicClient::new(

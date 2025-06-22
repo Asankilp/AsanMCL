@@ -5,26 +5,20 @@
       <v-toolbar-title class="text-h6">版本列表</v-toolbar-title>
       <v-spacer></v-spacer>
       <!-- 游戏目录切换菜单组件 -->
-      <GamePathMenu
-        :launcherConfig="launcherConfig"
-        @switch="switchGamePath"
-        @update:launcherConfig="val => launcherConfig = val"
-        @refreshVersions="refreshVersions"
-      />
+      <GamePathMenu :launcherConfig="launcherConfig" @switch="switchGamePath"
+        @update:launcherConfig="val => launcherConfig = val" @refreshVersions="refreshVersions" />
+      <v-btn icon color="grey lighten-1" @click="showAddVersionDialog = true">
+        <v-icon left>mdi-plus</v-icon>
+      </v-btn>
     </v-app-bar>
 
     <!-- 版本列表 -->
     <v-main>
       <v-list lines="two">
-        <v-list-item
-          v-for="version in versions"
-          :key="version.name"
-          :title="version.name"
-          rounded="lg"
-        >
+        <v-list-item v-for="version in versions" :key="version.name" :title="version.name" rounded="lg">
           <template v-slot:prepend>
             <v-avatar size="40" rounded="lg">
-              <img width="40" height="40" :src="getVersionIcon(version)" alt="版本图标">
+              <img width="40" height="40" :src="getVersionIcon(version.info.type ?? VersionType.Other)" alt="版本图标">
             </v-avatar>
           </template>
 
@@ -32,12 +26,7 @@
             <div class="d-flex align-center">
               <v-menu offset-y>
                 <template v-slot:activator="{ props }">
-                  <v-btn
-                    icon
-                    color="lighten-1"
-                    variant="plain"
-                    v-bind="props"
-                  >
+                  <v-btn icon color="lighten-1" variant="plain" v-bind="props">
                     <v-icon>mdi-dots-vertical</v-icon>
                   </v-btn>
                 </template>
@@ -56,6 +45,9 @@
           <v-list-item-subtitle>请添加或下载新版本</v-list-item-subtitle>
         </v-list-item>
       </v-list>
+
+      <AddVersionDialog v-model="showAddVersionDialog" @close="showAddVersionDialog = false" v-if="launcherConfig"
+        :launcher-config="launcherConfig" />
     </v-main>
   </v-container>
 </template>
@@ -67,26 +59,15 @@ import { LauncherConfig } from '../types/config/launcher'
 import { LocalVersionInfo, VersionType } from '../types/version'
 import { useSnackbar } from '../composables/useSnackbar'
 import GamePathMenu from '../components/GamePathMenu.vue'
-import { getProfileIconUrl } from '../utils/icon'
+import AddVersionDialog from '../components/AddVersionDialog.vue'
+import { getVersionIcon } from '../utils/icon'
 const { showError } = useSnackbar()
 
 const versions = ref<LocalVersionInfo[]>([])
 const launcherConfig = ref<LauncherConfig>()
+const showAddVersionDialog = ref(false)
 
-const getVersionIcon = (version: LocalVersionInfo): string => {
-  const versionType = version.info?.type;
-  switch (versionType) {
-    case VersionType.Release:
-      return getProfileIconUrl('grassblock');
-    case VersionType.Snapshot:
-      return getProfileIconUrl('dirt');
-    case undefined:
-    case null:
-      return getProfileIconUrl('cobblestone');
-    default:
-      return getProfileIconUrl('cobblestone');
-  }
-}
+
 
 // 启动版本
 const launchVersion = async (version: any) => {
@@ -100,7 +81,7 @@ const handleMoreOptions = (version: any) => {
 
 // 切换游戏目录
 const switchGamePath = async (gamePath: string, gamePathName: string) => {
-  try{
+  try {
     console.log('切换游戏目录:', gamePath)
     versions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath })
     if (launcherConfig.value) {
@@ -152,5 +133,5 @@ onMounted(async () => {
 
 .v-list-item:hover {
   background: rgb(var(--v-theme-primary), 0.05) !important;
-} 
+}
 </style>

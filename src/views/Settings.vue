@@ -13,20 +13,21 @@
           <!-- 启动器设置 -->
           <v-window-item value="launcher">
             <v-form class="mt-4">
+              <h3 class="text-h6 mb-2">基本</h3>
               <v-switch v-model="closeAfterLaunch" label="启动游戏后关闭启动器" color="primary" inset class="mt-4"></v-switch>
-              
+
               <v-divider class="my-4"></v-divider>
-              
+
+              <h3 class="text-h6 mb-2">下载</h3>
+              <v-select v-model="downloadSource" :items="downloadSourceOptions" label="下载源" class="mb-4"
+                item-title="label" item-value="value" />
+
+              <v-divider class="my-4"></v-divider>
               <h3 class="text-h6 mb-2">颜色主题</h3>
               <v-btn-group rounded="pill" class="mt-2">
-                <v-btn
-                  v-for="option in themeOptions"
-                  :key="option.value"
-                  :prepend-icon="option.icon"
+                <v-btn v-for="option in themeOptions" :key="option.value" :prepend-icon="option.icon"
                   :color="colorTheme === option.value ? 'primary' : undefined"
-                  :variant="colorTheme === option.value ? 'flat' : 'text'"
-                  @click="colorTheme = option.value"
-                >
+                  :variant="colorTheme === option.value ? 'flat' : 'text'" @click="colorTheme = option.value">
                   {{ option.text }}
                 </v-btn>
               </v-btn-group>
@@ -50,11 +51,7 @@
                 <tr v-for="jre in jreList" :key="jre.path">
                   <td>
                     <v-radio-group v-model="selectedJrePath" class="ma-0 pa-0" hide-details>
-                      <v-radio
-                        :value="jre.path"
-                        color="primary"
-                        density="compact"
-                      />
+                      <v-radio :value="jre.path" color="primary" density="compact" />
                     </v-radio-group>
                   </td>
                   <td class="text-no-wrap">
@@ -119,17 +116,12 @@ import { invoke } from '@tauri-apps/api/core'
 import type { JreInfo } from '../types/config/jre'
 import { open } from '@tauri-apps/plugin-dialog'
 import { JreConfig } from '../types/config/jre'
-import { ColorTheme, type LauncherConfig } from '../types/config/launcher'
+import { ColorTheme, DownloadSource, type LauncherConfig } from '../types/config/launcher'
 import { useAppTheme } from '../composables/useTheme'
 import { useSnackbar } from '../composables/useSnackbar'
 
 // 当前激活的选项卡
 const activeTab = ref('launcher')
-
-// 启动器设置
-const closeAfterLaunch = ref(false)
-const { colorTheme } = useAppTheme()
-const { showError } = useSnackbar()
 
 // 主题选项
 const themeOptions = [
@@ -143,31 +135,55 @@ const jreList = ref<JreInfo[]>([])
 const selectedJrePath = ref<string | null>(null)
 const showDeleteDialog = ref(false)
 const jreToDelete = ref<JreInfo | null>(null)
+const launcherConfig = ref<LauncherConfig>()
+const closeAfterLaunch = ref(launcherConfig.value?.closeAfterLaunch)
+const { colorTheme } = useAppTheme()
+const { showError } = useSnackbar()
 
-// 监听选中JRE变化
-watch(selectedJrePath, async (newPath) => {
-  // 这里可以保存到配置或做其他处理
-  // 例如：await invoke('set_selected_jre', { path: newPath })
-  console.log('JRE切换为:', newPath)
-})
 
-// 加载启动器配置
-const loadLauncherConfig = async () => {
+
+// 下载源选项
+const downloadSourceOptions = [
+  { label: '官方源', value: DownloadSource.Official },
+  { label: 'BMCLAPI', value: DownloadSource.BmclApi },
+]
+const downloadSource = ref(DownloadSource.Official)
+
+// 监听下载源变化
+watch(downloadSource, async (newSource) => {
   try {
-    const config = await invoke<LauncherConfig>('get_launcher_config_command')
-    closeAfterLaunch.value = config.closeAfterLaunch
-    colorTheme.value = config.colorTheme
+    if (launcherConfig.value) {
+      launcherConfig.value.downloadSource = newSource
+    }
+    await writeLauncherConfig()
   } catch (error: string | any) {
     showError(error)
   }
+})
+
+// 监听选中JRE变化
+watch(selectedJrePath, async (newPath) => {
+
+  console.log('JRE切换为:', newPath)
+})
+
+const writeLauncherConfig = async () => {
+  await invoke('save_launcher_config_command', { config: launcherConfig.value })
+}
+
+const loadLauncherConfig = async () => {
+  launcherConfig.value = await invoke<LauncherConfig>('get_launcher_config_command')
+  colorTheme.value = launcherConfig.value.colorTheme
+  downloadSource.value = launcherConfig.value.downloadSource
 }
 
 // 监听关闭启动器设置变化
 watch(closeAfterLaunch, async (newValue) => {
   try {
-    const config = await invoke<LauncherConfig>('get_launcher_config_command')
-    config.closeAfterLaunch = newValue
-    await invoke('save_launcher_config_command', { config })
+    if (launcherConfig.value) {
+      launcherConfig.value.closeAfterLaunch = newValue ?? false
+    }
+    await writeLauncherConfig()
   } catch (error: string | any) {
     showError(error)
   }

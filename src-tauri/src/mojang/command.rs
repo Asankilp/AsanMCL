@@ -1,3 +1,6 @@
+use crate::config::model::DownloadSource;
+use crate::game::version::model::VersionManifest;
+
 use super::api::*;
 use super::model::{CapeData, MinecraftProfile, SkinData};
 
@@ -54,4 +57,13 @@ pub fn get_player_avatar_url(uuid: Option<String>, size: Option<u32>) -> String 
 #[tauri::command]
 pub fn get_player_skin_preview_url(uuid: String) -> String {
     super::api::get_player_skin_preview_url(&uuid)
+}
+
+#[tauri::command]
+pub async fn get_version_manifest(
+    download_source: DownloadSource,
+) -> Result<VersionManifest, String> {
+    super::api::get_version_manifest(download_source)
+        .await
+        .map_err(|e| e.to_string())
 }

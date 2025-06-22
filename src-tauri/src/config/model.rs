@@ -19,7 +19,7 @@ impl Default for JreConfig {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
-pub enum DownloadSources {
+pub enum DownloadSource {
     Official,
     BmclApi,
 }
@@ -66,7 +66,7 @@ pub struct LauncherConfig {
     #[serde(default = "default_color_theme")]
     pub color_theme: ColorTheme,
     #[serde(default = "default_download_source")]
-    pub download_source: DownloadSources,
+    pub download_source: DownloadSource,
     #[serde(default = "default_false")]
     pub enable_proxy: bool,
     #[serde(default = "default_proxy_config")]
@@ -83,8 +83,8 @@ fn default_last_game_path() -> String {
     "当前目录".to_string()
 }
 
-fn default_download_source() -> DownloadSources {
-    DownloadSources::Official
+fn default_download_source() -> DownloadSource {
+    DownloadSource::Official
 }
 
 fn default_color_theme() -> ColorTheme {

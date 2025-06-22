@@ -32,6 +32,7 @@ pub fn run() {
             get_player_uuid,
             get_player_avatar_url,
             get_player_skin_preview_url,
+            get_version_manifest,
             scan_all_jres,
             get_jre_info,
             get_jre_config_command,
