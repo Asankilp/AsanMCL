@@ -7,7 +7,7 @@ import { usePreferredDark } from '@vueuse/core'
 export const useAppTheme = () => {
   const theme = useTheme()
   const osTheme = usePreferredDark()
-  const colorTheme = ref<ColorTheme>(ColorTheme.FollowSystem)
+  const colorTheme = ref<ColorTheme>()
 
   // 加载主题设置
   const loadTheme = async () => {
@@ -41,16 +41,21 @@ export const useAppTheme = () => {
   }
 
   // 监听系统主题变化
-  watch(osTheme, () => {
-    if (colorTheme.value === ColorTheme.FollowSystem) {
+  watch(osTheme, async () => {
+    console.log(colorTheme.value)
+    if ((await invoke<LauncherConfig>('get_launcher_config_command')).colorTheme === ColorTheme.FollowSystem) {
+      console.log('System theme changed:', osTheme.value)
       applyTheme(ColorTheme.FollowSystem)
     }
   })
 
   // 监听主题设置变化
   watch(colorTheme, (newValue) => {
-    applyTheme(newValue)
-    saveTheme(newValue)
+    console.log('Theme setting changed:', newValue)
+    if (newValue !== undefined) {
+      applyTheme(newValue)
+      saveTheme(newValue)
+    }
   })
 
   return {

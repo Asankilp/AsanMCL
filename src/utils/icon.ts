@@ -8,8 +8,7 @@ import { VersionType } from '../types/version';
  */
 export function getProfileIconUrl(icon: ProfileIcon): string {
   if (typeof icon === 'string') {
-    // 非 custom，返回 public/assets 下同名 png，适配 Vite 静态资源
-    return `src/assets/images/icons/${icon}.png`;
+    return `${window.location.origin}/src/assets/images/icons/${icon}.png`;
   } else if ('custom' in icon) {
     // custom，base64 图片
     return `${icon.custom}`;
