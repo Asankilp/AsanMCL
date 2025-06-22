@@ -7,7 +7,7 @@ import { usePreferredDark } from '@vueuse/core'
 export const useAppTheme = () => {
   const theme = useTheme()
   const osTheme = usePreferredDark()
-  const colorTheme = ref<ColorTheme>()
+  const colorTheme = ref<ColorTheme>(ColorTheme.FollowSystem)
 
   // 加载主题设置
   const loadTheme = async () => {

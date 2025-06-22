@@ -8,7 +8,8 @@ import { VersionType } from '../types/version';
  */
 export function getProfileIconUrl(icon: ProfileIcon): string {
   if (typeof icon === 'string') {
-    return `${window.location.origin}/src/assets/images/icons/${icon}.png`;
+    // 使用 import.meta.url 构造完整 URL
+    return new URL(`../assets/images/icons/${icon}.png`, import.meta.url).toString();
   } else if ('custom' in icon) {
     // custom，base64 图片
     return `${icon.custom}`;
