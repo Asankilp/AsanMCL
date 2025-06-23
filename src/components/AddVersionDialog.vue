@@ -37,7 +37,9 @@
                             </template>
                             <v-list-item-title>
                                 {{ version.id }}
-                                <span v-if="versionThemes[version.id]" style="font-size: 12px; color: #888; margin-left: 8px;">{{ versionThemes[version.id] }}</span>
+                                <span v-if="versionThemes[version.id]"
+                                    style="font-size: 12px; color: #888; margin-left: 8px;">{{
+                                    versionThemes[version.id] }}</span>
                             </v-list-item-title>
                             <v-list-item-subtitle>{{ version.releaseTime }}</v-list-item-subtitle>
                         </v-list-item>
@@ -52,81 +54,85 @@
         </v-card>
     </v-dialog>
 
-    <!-- 第二步对话框：选择组件 -->
+    <!-- 第二步对话框：选择模组加载器 -->
     <v-dialog v-model="showStep2" max-width="400">
-      <v-card>
-        <v-card-title>选择需要安装的组件</v-card-title>
-        <v-card-text>
-          <v-row dense class="flex-column">
-            <!-- Minecraft 卡片 -->
-            <v-col cols="12">
-              <v-card>
-                <v-card-title class="d-flex align-center">
-                    <v-avatar rounded="lg" size="40" class="mr-2">
-                        <img :src="getProfileIconUrl('grassblock')" width="40" height="40" alt="icon" />
-                    </v-avatar>
-                  <v-checkbox v-model="selectedComponents" :value="'minecraft'" :disabled="true" :ripple="false" hide-details class="mr-2" />
-                  Minecraft
-                </v-card-title>
-                <v-card-subtitle>{{ selectedVersionId }}</v-card-subtitle>
-              </v-card>
-            </v-col>
-            <v-col cols="12" v-for="mod in modComponents" :key="mod.key">
-              <v-card :outlined="true" :elevation="selectedComponents.includes(mod.key) ? 8 : 2" :class="{'card-clickable': selectedComponents.includes(mod.key)}" @click="selectedComponents.includes(mod.key) && openComponentVersion(mod.key)">
-                <v-card-title class="d-flex align-center">
-                  <v-avatar rounded="lg" size="40" class="mr-2">
-                    <img :src="getProfileIconUrl(mod.icon as ProfileIcon)" width="40" height="40" alt="icon" />
-                  </v-avatar>
-                  <v-checkbox
-                    v-model="selectedComponents"
-                    :value="mod.key"
-                    hide-details
-                    class="mr-2"
-                    @click.stop
-                    :disabled="!selectedComponents.includes(mod.key) && selectedComponents.some(k => modComponents.map(m=>m.key).includes(k))"
-                  />
-                  <span :style="!selectedComponents.includes(mod.key) ? 'color:#aaa;' : ''">{{ mod.label }}</span>
-                  <v-spacer />
-                  <v-progress-circular v-if="componentLoading[mod.key]" indeterminate color="primary" size="20" class="ml-2" />
-                </v-card-title>
-                <v-card-subtitle v-if="componentVersions[mod.key]">{{ componentVersions[mod.key] }}</v-card-subtitle>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn text @click="showStep2 = false">返回</v-btn>
-          <v-btn color="primary" @click="confirmComponents">确定</v-btn>
-        </v-card-actions>
-      </v-card>
+        <v-card>
+            <v-card-title>选择需要安装的模组加载器</v-card-title>
+            <v-card-text>
+                <v-row dense class="flex-column">
+                    <!-- Minecraft 卡片 -->
+                    <v-col cols="12">
+                        <v-card>
+                            <v-card-title class="d-flex align-center">
+                                <v-avatar rounded="lg" size="40" class="mr-2">
+                                    <img :src="getProfileIconUrl('grassblock')" width="40" height="40" alt="icon" />
+                                </v-avatar>
+                                <v-checkbox v-model="selectedModLoaders" :value="'minecraft'" :disabled="true"
+                                    :ripple="false" hide-details class="mr-2" />
+                                Minecraft
+                            </v-card-title>
+                            <v-card-subtitle>{{ selectedVersionId }}</v-card-subtitle>
+                        </v-card>
+                    </v-col>
+                    <v-col cols="12" v-for="mod in modLoaders" :key="mod.key">
+                        <v-card :outlined="true" :elevation="selectedModLoaders.includes(mod.key) ? 8 : 2"
+                            :class="{ 'card-clickable': selectedModLoaders.includes(mod.key) }"
+                            @click="selectedModLoaders.includes(mod.key) && openModLoaderVersion(mod.key)">
+                            <v-card-title class="d-flex align-center">
+                                <v-avatar rounded="lg" size="40" class="mr-2">
+                                    <img :src="getProfileIconUrl(mod.icon as ProfileIcon)" width="40" height="40"
+                                        alt="icon" />
+                                </v-avatar>
+                                <v-checkbox v-model="selectedModLoaders" :value="mod.key" hide-details class="mr-2"
+                                    @click.stop
+                                    :disabled="modLoaderLoading[mod.key] || (!selectedModLoaders.includes(mod.key) && selectedModLoaders.some(k => modLoaders.map(m => m.key).includes(k)))" />
+                                <span :style="!selectedModLoaders.includes(mod.key) ? 'color:#aaa;' : ''">{{ mod.label
+                                    }}</span>
+                                <v-spacer />
+                                <v-progress-circular v-if="modLoaderLoading[mod.key]" indeterminate color="primary"
+                                    size="20" class="ml-2" />
+                            </v-card-title>
+                            <v-card-subtitle v-if="modLoaderVersions[mod.key]">{{ modLoaderVersions[mod.key]
+                                }}</v-card-subtitle>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer />
+                <v-btn text @click="showStep2 = false">返回</v-btn>
+                <v-btn color="primary" @click="confirmModLoaders">确定</v-btn>
+            </v-card-actions>
+        </v-card>
     </v-dialog>
 
-    <!-- 组件版本选择对话框 -->
-    <v-dialog v-model="showComponentVersionDialog" max-width="600">
-      <v-card>
-        <v-card-title>{{ componentVersionTitle }}</v-card-title>
-        <v-card-text style="max-height: 400px; overflow-y: auto;">
-          <v-row justify="center" v-if="componentVersionLoading">
-            <v-progress-circular indeterminate color="primary" size="40" />
-          </v-row>
-          <v-radio-group v-else v-model="componentVersionSelected">
-            <v-list>
-              <v-list-item v-for="item in componentVersionList" :key="item" :active="componentVersionSelected === item" @click="componentVersionSelected = item" style="cursor:pointer;">
-                <template v-slot:prepend>
-                  <v-radio :value="item" @click.stop />
-                </template>
-                <v-list-item-title>{{ item }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-radio-group>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn text @click="showComponentVersionDialog = false">取消</v-btn>
-          <v-btn color="primary" :disabled="!componentVersionSelected" @click="selectComponentVersion">确定</v-btn>
-        </v-card-actions>
-      </v-card>
+    <!-- 模组加载器版本选择对话框 -->
+    <v-dialog v-model="showModLoaderVersionDialog" max-width="600">
+        <v-card>
+            <v-card-title>{{ modLoaderVersionTitle }}</v-card-title>
+            <v-card-text style="max-height: 400px; overflow-y: auto;">
+                <v-row justify="center" v-if="modLoaderVersionLoading">
+                    <v-progress-circular indeterminate color="primary" size="40" />
+                </v-row>
+                <v-radio-group v-else v-model="modLoaderVersionSelected">
+                    <v-list>
+                        <v-list-item v-for="item in modLoaderVersionList" :key="item"
+                            :active="modLoaderVersionSelected === item" @click="modLoaderVersionSelected = item"
+                            style="cursor:pointer;">
+                            <template v-slot:prepend>
+                                <v-radio :value="item" @click.stop />
+                            </template>
+                            <v-list-item-title>{{ item }}</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-radio-group>
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer />
+                <v-btn text @click="showModLoaderVersionDialog = false">取消</v-btn>
+                <v-btn color="primary" :disabled="!modLoaderVersionSelected" @click="selectModLoaderVersion">确定</v-btn>
+            </v-card-actions>
+        </v-card>
     </v-dialog>
 </template>
 
@@ -138,7 +144,10 @@ import { LauncherConfig } from '../types/config/launcher'
 import { getProfileIconUrl, getVersionIcon } from '../utils/icon'
 import { getMajorUpdateThemeById } from '../utils/version'
 import { ProfileIcon } from '../types/profile'
+import { useSnackbar } from '../composables/useSnackbar'
 
+
+const { showError } = useSnackbar()
 const props = defineProps({
     modelValue: Boolean,
     launcherConfig: {
@@ -146,7 +155,11 @@ const props = defineProps({
         required: true
     }
 })
-const emit = defineEmits(['update:modelValue', 'close', 'confirm'])
+const emit = defineEmits<{
+    (e: 'update:modelValue', value: boolean): void
+    (e: 'confirm', data: Object): void
+    (e: 'close'): void
+}>()
 
 const dialogVisible = computed({
     get: () => props.modelValue,
@@ -185,11 +198,11 @@ const filteredVersions = computed(() => {
 })
 
 watch(filteredVersions, async (versions) => {
-  const themes: Record<string, string> = {}
-  await Promise.all(versions.map(async v => {
-    themes[v.id] = await getMajorUpdateThemeById(v.id)
-  }))
-  versionThemes.value = themes
+    const themes: Record<string, string> = {}
+    await Promise.all(versions.map(async v => {
+        themes[v.id] = await getMajorUpdateThemeById(v.id)
+    }))
+    versionThemes.value = themes
 }, { immediate: true })
 
 function confirmSelect() {
@@ -201,102 +214,111 @@ function confirmSelect() {
 }
 
 const showStep2 = ref(false)
-const selectedComponents = ref(['minecraft'])
-const componentVersions = ref<{[k:string]: string}>({})
-const showComponentVersionDialog = ref(false)
-const componentVersionList = ref<string[]>([])
-const componentVersionSelected = ref<string | null>(null)
-const componentVersionTitle = ref('')
-const componentVersionLoading = ref(false)
-let currentComponent: string | null = null
-const componentLoading = ref<{[k:string]: boolean}>({ forge: false, fabric: false, neoforge: false })
-const componentVersionListMap = ref<{[k:string]: string[]}>({ forge: [], fabric: [], neoforge: [] })
+const selectedModLoaders = ref(['minecraft'])
+const modLoaderVersions = ref<{ [k: string]: string }>({})
+const showModLoaderVersionDialog = ref(false)
+const modLoaderVersionList = ref<string[]>([])
+const modLoaderVersionSelected = ref<string | null>(null)
+const modLoaderVersionTitle = ref('')
+const modLoaderVersionLoading = ref(false)
+let currentModLoader: string | null = null
+const modLoaderLoading = ref<{ [k: string]: boolean }>({ forge: false, fabric: false, neoforge: false })
+const modLoaderVersionListMap = ref<{ [k: string]: string[] }>({ forge: [], fabric: [], neoforge: [] })
 
-async function fetchComponentVersions(component: string) {
-  componentLoading.value[component] = true
-  // TODO: 替换为实际异步获取版本的函数
-  return new Promise<string[]>(resolve => {
-    setTimeout(() => {
-      let list: string[] = []
-      if (component === 'forge') {
-        list = ['Forge-1.20.1', 'Forge-1.19.4', 'Forge-1.18.2']
-      } else if (component === 'fabric') {
-        list = ['Fabric-0.15.7', 'Fabric-0.14.21']
-      } else if (component === 'neoforge') {
-        list = ['NeoForge-20.2.45', 'NeoForge-19.3.12']
-      }
-      componentVersionListMap.value[component] = list
-      componentLoading.value[component] = false
-      resolve(list)
-    }, 1000)
-  })
+async function fetchModLoaderVersions(modLoader: string, versionId: string | null) {
+    modLoaderLoading.value[modLoader] = true
+    // TODO: 替换为实际异步获取版本的函数，需传入versionId
+    return new Promise<string[]>(resolve => {
+        setTimeout(() => {
+            let list: string[] = []
+            if (modLoader === 'forge') {
+                list = versionId ? [`Forge-for-${versionId}-A`, `Forge-for-${versionId}-B`] : []
+            } else if (modLoader === 'fabric') {
+                list = versionId ? [`Fabric-for-${versionId}-A`, `Fabric-for-${versionId}-B`] : []
+            } else if (modLoader === 'neoforge') {
+                list = versionId ? [`NeoForge-for-${versionId}-A`, `NeoForge-for-${versionId}-B`] : []
+            }
+            modLoaderVersionListMap.value[modLoader] = list
+            modLoaderLoading.value[modLoader] = false
+            resolve(list)
+        }, 1000)
+    })
 }
 
 watch(showStep2, (val) => {
-  if (val) {
-    ['forge', 'fabric', 'neoforge'].forEach((component) => {
-      if (!componentVersionListMap.value[component] || componentVersionListMap.value[component].length === 0) {
-        fetchComponentVersions(component)
-      }
-    })
-  }
+    if (val) {
+        // 每次都重新拉取所有modLoader的版本
+        ['forge', 'fabric', 'neoforge'].forEach((modLoader) => {
+            fetchModLoaderVersions(modLoader, selectedVersionId.value)
+        })
+    }
 })
 
-async function openComponentVersion(component: string) {
-  currentComponent = component
-  componentVersionTitle.value = `选择 ${component.charAt(0).toUpperCase() + component.slice(1)} 版本`
-  componentVersionSelected.value = componentVersions.value[component] || null
-  componentVersionLoading.value = componentLoading.value[component]
-  if (!componentVersionListMap.value[component] || componentVersionListMap.value[component].length === 0) {
-    await fetchComponentVersions(component)
-  }
-  componentVersionList.value = componentVersionListMap.value[component]
-  componentVersionLoading.value = false
-  showComponentVersionDialog.value = true
+async function openModLoaderVersion(modLoader: string) {
+    currentModLoader = modLoader
+    modLoaderVersionTitle.value = `选择 ${modLoader.charAt(0).toUpperCase() + modLoader.slice(1)} 版本`
+    modLoaderVersionSelected.value = modLoaderVersions.value[modLoader] || null
+    modLoaderVersionLoading.value = modLoaderLoading.value[modLoader]
+    if (!modLoaderVersionListMap.value[modLoader] || modLoaderVersionListMap.value[modLoader].length === 0) {
+        await fetchModLoaderVersions(modLoader, selectedVersionId.value)
+    }
+    modLoaderVersionList.value = modLoaderVersionListMap.value[modLoader]
+    modLoaderVersionLoading.value = false
+    showModLoaderVersionDialog.value = true
 }
 
-function selectComponentVersion() {
-  if (currentComponent && componentVersionSelected.value) {
-    componentVersions.value[currentComponent] = componentVersionSelected.value
-    showComponentVersionDialog.value = false
-  }
+function selectModLoaderVersion() {
+    if (currentModLoader && modLoaderVersionSelected.value) {
+        modLoaderVersions.value[currentModLoader] = modLoaderVersionSelected.value
+        showModLoaderVersionDialog.value = false
+    }
 }
 
-function confirmComponents() {
-  // 关闭所有对话框
-  showStep2.value = false
-  dialogVisible.value = false
-  // emit 选择结果
-  emit('confirm', {
-    versionId: selectedVersionId.value,
-    components: selectedComponents.value,
-    componentVersions: { ...componentVersions.value }
-  })
+function confirmModLoaders() {
+    // 关闭所有对话框
+    console.log(selectedModLoaders.value)
+    console.log(modLoaderVersions.value)
+    if (selectedModLoaders.value.length != Object.keys(modLoaderVersions.value).length + 1) {
+        showError('请选择所有已勾选的模组加载器的版本')
+        return
+    }
+    showStep2.value = false
+    dialogVisible.value = false
+    // emit 选择结果
+    emit('confirm', {
+        versionId: selectedVersionId.value,
+        modLoaders: selectedModLoaders.value,
+        modLoaderVersions: { ...modLoaderVersions.value }
+    })
+    selectedVersionId.value = null
+    selectedModLoaders.value = ['minecraft']
+    modLoaderVersions.value = {}
 }
 
-const modComponents = [
-  { key: 'forge', label: 'Forge', icon: 'forge' },
-  { key: 'fabric', label: 'Fabric', icon: 'fabric' },
-  { key: 'neoforge', label: 'NeoForge', icon: 'neoforge' }
+const modLoaders = [
+    { key: 'forge', label: 'Forge', icon: 'forge' },
+    { key: 'fabric', label: 'Fabric', icon: 'fabric' },
+    { key: 'neoforge', label: 'NeoForge', icon: 'neoforge' }
 ]
 
-watch(selectedComponents, (val) => {
-  // 只允许modComponents中的key最多选中一个
-  const modKeys = modComponents.map(m => m.key)
-  const selected = val.filter((k: string) => modKeys.includes(k))
-  if (selected.length > 1) {
-    // 只保留最后一个
-    selectedComponents.value = val.filter((k: string) => !modKeys.includes(k)).concat(selected.slice(-1))
-  }
+watch(selectedModLoaders, (val) => {
+    // 只允许modLoaderList中的key最多选中一个
+    const modKeys = modLoaders.map(m => m.key)
+    const selected = val.filter((k: string) => modKeys.includes(k))
+    if (selected.length > 1) {
+        // 只保留最后一个
+        selectedModLoaders.value = val.filter((k: string) => !modKeys.includes(k)).concat(selected.slice(-1))
+    }
 })
 </script>
 
 <style scoped>
 .card-clickable {
-  cursor: pointer;
-  transition: box-shadow 0.2s;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
 }
+
 .card-clickable:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 </style>
