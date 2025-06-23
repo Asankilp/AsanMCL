@@ -77,7 +77,14 @@
                   <v-avatar rounded="lg" size="40" class="mr-2">
                     <img :src="getProfileIconUrl(mod.icon as ProfileIcon)" width="40" height="40" alt="icon" />
                   </v-avatar>
-                  <v-checkbox v-model="selectedComponents" :value="mod.key" hide-details class="mr-2" @click.stop />
+                  <v-checkbox
+                    v-model="selectedComponents"
+                    :value="mod.key"
+                    hide-details
+                    class="mr-2"
+                    @click.stop
+                    :disabled="!selectedComponents.includes(mod.key) && selectedComponents.some(k => modComponents.map(m=>m.key).includes(k))"
+                  />
                   <span :style="!selectedComponents.includes(mod.key) ? 'color:#aaa;' : ''">{{ mod.label }}</span>
                   <v-spacer />
                   <v-progress-circular v-if="componentLoading[mod.key]" indeterminate color="primary" size="20" class="ml-2" />
@@ -272,6 +279,16 @@ const modComponents = [
   { key: 'fabric', label: 'Fabric', icon: 'fabric' },
   { key: 'neoforge', label: 'NeoForge', icon: 'neoforge' }
 ]
+
+watch(selectedComponents, (val) => {
+  // 只允许modComponents中的key最多选中一个
+  const modKeys = modComponents.map(m => m.key)
+  const selected = val.filter((k: string) => modKeys.includes(k))
+  if (selected.length > 1) {
+    // 只保留最后一个
+    selectedComponents.value = val.filter((k: string) => !modKeys.includes(k)).concat(selected.slice(-1))
+  }
+})
 </script>
 
 <style scoped>
