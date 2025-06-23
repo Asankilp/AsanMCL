@@ -251,6 +251,9 @@ watch(showStep2, (val) => {
         ['forge', 'fabric', 'neoforge'].forEach((modLoader) => {
             fetchModLoaderVersions(modLoader, selectedVersionId.value)
         })
+    } else {
+        selectedModLoaders.value = ['minecraft']
+        modLoaderVersions.value = {}
     }
 })
 
