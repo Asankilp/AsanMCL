@@ -182,7 +182,8 @@ watch(closeAfterLaunch, async (newValue) => {
 
 // 组件挂载时加载配置
 onMounted(() => {
-  
+  colorTheme.value = launcherConfigStore.config?.colorTheme ?? ColorTheme.FollowSystem
+  downloadSource.value = launcherConfigStore.config?.downloadSource ?? DownloadSource.Official
 })
 
 // 加载 JRE 列表
