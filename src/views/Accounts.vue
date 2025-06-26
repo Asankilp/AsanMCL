@@ -147,6 +147,7 @@ const handleSubmit = (account: AccountInfo) => {
     throw new Error('该账户已存在')
   } else {
     accounts.value.push(account)
+    accountConfigStore.config.accounts = accounts.value
     writeAccountConfig()
   }
 }
@@ -163,9 +164,8 @@ const handleDelete = (account: AccountInfo) => {
 
 const handleSelectionChange = async () => {
   const selectedUUID = selectedAccount.value?.uuid
-  const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
-  launcherConfig.selectedAccount = selectedUUID
-  await invoke('save_launcher_config_command', { config: launcherConfig })
+  launcherConfigStore.config.selectedAccount = selectedUUID
+  launcherConfigStore.saveConfig()
   await loadAvatar()
 }
 
@@ -177,6 +177,7 @@ const confirmDelete = async () => {
     const deletedIsSelected = selectedAccount.value?.uuid === accountToDelete.value?.uuid
     if (index !== -1) {
       accounts.value.splice(index, 1)
+      accountConfigStore.config.accounts = accounts.value
       await writeAccountConfig()
       showSuccess('账户删除成功')
     }
@@ -221,9 +222,6 @@ const loadAccounts = async () => {
 
 const writeAccountConfig = async () => {
   // 将账户数据写入配置文件
-  const accountConfig: AccountConfig = {
-    accounts: accounts.value
-  }
   accountConfigStore.saveConfig()
 }
 </script>
