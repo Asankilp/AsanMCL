@@ -85,7 +85,6 @@ import Hello from './components/Hello.vue'
 import { useAppTheme } from './composables/useTheme'
 import { invoke } from '@tauri-apps/api/core'
 import { LauncherConfig } from './types/config/launcher'
-import { useLauncherConfigStore } from './composables/useConfig'
 
 const router = useRouter()
 const drawer = ref(true)
@@ -129,14 +128,14 @@ const {
 
 // 初始化主题
 const { loadTheme } = useAppTheme()
-const launcherConfigStore = useLauncherConfigStore()
 onMounted(async () => {
   loadTheme()
   loadAvatar()
 })
 
 const loadAvatar = async () => {
-  currentUser.value.avatar = await invoke<string>('get_player_avatar_url', { uuid: launcherConfigStore.config.selectedAccount })
+  const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
+  currentUser.value.avatar = await invoke<string>('get_player_avatar_url', { uuid: launcherConfig.selectedAccount })
 }
 
 // 提供 loadAvatar 方法给子组件
