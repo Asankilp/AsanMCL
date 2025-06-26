@@ -3,18 +3,19 @@ import { useTheme } from 'vuetify'
 import { ColorTheme, type LauncherConfig } from '../types/config/launcher'
 import { invoke } from '@tauri-apps/api/core'
 import { usePreferredDark } from '@vueuse/core'
+import { useLauncherConfigStore } from './useConfig'
 
 export const useAppTheme = () => {
   const theme = useTheme()
   const osTheme = usePreferredDark()
   const colorTheme = ref<ColorTheme>(ColorTheme.FollowSystem)
+  const launcherConfigStore = useLauncherConfigStore()
 
   // 加载主题设置
   const loadTheme = async () => {
     try {
-      const config = await invoke<LauncherConfig>('get_launcher_config_command')
-      colorTheme.value = config.colorTheme
-      applyTheme(config.colorTheme)
+      colorTheme.value = launcherConfigStore.config.colorTheme
+      applyTheme(colorTheme.value)
     } catch (error) {
       console.error('Failed to load theme setting:', error)
     }
@@ -23,9 +24,8 @@ export const useAppTheme = () => {
   // 保存主题设置
   const saveTheme = async (newTheme: ColorTheme) => {
     try {
-      const config = await invoke<LauncherConfig>('get_launcher_config_command')
-      config.colorTheme = newTheme
-      await invoke('save_launcher_config_command', { config })
+      launcherConfigStore.config.colorTheme = newTheme
+      launcherConfigStore.saveConfig(launcherConfigStore.config)
     } catch (error) {
       console.error('Failed to save theme setting:', error)
     }
@@ -43,7 +43,7 @@ export const useAppTheme = () => {
   // 监听系统主题变化
   watch(osTheme, async () => {
     console.log(colorTheme.value)
-    if ((await invoke<LauncherConfig>('get_launcher_config_command')).colorTheme === ColorTheme.FollowSystem) {
+    if (launcherConfigStore.config.colorTheme === ColorTheme.FollowSystem) {
       console.log('System theme changed:', osTheme.value)
       applyTheme(ColorTheme.FollowSystem)
     }

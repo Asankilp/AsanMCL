@@ -7,7 +7,7 @@
     </template>
     <v-list>
       <v-list-item
-        v-for="(path, pathName) in launcherConfig?.gamePath"
+        v-for="(path, pathName) in config.gamePath"
         :key="pathName"
         @click="onSwitch(path, pathName)"
         :title="pathName"
@@ -15,7 +15,7 @@
       >
         <template v-slot:prepend>
           <v-radio
-            :model-value="launcherConfig?.lastGamePath === pathName"
+            :model-value="config.lastGamePath === pathName"
             readonly
             hide-details
             density="compact"
@@ -60,16 +60,15 @@
 import { ref } from 'vue'
 import { open, ask } from '@tauri-apps/plugin-dialog'
 import { invoke } from '@tauri-apps/api/core'
-import type { LauncherConfig } from '../types/config/launcher'
+import { useLauncherConfigStore } from '../composables/useConfig'
 import { useSnackbar } from '../composables/useSnackbar'
 const { showError } = useSnackbar()
 
-const props = defineProps<{
-  launcherConfig: LauncherConfig | undefined
-}>()
+const launcherConfigStore = useLauncherConfigStore()
+const config = launcherConfigStore.config
+
 const emits = defineEmits<{
   (e: 'switch', path: string, pathName: string): void
-  (e: 'update:launcherConfig', config: LauncherConfig): void
   (e: 'refreshVersions', gamePath: string): void
 }>()
 
@@ -100,16 +99,15 @@ const onAdd = async () => {
 const confirmAddGamePath = async () => {
   const name = newGamePathName.value.trim()
   if (!name || !pendingGamePath.value) return
-  if (props.launcherConfig) {
-    if (!props.launcherConfig.gamePath) props.launcherConfig.gamePath = {}
-    if (Object.prototype.hasOwnProperty.call(props.launcherConfig.gamePath, name)) {
+  if (config) {
+    if (!config.gamePath) config.gamePath = {}
+    if (Object.prototype.hasOwnProperty.call(config.gamePath, name)) {
       showError('该名称已存在')
       return
     }
-    props.launcherConfig.gamePath[name] = pendingGamePath.value
-    props.launcherConfig.lastGamePath = name
-    emits('update:launcherConfig', props.launcherConfig)
-    await invoke('save_launcher_config_command', { config: props.launcherConfig })
+    config.gamePath[name] = pendingGamePath.value
+    config.lastGamePath = name
+    await launcherConfigStore.saveConfig(config)
     await invoke('init_game_path_command', { path: pendingGamePath.value })
     emits('refreshVersions', pendingGamePath.value)
   }
@@ -125,27 +123,26 @@ const cancelAddGamePath = () => {
 }
 
 const onDelete = async (pathName: string) => {
-  if (!props.launcherConfig?.gamePath) return
-  const keys = Object.keys(props.launcherConfig.gamePath)
+  if (!config?.gamePath) return
+  const keys = Object.keys(config.gamePath)
   if (keys.length <= 1) {
     showError('至少需要保留一个游戏目录')
     return
   }
   const confirmed = await ask(`确定要删除游戏目录 "${pathName}" 吗？`, { title: '删除确认' })
   if (!confirmed) return
-  delete props.launcherConfig.gamePath[pathName]
-  if (props.launcherConfig.lastGamePath === pathName) {
-    const newKeys = Object.keys(props.launcherConfig.gamePath)
+  delete config.gamePath[pathName]
+  if (config.lastGamePath === pathName) {
+    const newKeys = Object.keys(config.gamePath)
     if (newKeys.length > 0) {
-      props.launcherConfig.lastGamePath = newKeys[0]
-      emits('refreshVersions', props.launcherConfig.gamePath[newKeys[0]])
+      config.lastGamePath = newKeys[0]
+      emits('refreshVersions', config.gamePath[newKeys[0]])
     } else {
-      props.launcherConfig.lastGamePath = ''
+      config.lastGamePath = ''
       emits('refreshVersions', '')
     }
   }
-  emits('update:launcherConfig', props.launcherConfig)
-  await invoke('save_launcher_config_command', { config: props.launcherConfig })
+  await launcherConfigStore.saveConfig(config)
 }
 </script>
 

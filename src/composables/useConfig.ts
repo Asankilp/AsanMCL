@@ -19,8 +19,8 @@ export const useLauncherConfigStore = defineStore('launcherconfig', () => {
   // 保存配置
   const saveConfig = async (newConfig: LauncherConfig) => {
     try {
-      await invoke('save_launcher_config_command', { config: newConfig })
-      config.value = newConfig
+      await invoke('save_launcher_config_command', { config: config.value })
+      // config.value = newConfig
     } catch (error) {
       console.error('Failed to save launcher config:', error)
     }

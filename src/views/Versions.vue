@@ -6,7 +6,7 @@
       <v-spacer></v-spacer>
       <!-- 游戏目录切换菜单组件 -->
       <GamePathMenu :launcherConfig="launcherConfigStore.config" @switch="switchGamePath"
-        @update:launcherConfig="val => launcherConfigStore.config = val" @refreshVersions="refreshVersions" />
+        @update:launcherConfig="(val: LauncherConfig) => launcherConfigStore.config = val" @refreshVersions="refreshVersions" />
       <v-btn icon color="grey lighten-1" @click="showAddVersionDialog = true">
         <v-icon left>mdi-plus</v-icon>
       </v-btn>
