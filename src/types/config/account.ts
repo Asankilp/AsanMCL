@@ -17,3 +17,13 @@ export interface AccountInfo {
 export interface AccountConfig {
     accounts: AccountInfo[];
 }
+
+export const defaultAccountConfig = (): AccountConfig => ({
+    accounts: [
+        {
+            accountType: AccountType.Offline,
+            name: 'Steve',
+            uuid: '00000000-0000-0000-0000-000000000000',
+        },
+    ],
+});

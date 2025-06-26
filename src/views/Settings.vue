@@ -119,6 +119,7 @@ import { JreConfig } from '../types/config/jre'
 import { ColorTheme, DownloadSource, type LauncherConfig } from '../types/config/launcher'
 import { useAppTheme } from '../composables/useTheme'
 import { useSnackbar } from '../composables/useSnackbar'
+import { useLauncherConfigStore } from '../composables/useConfig'
 
 // 当前激活的选项卡
 const activeTab = ref('launcher')
@@ -135,8 +136,8 @@ const jreList = ref<JreInfo[]>([])
 const selectedJrePath = ref<string | null>(null)
 const showDeleteDialog = ref(false)
 const jreToDelete = ref<JreInfo | null>(null)
-const launcherConfig = ref<LauncherConfig>()
-const closeAfterLaunch = ref(launcherConfig.value?.closeAfterLaunch)
+const launcherConfigStore = useLauncherConfigStore()
+const closeAfterLaunch = ref(launcherConfigStore.config.closeAfterLaunch)
 const { colorTheme } = useAppTheme()
 const { showError } = useSnackbar()
 
@@ -152,10 +153,10 @@ const downloadSource = ref(DownloadSource.Official)
 // 监听下载源变化
 watch(downloadSource, async (newSource) => {
   try {
-    if (launcherConfig.value) {
-      launcherConfig.value.downloadSource = newSource
+    if (launcherConfigStore.config) {
+      launcherConfigStore.config.downloadSource = newSource
     }
-    await writeLauncherConfig()
+    launcherConfigStore.saveConfig(launcherConfigStore.config)
   } catch (error: string | any) {
     showError(error)
   }
@@ -167,23 +168,13 @@ watch(selectedJrePath, async (newPath) => {
   console.log('JRE切换为:', newPath)
 })
 
-const writeLauncherConfig = async () => {
-  await invoke('save_launcher_config_command', { config: launcherConfig.value })
-}
-
-const loadLauncherConfig = async () => {
-  launcherConfig.value = await invoke<LauncherConfig>('get_launcher_config_command')
-  colorTheme.value = launcherConfig.value.colorTheme
-  downloadSource.value = launcherConfig.value.downloadSource
-}
-
 // 监听关闭启动器设置变化
 watch(closeAfterLaunch, async (newValue) => {
   try {
-    if (launcherConfig.value) {
-      launcherConfig.value.closeAfterLaunch = newValue ?? false
+    if (launcherConfigStore.config) {
+      launcherConfigStore.config.closeAfterLaunch = newValue ?? false
     }
-    await writeLauncherConfig()
+    launcherConfigStore.saveConfig(launcherConfigStore.config)
   } catch (error: string | any) {
     showError(error)
   }
@@ -191,7 +182,7 @@ watch(closeAfterLaunch, async (newValue) => {
 
 // 组件挂载时加载配置
 onMounted(() => {
-  loadLauncherConfig()
+  
 })
 
 // 加载 JRE 列表

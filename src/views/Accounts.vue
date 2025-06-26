@@ -100,8 +100,11 @@ import { useSnackbar } from '../composables/useSnackbar'
 import { invoke } from '@tauri-apps/api/core'
 import { convertToCompactUUID } from '../utils/converter'
 import { LauncherConfig } from '../types/config/launcher'
+import { useAccountConfigStore, useLauncherConfigStore } from '../composables/useConfig'
 
 const { showSuccess, showError } = useSnackbar()
+const launcherConfigStore = useLauncherConfigStore()
+const accountConfigStore = useAccountConfigStore()
 
 const accounts = ref<AccountInfo[]>([])
 const accountDialogVisible = ref(false)
@@ -212,10 +215,8 @@ onMounted(() => {
 })
 
 const loadAccounts = async () => {
-  const accountConfig = await invoke<AccountConfig>('get_account_config_command')
-  const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
-  accounts.value = accountConfig.accounts
-  selectedAccount.value = accountConfig.accounts.find(a => a.uuid === launcherConfig.selectedAccount) ?? null
+  accounts.value = accountConfigStore.config.accounts
+  selectedAccount.value = accountConfigStore.config.accounts.find(a => a.uuid === launcherConfigStore.config.selectedAccount) ?? null
 }
 
 const writeAccountConfig = async () => {
@@ -223,7 +224,7 @@ const writeAccountConfig = async () => {
   const accountConfig: AccountConfig = {
     accounts: accounts.value
   }
-  await invoke('save_account_config_command', { config: accountConfig })
+  accountConfigStore.saveConfig(accountConfig)
 }
 </script>
 

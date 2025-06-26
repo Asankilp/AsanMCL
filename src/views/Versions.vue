@@ -5,8 +5,8 @@
       <v-toolbar-title class="text-h6">版本列表</v-toolbar-title>
       <v-spacer></v-spacer>
       <!-- 游戏目录切换菜单组件 -->
-      <GamePathMenu :launcherConfig="launcherConfig" @switch="switchGamePath"
-        @update:launcherConfig="val => launcherConfig = val" @refreshVersions="refreshVersions" />
+      <GamePathMenu :launcherConfig="launcherConfigStore.config" @switch="switchGamePath"
+        @update:launcherConfig="val => launcherConfigStore.config = val" @refreshVersions="refreshVersions" />
       <v-btn icon color="grey lighten-1" @click="showAddVersionDialog = true">
         <v-icon left>mdi-plus</v-icon>
       </v-btn>
@@ -46,8 +46,8 @@
         </v-list-item>
       </v-list>
 
-      <AddVersionDialog v-model="showAddVersionDialog" @close="showAddVersionDialog = false" v-if="launcherConfig"
-        :launcher-config="launcherConfig" />
+      <AddVersionDialog v-model="showAddVersionDialog" @close="showAddVersionDialog = false" v-if="launcherConfigStore.config"
+        :launcher-config="launcherConfigStore.config" />
     </v-main>
   </v-container>
 </template>
@@ -61,10 +61,11 @@ import { useSnackbar } from '../composables/useSnackbar'
 import GamePathMenu from '../components/GamePathMenu.vue'
 import AddVersionDialog from '../components/AddVersionDialog.vue'
 import { getVersionIcon } from '../utils/icon'
+import { useLauncherConfigStore } from '../composables/useConfig'
 const { showError } = useSnackbar()
 
 const versions = ref<LocalVersionInfo[]>([])
-const launcherConfig = ref<LauncherConfig>()
+const launcherConfigStore = useLauncherConfigStore()
 const showAddVersionDialog = ref(false)
 
 
@@ -84,10 +85,10 @@ const switchGamePath = async (gamePath: string, gamePathName: string) => {
   try {
     console.log('切换游戏目录:', gamePath)
     versions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath })
-    if (launcherConfig.value) {
-      launcherConfig.value.lastGamePath = gamePathName
+    if (launcherConfigStore.config) {
+      launcherConfigStore.config.lastGamePath = gamePathName
     }
-    writeLauncherConfig()
+    launcherConfigStore.saveConfig(launcherConfigStore.config)
   } catch (error: string | any) {
     showError(error)
   }
@@ -102,19 +103,9 @@ const refreshVersions = async (gamePath: string) => {
   }
 }
 
-const writeLauncherConfig = async () => {
-  await invoke('save_launcher_config_command', { config: launcherConfig.value })
-}
-
-const loadLauncherConfig = async () => {
-  launcherConfig.value = await invoke<LauncherConfig>('get_launcher_config_command')
-}
-
 onMounted(async () => {
   try {
-    loadLauncherConfig()
-    const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
-    versions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath: launcherConfig.gamePath[launcherConfig.lastGamePath] })
+    versions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath: launcherConfigStore.config.gamePath[launcherConfigStore.config.lastGamePath] })
   } catch (error: string | any) {
     showError(error)
   }

@@ -9,6 +9,8 @@ import App from "./App.vue";
 // Vuetify
 import 'vuetify/styles';
 import '@mdi/font/css/materialdesignicons.css';
+import { createPinia } from "pinia";
+import { useAccountConfigStore, useLauncherConfigStore } from "./composables/useConfig";
 
 const vuetify = createVuetify({
   components,
@@ -64,6 +66,15 @@ const vuetify = createVuetify({
 // mediaQuery.addEventListener('change', handleThemeChange);
 
 const app = createApp(App);
+const pinia = createPinia();
+
 app.use(vuetify);
 app.use(router);
+app.use(pinia);
+
+const launcherConfigStore = useLauncherConfigStore();
+const accountConfigStore = useAccountConfigStore();
+launcherConfigStore.loadConfig()
+accountConfigStore.loadConfig()
+
 app.mount("#app");
