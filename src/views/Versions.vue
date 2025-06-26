@@ -88,7 +88,7 @@ const switchGamePath = async (gamePath: string, gamePathName: string) => {
     if (launcherConfigStore.config) {
       launcherConfigStore.config.lastGamePath = gamePathName
     }
-    launcherConfigStore.saveConfig(launcherConfigStore.config)
+    launcherConfigStore.saveConfig()
   } catch (error: string | any) {
     showError(error)
   }

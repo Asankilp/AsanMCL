@@ -17,7 +17,7 @@ export const useLauncherConfigStore = defineStore('launcherconfig', () => {
   }
 
   // 保存配置
-  const saveConfig = async (newConfig: LauncherConfig) => {
+  const saveConfig = async () => {
     try {
       await invoke('save_launcher_config_command', { config: config.value })
       // config.value = newConfig
@@ -44,10 +44,9 @@ export const useAccountConfigStore = defineStore('accountconfig', () => {
     }
   }
 
-  const saveConfig = async (newConfig: AccountConfig) => {
+  const saveConfig = async () => {
     try {
-      await invoke('save_account_config_command', { config: newConfig })
-      config.value = newConfig
+      await invoke('save_account_config_command', { config: config.value })
     } catch (error) {
       console.error('Failed to save account config:', error)
     }

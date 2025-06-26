@@ -25,7 +25,7 @@ export const useAppTheme = () => {
   const saveTheme = async (newTheme: ColorTheme) => {
     try {
       launcherConfigStore.config.colorTheme = newTheme
-      launcherConfigStore.saveConfig(launcherConfigStore.config)
+      launcherConfigStore.saveConfig()
     } catch (error) {
       console.error('Failed to save theme setting:', error)
     }

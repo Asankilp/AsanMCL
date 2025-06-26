@@ -224,7 +224,7 @@ const writeAccountConfig = async () => {
   const accountConfig: AccountConfig = {
     accounts: accounts.value
   }
-  accountConfigStore.saveConfig(accountConfig)
+  accountConfigStore.saveConfig()
 }
 </script>
 

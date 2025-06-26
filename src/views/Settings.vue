@@ -156,7 +156,7 @@ watch(downloadSource, async (newSource) => {
     if (launcherConfigStore.config) {
       launcherConfigStore.config.downloadSource = newSource
     }
-    launcherConfigStore.saveConfig(launcherConfigStore.config)
+    launcherConfigStore.saveConfig()
   } catch (error: string | any) {
     showError(error)
   }
@@ -174,7 +174,7 @@ watch(closeAfterLaunch, async (newValue) => {
     if (launcherConfigStore.config) {
       launcherConfigStore.config.closeAfterLaunch = newValue ?? false
     }
-    launcherConfigStore.saveConfig(launcherConfigStore.config)
+    launcherConfigStore.saveConfig()
   } catch (error: string | any) {
     showError(error)
   }

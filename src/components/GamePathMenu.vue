@@ -107,7 +107,7 @@ const confirmAddGamePath = async () => {
     }
     config.gamePath[name] = pendingGamePath.value
     config.lastGamePath = name
-    await launcherConfigStore.saveConfig(config)
+    await launcherConfigStore.saveConfig()
     await invoke('init_game_path_command', { path: pendingGamePath.value })
     emits('refreshVersions', pendingGamePath.value)
   }
@@ -142,7 +142,7 @@ const onDelete = async (pathName: string) => {
       emits('refreshVersions', '')
     }
   }
-  await launcherConfigStore.saveConfig(config)
+  await launcherConfigStore.saveConfig()
 }
 </script>
 
