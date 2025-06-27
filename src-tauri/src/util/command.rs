@@ -62,18 +62,21 @@ pub async fn download_files(app: AppHandle, files: HashMap<String, String>) -> R
                     Ok(Ok(id)) => {
                         let mut map = DOWNLOAD_CANCEL_MAP.lock().unwrap();
                         map.remove(&id);
+                        Ok::<(), Box<dyn std::error::Error + Send + Sync>>(())
                     },
                     Ok(Err(_e)) => {
                         let payload = DownloadError {
                             error: format!("{:?}", _e),
                         };
                         let _ = app_clone_for_error.emit("download-error", payload);
+                        Err(_e)
                     },
                     Err(_e) => {
                         let payload = DownloadError {
                             error: format!("{:?}", _e),
                         };
                         let _ = app_clone_for_error.emit("download-error", payload);
+                        Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, format!("{:?}", _e))) as Box<dyn std::error::Error + Send + Sync>)
                     }
                 }
             }
@@ -82,8 +85,10 @@ pub async fn download_files(app: AppHandle, files: HashMap<String, String>) -> R
     let results = future::join_all(handles).await;
     let mut errors = Vec::new();
     for res in results {
-        if let Err(e) = res {
-            errors.push(e.to_string());
+        match res {
+            Ok(Ok(())) => {}, // 成功
+            Ok(Err(e)) => errors.push(e.to_string()), // 任务返回错误
+            Err(e) => errors.push(e.to_string()), // 任务本身 panic 或 join 失败
         }
     }
     if errors.is_empty() {

@@ -14,7 +14,12 @@ import { invoke } from '@tauri-apps/api/core';
 
 
 const testDownload = async () => {
-  await invoke<void>('download_files', { files: { "https://d.taptap.cn/pc/latest/rep-rep_typxbuxvnpi?sid=250627YjqCrFCCbhZF": "G:\\test.exe", "https://d.taptap.cn/latest/rep-rep_typxbuxvnpi?sid=250627YjqCrFCCbhZF": "G:\\test.apk" } })
+  try {
+    const result = await invoke('download_files', { files: { "https://d.taptap.cn/pc/latest/rep-rep_typxbuxvnpi?sid=250627YjqCrFCCbhZF": "G:\\test.exe", "https://d.taptap.cn/latest/rep-rep_typxbuxvnpi?sid=250627YjqCrFCCbhZF": "G:\\test.apk" } })
+    console.log(result)
+  } catch (e) {
+    console.log(e)
+  }
 }
 </script>
 
