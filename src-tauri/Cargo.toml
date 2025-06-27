@@ -19,7 +19,7 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 tauri = { version = "2", features = [] }
-reqwest = { version = "0.12.18", features = ["json", "blocking"] }
+reqwest = { version = "0.12.18", features = ["json", "blocking", "stream"] }
 tokio = { version = "1.45.1", features = ["full"] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
@@ -34,6 +34,10 @@ dirs = "5.0"
 tauri-plugin-dialog = "2"
 config = "0.15.11"
 tauri-plugin-store = "2"
+futures-util = "0.3.31"
+uuid = { version = "1.17.0", features = ["v4"] }
+futures = "0.3.31"
+once_cell = "1.21.3"
 
 [target.'cfg(windows)'.dependencies]
 winreg = "0.11"

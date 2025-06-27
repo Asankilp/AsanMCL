@@ -13,3 +13,13 @@ export type LoginEvent =
       response: MinecraftAuthResponse;
     };
   }
+
+export interface DownloadProgress {
+  id: string;
+  filename: string;
+  progress: number;
+}
+
+export interface DownloadError {
+  error: string;
+}

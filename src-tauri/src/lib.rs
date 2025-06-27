@@ -46,6 +46,8 @@ pub fn run() {
             get_local_versions_command,
             init_game_path_command,
             init_launcher_command,
+            download_files,
+            cancel_download,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

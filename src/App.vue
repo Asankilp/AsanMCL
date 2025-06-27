@@ -1,34 +1,16 @@
 <template>
   <v-app>
     <!-- 欢迎页 -->
-    <Hello
-      v-if="showWelcome"
-      @close="showWelcome = false"
-    />
-
+    <Hello v-if="showWelcome" @close="showWelcome = false" />
+    <DownloadDialog />
     <!-- 侧边导航栏 -->
-    <v-navigation-drawer
-      v-model="drawer"
-      :rail="isRail"
-      permanent
-      color="surface"
-    >
+    <v-navigation-drawer v-model="drawer" :rail="isRail" permanent color="surface">
       <div>
         <v-list>
-          <v-list-item
-            :prepend-avatar="currentUser.avatar"
-            :title="currentUser.name"
-            nav
-            :active="$route.path === '/accounts'"
-            class="account-item"
-            @click="router.push('/accounts')"
-          >
+          <v-list-item :prepend-avatar="currentUser.avatar" :title="currentUser.name" nav
+            :active="$route.path === '/accounts'" class="account-item" @click="router.push('/accounts')">
             <template v-slot:append>
-              <v-btn
-                variant="text"
-                icon="mdi-chevron-left"
-                @click.stop="isRail = !isRail"
-              ></v-btn>
+              <v-btn variant="text" icon="mdi-chevron-left" @click.stop="isRail = !isRail"></v-btn>
             </template>
           </v-list-item>
         </v-list>
@@ -38,17 +20,8 @@
 
       <!-- 导航菜单 -->
       <v-list density="compact" nav>
-        <v-list-item
-          v-for="item in menuItems"
-          :key="item.to"
-          :value="item.to"
-          :to="item.to"
-          :prepend-icon="item.icon"
-          :title="item.title"
-          :active="$route.path === item.to"
-          rounded="mx-2 my-1"
-          class="mx-2"
-        ></v-list-item>
+        <v-list-item v-for="item in menuItems" :key="item.to" :value="item.to" :to="item.to" :prepend-icon="item.icon"
+          :title="item.title" :active="$route.path === item.to" rounded="mx-2 my-1" class="mx-2"></v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -58,18 +31,10 @@
     </v-main>
 
     <!-- 全局提示组件 -->
-    <v-snackbar
-      v-model="snackbar"
-      :timeout="snackbarTimeout"
-      location="top"
-      :color="snackbarType"
-    >
+    <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" location="top" :color="snackbarType">
       {{ snackbarMessage }}
       <template v-slot:actions>
-        <v-btn
-          variant="text"
-          @click="snackbar = false"
-        >
+        <v-btn variant="text" @click="snackbar = false">
           关闭
         </v-btn>
       </template>
@@ -85,6 +50,10 @@ import Hello from './components/Hello.vue'
 import { useAppTheme } from './composables/useTheme'
 import { invoke } from '@tauri-apps/api/core'
 import { LauncherConfig } from './types/config/launcher'
+import DownloadDialog from './components/DownloadDialog.vue'
+import { listen } from '@tauri-apps/api/event'
+import { DownloadError, DownloadProgress } from './types/event'
+import { useDownloadDialogStore } from './store/downloadDialog'
 
 const router = useRouter()
 const drawer = ref(true)
@@ -128,6 +97,8 @@ const {
 
 // 初始化主题
 const { loadTheme } = useAppTheme()
+const downloadDialogStore = useDownloadDialogStore()
+const { showError } = useSnackbar()
 onMounted(async () => {
   loadTheme()
   loadAvatar()
@@ -140,6 +111,26 @@ const loadAvatar = async () => {
 
 // 提供 loadAvatar 方法给子组件
 provide('loadAvatar', loadAvatar)
+
+listen<DownloadProgress>('download-progress', (progress) => {
+  downloadDialogStore.addOrUpdateItem({
+    id: progress.payload.id,
+    filename: progress.payload.filename,
+    progress: progress.payload.progress
+  })
+}
+)
+listen<DownloadError>('download-error', (error) => {
+  if (error.payload.error != "\"canceled\""){
+    showError(`下载发生错误：${error.payload.error}`)
+  }
+  // 下载失败后，取消所有下载任务并清空任务列表
+  for (const item of downloadDialogStore.items) {
+    invoke('cancel_download', { id: item.id })
+  }
+  downloadDialogStore.clear()
+}
+)
 </script>
 
 <style>
