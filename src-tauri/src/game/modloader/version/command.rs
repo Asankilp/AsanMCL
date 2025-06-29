@@ -1,12 +1,12 @@
 use crate::{
     config::model::DownloadSource,
-    game::modloader::version::models::fabric::FabricSupportedGameVersions,
+    game::modloader::version::models::fabric::FabricSupportedGameVersion,
 };
 
 #[tauri::command]
 pub async fn get_fabric_supported_game_versions(
     download_source: DownloadSource,
-) -> Result<Vec<FabricSupportedGameVersions>, String> {
+) -> Result<Vec<FabricSupportedGameVersion>, String> {
     return super::api::get_fabric_supported_game_versions(download_source)
         .await
         .map_err(|e| e.to_string());

@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct FabricSupportedGameVersions {
+pub struct FabricSupportedGameVersion {
     pub version: String,
-    pub latest: bool,
+    pub stable: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -60,9 +60,9 @@ pub struct FabricLauncherMeta {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct FabricLoaderVersionJson {
     pub loader: FabricLoaderVersion,
-    pub intermediary: FabricIntermediaryVersion,
+    pub intermediary: Option<FabricIntermediaryVersion>,
     #[serde(rename = "launcherMeta")]
-    pub launcher_meta: FabricLauncherMeta,
+    pub launcher_meta: Option<FabricLauncherMeta>,
 }
 
 #[cfg(test)]
