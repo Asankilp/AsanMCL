@@ -17,6 +17,13 @@ pub async fn get_fabric_supported_game_versions(
     Ok(versions)
 }
 
+pub async fn get_forge_supported_game_versions() -> Result<Vec<String>, String> {
+    let url = "https://bmclapi2.bangbang93.com/forge/minecraft";
+    let response = reqwest::get(url).await.map_err(|e| e.to_string())?;
+    let versions: Vec<String> = response.json().await.map_err(|e| e.to_string())?;
+    Ok(versions)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

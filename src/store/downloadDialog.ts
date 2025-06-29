@@ -1,13 +1,8 @@
 import { defineStore } from 'pinia'
-
-export interface DownloadItem {
-  id: string
-  filename: string
-  progress: number // 0~100
-}
+import { DownloadProgress } from '../types/event'
 
 interface DownloadDialogState {
-  items: DownloadItem[]
+  items: DownloadProgress[]
   visible: boolean
 }
 
@@ -17,7 +12,7 @@ export const useDownloadDialogStore = defineStore('downloadDialog', {
     visible: false,
   }),
   actions: {
-    addOrUpdateItem(item: DownloadItem) {
+    addOrUpdateItem(item: DownloadProgress) {
       const idx = this.items.findIndex(i => i.id === item.id)
       if (idx !== -1) {
         this.items[idx] = item

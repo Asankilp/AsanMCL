@@ -23,7 +23,7 @@ pub fn init_launcher_command() -> () {
 }
 
 #[tauri::command]
-pub async fn download_files(app: AppHandle, files: HashMap<String, String>) -> Result<(), String> {
+pub async fn download_files(app: AppHandle, files: HashMap<String, PathBuf>) -> Result<(), String> {
     use futures::future;
     let mut handles = Vec::new();
     for (url, save_path) in files {
@@ -38,18 +38,19 @@ pub async fn download_files(app: AppHandle, files: HashMap<String, String>) -> R
             async move {
                 let result = std::panic::AssertUnwindSafe(download_with_progress(
                     &url,
-                    &save_path,
+                    save_path,
                     {
                         let app = app.clone();
-                        move |id, percent| {
+                        move |id, percent, speed| {
                             if percent >= 0.0 {
                                 let mut map = DOWNLOAD_CANCEL_MAP.lock().unwrap();
                                 map.entry(id.clone()).or_insert_with(|| cancel_tx_clone.clone());
                             }
                             let payload = DownloadProgress {
                                 id: id.clone(),
-                                filename: save_path_clone.clone(),
+                                path: save_path_clone.clone(),
                                 progress: percent,
+                                speed: speed,
                             };
                             let _ = app.emit("download-progress", payload);
                         }

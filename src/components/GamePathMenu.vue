@@ -129,7 +129,7 @@ const onDelete = async (pathName: string) => {
     showError('至少需要保留一个游戏目录')
     return
   }
-  const confirmed = await ask(`确定要删除游戏目录 "${pathName}" 吗？`, { title: '删除确认' })
+  const confirmed = await ask(`确定要移除游戏目录 "${pathName}" 吗？此操作不会删除该目录下的文件。`, { title: '移除确认', kind: 'warning' })
   if (!confirmed) return
   delete config.gamePath[pathName]
   if (config.lastGamePath === pathName) {

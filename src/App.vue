@@ -115,8 +115,9 @@ provide('loadAvatar', loadAvatar)
 listen<DownloadProgress>('download-progress', (progress) => {
   downloadDialogStore.addOrUpdateItem({
     id: progress.payload.id,
-    filename: progress.payload.filename,
-    progress: progress.payload.progress
+    path: progress.payload.path,
+    progress: progress.payload.progress,
+    speed: progress.payload.speed
   })
 }
 )

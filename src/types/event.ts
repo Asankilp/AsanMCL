@@ -16,8 +16,9 @@ export type LoginEvent =
 
 export interface DownloadProgress {
   id: string;
-  filename: string;
+  path: string;
   progress: number;
+  speed: number;
 }
 
 export interface DownloadError {
