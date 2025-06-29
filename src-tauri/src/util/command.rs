@@ -1,16 +1,17 @@
-use std::{collections::HashMap, path::PathBuf};
+use futures::FutureExt;
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
+use std::{collections::HashMap, path::PathBuf};
 use tauri::{AppHandle, Emitter};
 use tokio::sync::watch;
-use futures::FutureExt;
 
-use crate::util::{game::init_game_path, init::init_launcher};
 use crate::util::downloader::download_with_progress;
 use crate::util::model::{DownloadError, DownloadProgress};
+use crate::util::{game::init_game_path, init::init_launcher};
 
 // 全局存储下载任务的取消句柄
-static DOWNLOAD_CANCEL_MAP: Lazy<Mutex<HashMap<String, watch::Sender<bool>>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+static DOWNLOAD_CANCEL_MAP: Lazy<Mutex<HashMap<String, watch::Sender<bool>>>> =
+    Lazy::new(|| Mutex::new(HashMap::new()));
 
 #[tauri::command]
 pub async fn init_game_path_command(path: PathBuf) -> Result<(), String> {
@@ -44,7 +45,8 @@ pub async fn download_files(app: AppHandle, files: HashMap<String, PathBuf>) -> 
                         move |id, percent, speed| {
                             if percent >= 0.0 {
                                 let mut map = DOWNLOAD_CANCEL_MAP.lock().unwrap();
-                                map.entry(id.clone()).or_insert_with(|| cancel_tx_clone.clone());
+                                map.entry(id.clone())
+                                    .or_insert_with(|| cancel_tx_clone.clone());
                             }
                             let payload = DownloadProgress {
                                 id: id.clone(),
@@ -64,20 +66,24 @@ pub async fn download_files(app: AppHandle, files: HashMap<String, PathBuf>) -> 
                         let mut map = DOWNLOAD_CANCEL_MAP.lock().unwrap();
                         map.remove(&id);
                         Ok::<(), Box<dyn std::error::Error + Send + Sync>>(())
-                    },
+                    }
                     Ok(Err(_e)) => {
                         let payload = DownloadError {
                             error: format!("{:?}", _e),
                         };
                         let _ = app_clone_for_error.emit("download-error", payload);
                         Err(_e)
-                    },
+                    }
                     Err(_e) => {
                         let payload = DownloadError {
                             error: format!("{:?}", _e),
                         };
                         let _ = app_clone_for_error.emit("download-error", payload);
-                        Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, format!("{:?}", _e))) as Box<dyn std::error::Error + Send + Sync>)
+                        Err(Box::new(std::io::Error::new(
+                            std::io::ErrorKind::Other,
+                            format!("{:?}", _e),
+                        ))
+                            as Box<dyn std::error::Error + Send + Sync>)
                     }
                 }
             }
@@ -87,9 +93,9 @@ pub async fn download_files(app: AppHandle, files: HashMap<String, PathBuf>) -> 
     let mut errors = Vec::new();
     for res in results {
         match res {
-            Ok(Ok(())) => {}, // 成功
+            Ok(Ok(())) => {}                          // 成功
             Ok(Err(e)) => errors.push(e.to_string()), // 任务返回错误
-            Err(e) => errors.push(e.to_string()), // 任务本身 panic 或 join 失败
+            Err(e) => errors.push(e.to_string()),     // 任务本身 panic 或 join 失败
         }
     }
     if errors.is_empty() {

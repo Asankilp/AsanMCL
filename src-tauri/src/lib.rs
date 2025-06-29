@@ -11,6 +11,7 @@ use game::command::*;
 use jre::command::*;
 use mojang::command::*;
 use util::command::*;
+use game::modloader::version::command::*;
 
 use crate::util::init::init_launcher;
 
@@ -48,6 +49,7 @@ pub fn run() {
             init_launcher_command,
             download_files,
             cancel_download,
+            get_fabric_loader_versions_by_game_version,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

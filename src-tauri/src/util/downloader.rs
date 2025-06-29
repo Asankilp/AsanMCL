@@ -30,11 +30,16 @@ where
     F: FnMut(String, f64, f64) + Send + 'static, // 新增速度参数
 {
     let id = Uuid::new_v4().to_string();
-    let client = match Client::builder().redirect(reqwest::redirect::Policy::limited(10)).build() {
+    let client = match Client::builder()
+        .redirect(reqwest::redirect::Policy::limited(10))
+        .build()
+    {
         Ok(c) => c,
         Err(e) => return Err(format!("HTTP客户端初始化失败: {}", e).into()),
     };
-    if let Err(_) = catch_unwind(AssertUnwindSafe(|| progress_callback(id.clone(), -1.0, 0.0))) {
+    if let Err(_) = catch_unwind(AssertUnwindSafe(|| {
+        progress_callback(id.clone(), -1.0, 0.0)
+    })) {
         return Err("进度回调发生 panic".into());
     }
     // 在发送 HTTP 请求前检查是否已取消
@@ -49,7 +54,13 @@ where
         return Err(format!("下载失败，状态码: {}", resp.status()).into());
     }
     let total_size = resp.content_length();
-    let mut file = match File::create(save_path) {
+    // 自动创建父目录
+    if let Some(parent) = save_path.parent() {
+        if let Err(e) = std::fs::create_dir_all(parent) {
+            return Err(format!("创建文件夹失败: {}", e).into());
+        }
+    }
+    let mut file = match File::create(&save_path) {
         Ok(f) => f,
         Err(e) => return Err(format!("文件创建失败: {}", e).into()),
     };
@@ -79,18 +90,30 @@ where
         if now.duration_since(last_speed_time) >= speed_interval {
             let bytes = downloaded - last_speed_downloaded;
             let secs = now.duration_since(last_speed_time).as_secs_f64();
-            let speed = if secs > 0.0 { bytes as f64 / secs / 1024.0 } else { 0.0 };
+            let speed = if secs > 0.0 {
+                bytes as f64 / secs / 1024.0
+            } else {
+                0.0
+            };
             // 平滑
-            avg_speed = if avg_speed == 0.0 { speed } else { avg_speed * 0.7 + speed * 0.3 };
+            avg_speed = if avg_speed == 0.0 {
+                speed
+            } else {
+                avg_speed * 0.7 + speed * 0.3
+            };
             last_speed_time = now;
             last_speed_downloaded = downloaded;
             last_reported_speed = avg_speed;
         }
         let cb_result = if let Some(size) = total_size {
             let percent = (downloaded as f64 / size as f64) * 100.0;
-            catch_unwind(AssertUnwindSafe(|| progress_callback(id.clone(), percent.min(100.0), last_reported_speed)))
+            catch_unwind(AssertUnwindSafe(|| {
+                progress_callback(id.clone(), percent.min(100.0), last_reported_speed)
+            }))
         } else {
-            catch_unwind(AssertUnwindSafe(|| progress_callback(id.clone(), -1.0, last_reported_speed)))
+            catch_unwind(AssertUnwindSafe(|| {
+                progress_callback(id.clone(), -1.0, last_reported_speed)
+            }))
         };
         if cb_result.is_err() {
             return Err("进度回调发生 panic".into());
@@ -99,10 +122,10 @@ where
     if let Err(e) = file.flush() {
         return Err(format!("文件刷新失败: {}", e).into());
     }
-    if let Err(_) = catch_unwind(AssertUnwindSafe(|| progress_callback(id.clone(), 100.0, 0.0))) {
+    if let Err(_) = catch_unwind(AssertUnwindSafe(|| {
+        progress_callback(id.clone(), 100.0, 0.0)
+    })) {
         return Err("进度回调发生 panic".into());
     }
     Ok(id)
 }
-
-
