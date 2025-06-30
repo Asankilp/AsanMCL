@@ -2,7 +2,7 @@
   <div class="home">
     <div class="content">
       <!-- 主要内容区域 -->
-      <h2>欢迎使用 Minecraft 启动器</h2>
+      <h2>{{ $t('home.welcome') }}</h2>
       <v-btn @click="testDownload">下载测试！！！！！！！！！！！</v-btn>
     </div>
   </div>

@@ -1,0 +1,55 @@
+{
+  "account": {
+    "my_accounts": "My Accounts",
+    "no_account": "No Account",
+    "add_account_hint": "Click the plus sign in the upper right corner to add an account",
+    "add_account": "Add Account",
+    "confirm_delete": "Confirm Delete",
+    "confirm_delete_hint": "Are you sure you want to delete this account? This action cannot be undone.",
+    "microsoft": "Microsoft Account",
+    "offline": "Offline Account",
+    "external": "External Account",
+    "account_existed": "This account is existed",
+    "account_delete_success": "Account delete successfully"
+  },
+  "home": {
+    "welcome": "Welcome",
+    "home": "Home"
+  },
+  "general": {
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "username": "Username",
+    "password": "Password"
+  },
+  "profile": {
+    "profiles": "Profiles",
+    "no_profile": "No Profile",
+    "add_profile_hint": "Please click the plus sign in the upper right corner to add"
+  },
+  "setting": {
+    "setting": "Settings",
+    "launcher_setting": "Launcher Settings",
+    "jre_list": "JRE List",
+    "general": "General",
+    "close_after_launch": "Close Launcher after game launches",
+    "download": "Download",
+    "download_source": "Download Source",
+    "color_theme": "Color Theme",
+    "proxy": "Proxy",
+    "enable_proxy": "Enable Proxy",
+    "proxy_host": "Proxy Host(e.g. http://127.0.0.1:1145)",
+    "enable_proxy_auth": "Enable Authentication",
+    "color_themes": {
+      "follow_system": "Follow System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "download_sources": {
+      "official": "Official",
+      "bmclapi": "BMCLAPI"
+    },
+    "select_jre_directory_title": "Select the JRE installation location that contains the bin directory"
+  }
+}

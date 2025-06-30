@@ -1,11 +1,11 @@
 <template>
   <v-container>
-    <h1 class="text-h4 mb-4">设置</h1>
+    <h1 class="text-h4 mb-4">{{ $t('setting.setting') }}</h1>
 
     <v-card>
       <v-tabs v-model="activeTab" color="primary" align-tabs="start">
-        <v-tab value="launcher">启动器设置</v-tab>
-        <v-tab value="jre">JRE 列表</v-tab>
+        <v-tab value="launcher">{{ $t('setting.launcher_setting') }}</v-tab>
+        <v-tab value="jre">{{ $t('setting.jre_list') }}</v-tab>
       </v-tabs>
 
       <v-card-text>
@@ -13,17 +13,17 @@
           <!-- 启动器设置 -->
           <v-window-item value="launcher">
             <v-form class="mt-4">
-              <h3 class="text-h6 mb-2">基本</h3>
-              <v-switch v-model="closeAfterLaunch" label="启动游戏后关闭启动器" color="primary" inset class="mt-4"></v-switch>
+              <h3 class="text-h6 mb-2">{{ $t('setting.general') }}</h3>
+              <v-switch v-model="closeAfterLaunch" :label="$t('setting.close_after_launch')" color="primary" inset class="mt-4"></v-switch>
 
               <v-divider class="my-4"></v-divider>
 
-              <h3 class="text-h6 mb-2">下载</h3>
-              <v-select v-model="downloadSource" :items="downloadSourceOptions" label="下载源" class="mb-4"
+              <h3 class="text-h6 mb-2">{{ $t('setting.download') }}</h3>
+              <v-select v-model="downloadSource" :items="downloadSourceOptions" :label="$t('setting.download_source')" class="mb-4"
                 item-title="label" item-value="value" />
 
               <v-divider class="my-4"></v-divider>
-              <h3 class="text-h6 mb-2">颜色主题</h3>
+              <h3 class="text-h6 mb-2">{{ $t('setting.color_theme') }}</h3>
               <v-btn-group rounded="pill" class="mt-2">
                 <v-btn v-for="option in themeOptions" :key="option.value" :prepend-icon="option.icon"
                   :color="colorTheme === option.value ? 'primary' : undefined"
@@ -34,12 +34,12 @@
 
               <v-divider class="my-4"></v-divider>
 
-              <h3 class="text-h6 mb-2">代理服务器</h3>
-              <v-switch v-model="proxyEnabled" label="启用代理服务器" color="primary" inset class="mt-2" />
-              <v-text-field v-model="proxyHost" label="代理服务器地址（如 http://127.0.0.1:7890）" :disabled="!proxyEnabled" class="mb-2" />
-              <v-switch v-model="proxyAuthEnabled" label="启用身份验证" color="primary" inset class="mt-2" :disabled="!proxyEnabled" />
-              <v-text-field v-model="proxyUsername" label="用户名" :disabled="!proxyEnabled || !proxyAuthEnabled" class="mb-2" />
-              <v-text-field v-model="proxyPassword" label="密码" :type="showProxyPassword ? 'text' : 'password'" :append-icon="showProxyPassword ? 'mdi-eye-off' : 'mdi-eye'" @click:append="showProxyPassword = !showProxyPassword" :disabled="!proxyEnabled || !proxyAuthEnabled" class="mb-2" />
+              <h3 class="text-h6 mb-2">{{ $t('setting.proxy') }}</h3>
+              <v-switch v-model="proxyEnabled" :label="$t('setting.enable_proxy')" color="primary" inset class="mt-2" />
+              <v-text-field v-model="proxyHost" :label="$t('setting.proxy_host')" :disabled="!proxyEnabled" class="mb-2" />
+              <v-switch v-model="proxyAuthEnabled" :label="$t('setting.enable_proxy_auth')" color="primary" inset class="mt-2" :disabled="!proxyEnabled" />
+              <v-text-field v-model="proxyUsername" :label="$t('general.username')" :disabled="!proxyEnabled || !proxyAuthEnabled" class="mb-2" />
+              <v-text-field v-model="proxyPassword" :label="$t('general.password')" :type="showProxyPassword ? 'text' : 'password'" :append-icon="showProxyPassword ? 'mdi-eye-off' : 'mdi-eye'" @click:append="showProxyPassword = !showProxyPassword" :disabled="!proxyEnabled || !proxyAuthEnabled" class="mb-2" />
             </v-form>
           </v-window-item>
 
@@ -129,15 +129,16 @@ import { ColorTheme, DownloadSource, type LauncherConfig } from '../types/config
 import { useAppTheme } from '../composables/useTheme'
 import { useSnackbar } from '../composables/useSnackbar'
 import { useLauncherConfigStore } from '../composables/useConfig'
+import { useI18n } from 'vue-i18n'
 
 // 当前激活的选项卡
 const activeTab = ref('launcher')
-
+const { t } = useI18n()
 // 主题选项
 const themeOptions = [
-  { text: '跟随系统', value: ColorTheme.FollowSystem, icon: 'mdi-theme-light-dark' },
-  { text: '浅色', value: ColorTheme.Light, icon: 'mdi-white-balance-sunny' },
-  { text: '深色', value: ColorTheme.Dark, icon: 'mdi-weather-night' }
+  { text: t('setting.color_themes.follow_system'), value: ColorTheme.FollowSystem, icon: 'mdi-theme-light-dark' },
+  { text: t('setting.color_themes.light'), value: ColorTheme.Light, icon: 'mdi-white-balance-sunny' },
+  { text: t('setting.color_themes.dark'), value: ColorTheme.Dark, icon: 'mdi-weather-night' }
 ]
 
 // JRE 列表
@@ -154,8 +155,8 @@ const { showError } = useSnackbar()
 
 // 下载源选项
 const downloadSourceOptions = [
-  { label: '官方源', value: DownloadSource.Official },
-  { label: 'BMCLAPI', value: DownloadSource.BmclApi },
+  { label: t('setting.download_sources.official'), value: DownloadSource.Official },
+  { label: t('setting.download_sources.bmclapi'), value: DownloadSource.BmclApi },
 ]
 const downloadSource = ref(DownloadSource.Official)
 
@@ -244,7 +245,7 @@ watch(activeTab, (newValue) => {
 // 添加 JRE
 const addJre = async () => {
   const jre_directory = await open({
-    title: '选择包含 bin 目录的 JRE 安装位置',
+    title: t('setting.select_jre_directory_title'),
     directory: true,
   })
   console.log('Selected JRE dir:', jre_directory)

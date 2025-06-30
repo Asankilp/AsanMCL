@@ -2,7 +2,7 @@
     <v-container class="pa-0 fill-height" fluid>
         <!-- 顶部工具栏 -->
         <v-app-bar flat>
-            <v-toolbar-title class="text-h6">游戏配置管理</v-toolbar-title>
+            <v-toolbar-title class="text-h6">{{ $t('profile.profiles') }}</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn icon color="grey lighten-1" @click=openDialog>
                 <v-icon>mdi-plus</v-icon>
@@ -40,8 +40,8 @@
                     </template>
                 </v-list-item>
                 <v-list-item v-if="profiles.length === 0" class="text-center">
-                    <v-list-item-title>暂无游戏配置</v-list-item-title>
-                    <v-list-item-subtitle>请点击右上角“新建配置”添加</v-list-item-subtitle>
+                    <v-list-item-title>{{ $t('profile.no_profile') }}</v-list-item-title>
+                    <v-list-item-subtitle>{{ $t('profile.add_profile_hint') }}</v-list-item-subtitle>
                 </v-list-item>
             </v-list>
         </v-main>
@@ -57,8 +57,8 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer />
-                    <v-btn text @click="closeDialog">取消</v-btn>
-                    <v-btn color="primary" @click="saveProfile">保存</v-btn>
+                    <v-btn text @click="closeDialog">{{ $t('general.cancel') }}</v-btn>
+                    <v-btn color="primary" @click="saveProfile">{{ $t('general.save') }}</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

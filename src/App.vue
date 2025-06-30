@@ -34,8 +34,7 @@
     <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" location="top" :color="snackbarType">
       {{ snackbarMessage }}
       <template v-slot:actions>
-        <v-btn variant="text" @click="snackbar = false">
-          关闭
+        <v-btn variant="text" @click="snackbar = false" icon="mdi-close">
         </v-btn>
       </template>
     </v-snackbar>
@@ -54,12 +53,13 @@ import DownloadDialog from './components/DownloadDialog.vue'
 import { listen } from '@tauri-apps/api/event'
 import { DownloadError, DownloadProgress } from './types/event'
 import { useDownloadDialogStore } from './store/downloadDialog'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const drawer = ref(true)
 const isRail = ref(true)
 const showWelcome = ref(false)
-
+const { t } = useI18n()
 const currentUser = ref({
   name: 'Player',
   avatar: 'https://crafatar.com/avatars/steve'
@@ -67,7 +67,7 @@ const currentUser = ref({
 
 const menuItems = [
   {
-    title: '主页',
+    title: t('home.home'),
     icon: 'mdi-home',
     to: '/'
   },

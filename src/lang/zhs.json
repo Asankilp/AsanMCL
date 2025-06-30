@@ -1,0 +1,55 @@
+{
+  "home": {
+    "welcome": "欢迎使用 Minecraft 启动器",
+    "home": "主页"
+  },
+  "account": {
+    "add_account": "添加账户",
+    "my_accounts": "我的账户",
+    "no_account": "暂无账户",
+    "add_account_hint": "点击右上角的加号添加账户",
+    "confirm_delete_hint": "确定要删除此账户吗？此操作无法撤销。",
+    "confirm_delete": "确认删除",
+    "microsoft": "Microsoft 账户",
+    "offline": "离线账户",
+    "external": "外置账户",
+    "account_existed": "该账户已存在",
+    "account_delete_success": "账户删除成功"
+  },
+  "general": {
+    "delete": "删除",
+    "cancel": "取消",
+    "save": "保存",
+    "username": "用户名",
+    "password": "密码"
+  },
+  "profile": {
+    "profiles": "游戏配置",
+    "no_profile": "暂无配置",
+    "add_profile_hint": "请点击右上角加号添加"
+  },
+  "setting": {
+    "setting": "设置",
+    "launcher_setting": "启动器设置",
+    "jre_list": "JRE 列表",
+    "general": "基本",
+    "close_after_launch": "启动游戏后关闭启动器",
+    "download": "下载",
+    "download_source": "下载源",
+    "color_theme": "颜色主题",
+    "proxy": "代理",
+    "enable_proxy": "启用代理",
+    "proxy_host": "代理服务器地址（如 http://127.0.0.1:1145）",
+    "enable_proxy_auth": "启用身份验证",
+    "color_themes": {
+      "follow_system": "跟随系统",
+      "light": "浅色",
+      "dark": "深色"
+    },
+    "download_sources": {
+      "official": "官方源",
+      "bmclapi": "BMCLAPI"
+    },
+    "select_jre_directory_title": "选择包含 bin 目录的 JRE 安装位置"
+  }
+}

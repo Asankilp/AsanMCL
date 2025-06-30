@@ -2,7 +2,7 @@
   <v-container class="pa-0 fill-height" fluid>
     <!-- 顶部工具栏 -->
     <v-app-bar flat>
-      <v-toolbar-title class="text-h6">我的账户</v-toolbar-title>
+      <v-toolbar-title class="text-h6">{{ $t('account.my_accounts') }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn
         icon
@@ -56,8 +56,8 @@
         </v-list-item>
 
         <v-list-item v-if="accounts.length === 0" class="text-center">
-          <v-list-item-title>暂无账户</v-list-item-title>
-          <v-list-item-subtitle>点击右上角的加号添加账户</v-list-item-subtitle>
+          <v-list-item-title>{{ $t('account.no_account') }}</v-list-item-title>
+          <v-list-item-subtitle>{{ $t('account.add_account_hint') }}</v-list-item-subtitle>
         </v-list-item>
       </v-list>
     </v-main>
@@ -65,7 +65,7 @@
     <!-- 账户表单对话框 -->
     <account-dialog
       v-model="accountDialogVisible"
-      title="添加账户"
+      :title="$t('account.add_account')"
       :loading="loading"
       @cancel="handleCancel"
       @submit="handleSubmit"
@@ -74,9 +74,9 @@
     <!-- 确认删除对话框 -->
     <confirm-dialog
       v-model="deleteDialogVisible"
-      title="确认删除"
-      message="确定要删除此账户吗？此操作无法撤销。"
-      confirm-text="删除"
+      :title="$t('account.confirm_delete')"
+      :message="$t('account.confirm_delete_hint')"
+      :confirm-text="$t('general.delete')"
       confirm-button-color="error"
       :loading="loading"
       @confirm="confirmDelete"
@@ -92,6 +92,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, inject } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AccountDialog from '../components/AccountDialog.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import AccountInfoDialog from '../components/AccountInfoDialog.vue'
@@ -124,16 +125,18 @@ const accountInfo = ref({
 })
 
 const loadAvatar = inject('loadAvatar') as () => Promise<void>
+const { t } = useI18n()
 
 // 获取账户类型的显示文本
 const getAccountTypeText = (type: AccountType): string => {
   const typeMap = {
-    [AccountType.Microsoft]: 'Microsoft 账户',
-    [AccountType.Offline]: '离线账户',
-    [AccountType.External]: '外置登录'
+    [AccountType.Microsoft]: t('account.microsoft'),
+    [AccountType.Offline]: t('account.offline'),
+    [AccountType.External]: t('account.external')
   }
   return typeMap[type]
 }
+
 
 // 获取头像URL
 const getAvatarUrl = (uuid: string): string => {
@@ -143,8 +146,8 @@ const getAvatarUrl = (uuid: string): string => {
 const handleSubmit = (account: AccountInfo) => {
   // 检查是否已存在相同UUID的账户
   if (accounts.value.some(a => convertToCompactUUID(a.uuid) === convertToCompactUUID(account.uuid))) {
-    showError('该账户已存在')
-    throw new Error('该账户已存在')
+    showError(t('account.account_existed'))
+    throw new Error(t('account.account_existed'))
   } else {
     accounts.value.push(account)
     accountConfigStore.config.accounts = accounts.value
@@ -179,7 +182,7 @@ const confirmDelete = async () => {
       accounts.value.splice(index, 1)
       accountConfigStore.config.accounts = accounts.value
       await writeAccountConfig()
-      showSuccess('账户删除成功')
+      showSuccess(t('account.account_delete_success'))
     }
     deleteDialogVisible.value = false
     // 如果删除的是当前选中账户，自动选择第一个
