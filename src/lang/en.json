@@ -24,7 +24,12 @@
     "password": "Password",
     "confirm": "Confirm",
     "name_existed": "This name is existed",
-    "confirm_remove": "Confirm Remove"
+    "confirm_remove": "Confirm Remove",
+    "back": "Back",
+    "close": "Close",
+    "next_step": "Next",
+    "load_failed": "Load Failed",
+    "search": "Search"
   },
   "profile": {
     "profiles": "Profiles",
@@ -65,6 +70,21 @@
       "select_game_dir": "Select Game Directory",
       "at_least_one_directory": "At least one game directory must be kept",
       "confirm_remove_game_dir_hint": "Are you sure you want to remove the game directory \"{path}\"? This operation will not delete the files in the directory."
+    },
+    "version": {
+      "add_version": "Add Version",
+      "type": {
+        "release": "Release",
+        "old_beta": "Old Beta",
+        "old_alpha": "Old Alpha",
+        "snapshot": "Snapshot"
+      },
+      "search_version": "Search version",
+      "version_name": "Version Name",
+      "enter_version_name_hint": "Please enter the version name",
+      "version_existed": "This version name is existed",
+      "select_specific_mod_loader_version": "Select version of {modLoader}",
+      "select_all_checked_mod_loaders_version": "Please select all checked mod loader versions"
     }
   }
 }

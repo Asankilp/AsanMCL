@@ -2,22 +2,22 @@
     <v-dialog v-model="dialogVisible" max-width="800">
         <v-card>
             <v-card-title>
-                添加版本
+                {{ $t('game.version.add_version') }}
             </v-card-title>
             <v-card-text style="max-height: 800px; overflow-y: auto;">
                 <v-row align="center" class="mb-2" no-gutters>
                     <v-row align="center" no-gutters style="flex:0 0 auto; width:auto;">
-                        <v-checkbox v-model="selectedTypes" label="正式版" :value="VersionType.Release" density="compact"
+                        <v-checkbox v-model="selectedTypes" :label="$t('game.version.type.release')" :value="VersionType.Release" density="compact"
                             hide-details class="mr-2" />
-                        <v-checkbox v-model="selectedTypes" label="快照版" :value="VersionType.Snapshot" density="compact"
+                        <v-checkbox v-model="selectedTypes" :label="$t('game.version.type.snapshot')" :value="VersionType.Snapshot" density="compact"
                             hide-details class="mr-2" />
-                        <v-checkbox v-model="selectedTypes" label="旧Beta版" :value="VersionType.OldBeta"
+                        <v-checkbox v-model="selectedTypes" :label="$t('game.version.type.old_beta')" :value="VersionType.OldBeta"
                             density="compact" hide-details class="mr-2" />
-                        <v-checkbox v-model="selectedTypes" label="旧Alpha版" :value="VersionType.OldAlpha"
+                        <v-checkbox v-model="selectedTypes" :label="$t('game.version.type.old_alpha')" :value="VersionType.OldAlpha"
                             density="compact" hide-details />
                     </v-row>
                     <v-spacer />
-                    <v-text-field v-model="searchText" label="搜索版本号" prepend-inner-icon="mdi-magnify" clearable
+                    <v-text-field v-model="searchText" :label="$t('general.search')" prepend-inner-icon="mdi-magnify" clearable
                         density="compact" style="max-width:500px;" />
                 </v-row>
                 <v-row justify="center" v-if="loading">
@@ -48,8 +48,8 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer />
-                <v-btn text @click="dialogVisible = false; $emit('close')">关闭</v-btn>
-                <v-btn color="primary" :disabled="!selectedVersionId" @click="showStep2 = true">下一步</v-btn>
+                <v-btn text @click="dialogVisible = false; $emit('close')">{{ $t('general.close') }}</v-btn>
+                <v-btn color="primary" :disabled="!selectedVersionId" @click="showStep2 = true">{{ $t('general.next_step') }}</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -57,10 +57,10 @@
     <!-- 第二步对话框：选择模组加载器 -->
     <v-dialog v-model="showStep2" max-width="400">
         <v-card>
-            <v-card-title>添加版本</v-card-title>
+            <v-card-title>{{ $t('game.version.add_version') }}</v-card-title>
             <v-card-text>
                 <v-row dense class="flex-column">
-                    <v-text-field v-model="versionName" label="版本名称" :rules="versionNameRules" ref="versionNameField" />
+                    <v-text-field v-model="versionName" :label="$t('game.version.version_name')" :rules="versionNameRules" ref="versionNameField" />
                     <!-- Minecraft 卡片 -->
                     <v-col cols="12">
                         <v-card>
@@ -100,8 +100,8 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer />
-                <v-btn text @click="showStep2 = false">返回</v-btn>
-                <v-btn color="primary" @click="confirmModLoaders" :disabled="!versionNameRules.every(rule => rule(versionName) === true)">确定</v-btn>
+                <v-btn text @click="showStep2 = false">{{ $t('general.back') }}</v-btn>
+                <v-btn color="primary" @click="confirmModLoaders" :disabled="!versionNameRules.every(rule => rule(versionName) === true)">{{ $t('general.confirm') }}</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -129,8 +129,8 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer />
-                <v-btn text @click="showModLoaderVersionDialog = false">取消</v-btn>
-                <v-btn color="primary" :disabled="!modLoaderVersionSelected" @click="selectModLoaderVersion">确定</v-btn>
+                <v-btn text @click="showModLoaderVersionDialog = false">{{ $t('general.cancel') }}</v-btn>
+                <v-btn color="primary" :disabled="!modLoaderVersionSelected" @click="selectModLoaderVersion">{{ $t('general.confirm') }}</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -146,9 +146,11 @@ import { getMajorUpdateThemeById } from '../utils/version'
 import { ProfileIcon } from '../types/profile'
 import { useSnackbar } from '../composables/useSnackbar'
 import { useLauncherConfigStore } from '../composables/useConfig'
+import { useI18n } from 'vue-i18n'
 
 const launcherConfigStore = useLauncherConfigStore()
 const { showError } = useSnackbar()
+const { t } = useI18n()
 const props = defineProps({
     modelValue: Boolean,
     launcherConfig: {
@@ -175,6 +177,7 @@ const searchText = ref('')
 const selectedTypes = ref([VersionType.Release])
 const versionThemes = ref<Record<string, string>>({})
 
+
 watch(() => props.modelValue, async (val) => {
     if (val) {
         loading.value = true
@@ -182,7 +185,7 @@ watch(() => props.modelValue, async (val) => {
         try {
             remoteVersions.value = await invoke<VersionManifest>('get_version_manifest', { downloadSource: props.launcherConfig.downloadSource })
         } catch (e: any) {
-            errorMsg.value = e?.message || String(e) || '加载失败'
+            errorMsg.value = e?.message || String(e) || t('general.load_failed')
         } finally {
             loading.value = false
         }
@@ -231,8 +234,8 @@ const versionName = ref<string>('')
 const versionNameField = ref()
 
 const versionNameRules = [
-  (v: string) => !!v || '请输入版本名称',
-  (v: string) => !existedLocalVersions.value.some(ver => ver.name === v) || '该版本已存在，请换个名称'
+  (v: string) => !!v || t('game.version.enter_version_name_hint'),
+  (v: string) => !existedLocalVersions.value.some(ver => ver.name === v) || t('game.version.version_existed')
 ]
 
 async function fetchModLoaderVersions(modLoader: string, versionId: string | null) {
@@ -277,7 +280,7 @@ watch(showStep2, (val) => {
 
 async function openModLoaderVersion(modLoader: string) {
     currentModLoader = modLoader
-    modLoaderVersionTitle.value = `选择 ${modLoader.charAt(0).toUpperCase() + modLoader.slice(1)} 版本`
+    modLoaderVersionTitle.value = t('game.version.select_specific_mod_loader_version', { modLoader: modLoader.charAt(0).toUpperCase() + modLoader.slice(1) })
     modLoaderVersionSelected.value = modLoaderVersions.value[modLoader] || null
     modLoaderVersionLoading.value = modLoaderLoading.value[modLoader]
     if (!modLoaderVersionListMap.value[modLoader] || modLoaderVersionListMap.value[modLoader].length === 0) {
@@ -300,7 +303,7 @@ function confirmModLoaders() {
     console.log(selectedModLoaders.value)
     console.log(modLoaderVersions.value)
     if (selectedModLoaders.value.length != Object.keys(modLoaderVersions.value).length + 1) {
-        showError('请选择所有已勾选的模组加载器的版本')
+        showError(t('game.version.select_all_checked_mod_loaders_version'))
         return
     }
     showStep2.value = false

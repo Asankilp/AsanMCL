@@ -1,0 +1,90 @@
+{
+  "home": {
+    "welcome": "Minecraftランチャーへようこそ",
+    "home": "ホーム"
+  },
+  "account": {
+    "add_account": "アカウントを追加",
+    "my_accounts": "マイアカウント",
+    "no_account": "アカウントはありません",
+    "add_account_hint": "右上のプラスアイコンをクリックしてアカウントを追加してください",
+    "confirm_delete_hint": "このアカウントを削除してもよろしいですか？この操作は元に戻せません。",
+    "confirm_delete": "削除を確認",
+    "microsoft": "Microsoft アカウント",
+    "offline": "オフラインアカウント",
+    "external": "外部アカウント",
+    "account_existed": "このアカウントはすでに存在します",
+    "account_delete_success": "アカウントの削除に成功しました"
+  },
+  "general": {
+    "delete": "削除",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "confirm": "確認",
+    "name_existed": "この名前はすでに存在します",
+    "confirm_remove": "取り除くを確認",
+    "back": "戻る",
+    "close": "閉じる",
+    "next_step": "次へ",
+    "load_failed": "読み込みに失敗しました",
+    "search": "検索"
+  },
+  "profile": {
+    "profiles": "ゲームプロフィール",
+    "no_profile": "プロフィールがありません",
+    "add_profile_hint": "右上のプラスアイコンをクリックして追加してください"
+  },
+  "setting": {
+    "setting": "設定",
+    "launcher_setting": "ランチャー設定",
+    "jre_list": "JREリスト",
+    "general": "一般",
+    "close_after_launch": "ゲーム起動後にランチャーを閉じる",
+    "download": "ダウンロード",
+    "download_source": "ダウンロードソース",
+    "color_theme": "カラーテーマ",
+    "proxy": "プロキシ",
+    "enable_proxy": "プロキシを有効にする",
+    "proxy_host": "プロキシサーバーのアドレス（例: http://127.0.0.1:1145）",
+    "enable_proxy_auth": "認証を有効にする",
+    "color_themes": {
+      "follow_system": "システムに従う",
+      "light": "ライト",
+      "dark": "ダーク"
+    },
+    "download_sources": {
+      "official": "公式ソース",
+      "bmclapi": "BMCLAPI"
+    },
+    "select_jre_directory_title": "binディレクトリを含むJREインストール先を選択"
+  },
+  "game": {
+    "dir": {
+      "add_game_dir": "ゲームディレクトリを追加",
+      "current_dir": "現在のディレクトリ",
+      "official_launcher_dir": "公式ランチャーディレクトリ",
+      "enter_dir_name": "このディレクトリの名前を入力してください",
+      "dir_name": "ディレクトリ名",
+      "select_game_dir": "ゲームディレクトリを選択",
+      "at_least_one_directory": "少なくとも1つのゲームディレクトリを保持してください",
+      "confirm_remove_game_dir_hint": "ゲームディレクトリ \"{path}\" を取り除くしてもよろしいですか？この操作はディレクトリ内のファイルを削除しません。"
+    },
+    "version": {
+      "add_version": "バージョンを追加",
+      "type": {
+        "release": "正式版",
+        "snapshot": "スナップショット版",
+        "old_beta": "旧ベータ版",
+        "old_alpha": "旧アルファ版"
+      },
+      "search_version": "バージョン番号を検索",
+      "version_name": "バージョン名",
+      "enter_version_name_hint": "バージョン名を入力してください",
+      "version_existed": "このバージョン名はすでに存在します",
+      "select_specific_mod_loader_version": "{modLoader} のバージョンを選択",
+      "select_all_checked_mod_loaders_version": "すべて選択されたModLoaderのバージョンを選択してください"
+    }
+  }
+}

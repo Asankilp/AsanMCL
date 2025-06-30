@@ -24,7 +24,12 @@
     "password": "密码",
     "confirm": "确认",
     "name_existed": "该名称已存在",
-    "confirm_remove": "确认移除"
+    "confirm_remove": "确认移除",
+    "back": "返回",
+    "close": "关闭",
+    "next_step": "下一步",
+    "load_failed": "加载失败",
+    "search": "搜索"
   },
   "profile": {
     "profiles": "游戏配置",
@@ -65,6 +70,21 @@
       "select_game_dir": "选择游戏目录",
       "at_least_one_directory": "至少要保留一个游戏目录",
       "confirm_remove_game_dir_hint": "确定要移除游戏目录 \"{path}\" 吗？此操作不会删除该目录下的文件。"
+    },
+    "version": {
+      "add_version": "添加版本",
+      "type": {
+        "release": "正式版",
+        "snapshot": "快照版",
+        "old_beta": "旧Beta版",
+        "old_alpha": "旧Alpha版"
+      },
+      "search_version": "搜索版本号",
+      "version_name": "版本名称",
+      "enter_version_name_hint": "请输入版本名称",
+      "version_existed": "该版本名称已存在",
+      "select_specific_mod_loader_version": "选择 {modLoader} 版本",
+      "select_all_checked_mod_loaders_version": "请选择所有已勾选的模组加载器的版本"
     }
   }
 }

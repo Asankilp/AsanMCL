@@ -11,8 +11,9 @@ import 'vuetify/styles';
 import '@mdi/font/css/materialdesignicons.css';
 import { createPinia } from "pinia";
 import { useAccountConfigStore, useLauncherConfigStore } from "./composables/useConfig";
-import zhs from './lang/zhs.json'
+import zhHans from './lang/zh-hans.json'
 import en from './lang/en.json'
+import ja from './lang/ja.json'
 import { createI18n } from 'vue-i18n'
 const vuetify = createVuetify({
   components,
@@ -67,15 +68,16 @@ const vuetify = createVuetify({
 // handleThemeChange(mediaQuery);
 // mediaQuery.addEventListener('change', handleThemeChange);
 
-type MessageSchema = typeof zhs
+type MessageSchema = typeof zhHans
 
 const app = createApp(App);
 const pinia = createPinia();
-const i18n = createI18n<[MessageSchema], 'zhs' | 'en'>({
-  locale: 'en',
+export const i18n = createI18n<[MessageSchema], 'zh-hans' | 'en' | 'ja'>({
+  locale: 'zh-hans',
   messages: {
-    'zhs': zhs,
-    'en': en
+    'zh-hans': zhHans,
+    'en': en,
+    'ja': ja
   }
 })
 
