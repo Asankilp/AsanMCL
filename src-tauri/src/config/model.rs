@@ -78,7 +78,7 @@ fn default_false() -> bool {
 }
 
 fn default_last_game_path() -> String {
-    "当前目录".to_string()
+    "game.dir.current_dir".to_string()
 }
 
 fn default_download_source() -> DownloadSource {

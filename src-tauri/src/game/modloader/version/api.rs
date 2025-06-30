@@ -1,5 +1,7 @@
 use crate::config::model::DownloadSource;
-use crate::game::modloader::version::models::fabric::{FabricLoaderVersionJson, FabricSupportedGameVersion};
+use crate::game::modloader::version::models::fabric::{
+    FabricLoaderVersionJson, FabricSupportedGameVersion,
+};
 use crate::util::reqwest_client::REQWEST_CLIENT;
 
 // #[derive(serde::Deserialize)]
@@ -29,7 +31,10 @@ pub async fn get_fabric_supported_game_versions(
     Ok(versions)
 }
 
-pub async fn get_fabric_loader_versions_by_game_version(game_version: String, download_source: DownloadSource) -> Result<Vec<String>, String> {
+pub async fn get_fabric_loader_versions_by_game_version(
+    game_version: String,
+    download_source: DownloadSource,
+) -> Result<Vec<String>, String> {
     // 先判断是否支持该游戏版本
     let supported_versions = get_fabric_supported_game_versions(download_source.clone()).await?;
     let is_supported = supported_versions.iter().any(|v| v.version == game_version);
@@ -37,8 +42,14 @@ pub async fn get_fabric_loader_versions_by_game_version(game_version: String, do
         return Err("不支持该游戏版本".to_string());
     }
     let url = match download_source {
-        DownloadSource::Official => format!("https://meta.fabricmc.net/v1/versions/loader/{}", game_version),
-        DownloadSource::BmclApi => format!("https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/loader/{}", game_version), // BMCLAPI 不支持 v1 格式
+        DownloadSource::Official => format!(
+            "https://meta.fabricmc.net/v1/versions/loader/{}",
+            game_version
+        ),
+        DownloadSource::BmclApi => format!(
+            "https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/loader/{}",
+            game_version
+        ), // BMCLAPI 不支持 v1 格式
     };
     let client = {
         let guard = REQWEST_CLIENT.lock().await;
@@ -48,7 +59,8 @@ pub async fn get_fabric_loader_versions_by_game_version(game_version: String, do
         }
     };
     let response = client.get(&url).send().await.map_err(|e| e.to_string())?;
-    let versions: Vec<FabricLoaderVersionJson> = response.json().await.map_err(|e| e.to_string())?;
+    let versions: Vec<FabricLoaderVersionJson> =
+        response.json().await.map_err(|e| e.to_string())?;
     let versions_list = versions
         .into_iter()
         .map(|v| v.loader.version)

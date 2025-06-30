@@ -1,3 +1,4 @@
+use crate::util::reqwest_client::REQWEST_CLIENT;
 use std::fs::File;
 use std::io::Write;
 use std::panic::{catch_unwind, AssertUnwindSafe};
@@ -5,7 +6,6 @@ use std::path::PathBuf;
 use std::time::Instant;
 use tokio::sync::watch;
 use uuid::Uuid;
-use crate::util::reqwest_client::REQWEST_CLIENT;
 /// 下载文件并实时返回进度（百分比），支持 302 跳转，可取消。
 ///
 /// # 参数

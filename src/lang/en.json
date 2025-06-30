@@ -21,7 +21,10 @@
     "cancel": "Cancel",
     "save": "Save",
     "username": "Username",
-    "password": "Password"
+    "password": "Password",
+    "confirm": "Confirm",
+    "name_existed": "This name is existed",
+    "confirm_remove": "Confirm Remove"
   },
   "profile": {
     "profiles": "Profiles",
@@ -51,5 +54,17 @@
       "bmclapi": "BMCLAPI"
     },
     "select_jre_directory_title": "Select the JRE installation location that contains the bin directory"
+  },
+  "game": {
+    "dir": {
+      "add_game_dir": "Add Game Directory",
+      "current_dir": "Current Directory",
+      "official_launcher_dir": "Official Launcher Directory",
+      "enter_dir_name": "Please enter the name for this directory",
+      "dir_name": "Directory Name",
+      "select_game_dir": "Select Game Directory",
+      "at_least_one_directory": "At least one game directory must be kept",
+      "confirm_remove_game_dir_hint": "Are you sure you want to remove the game directory \"{path}\"? This operation will not delete the files in the directory."
+    }
   }
 }

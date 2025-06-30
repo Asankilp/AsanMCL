@@ -1,5 +1,5 @@
-use crate::{config::model::DownloadSource, game::version::model::VersionManifest};
 use crate::util::reqwest_client::REQWEST_CLIENT;
+use crate::{config::model::DownloadSource, game::version::model::VersionManifest};
 
 use super::model::{
     CapeData, GameOwnershipResponse, MinecraftProfile, PlayerUuidResponse, SkinData,

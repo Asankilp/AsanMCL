@@ -33,7 +33,6 @@ pub struct FabricLibraryInfo {
     pub size: Option<u64>,
 }
 
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct FabricMainClasses {
     pub client: String,
@@ -72,8 +71,9 @@ mod tests {
     fn test_parse_fabric_loader_versions() {
         let url = "https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/loader/1.20";
         let response = reqwest::blocking::get(url).unwrap();
-        let result: Vec<FabricLoaderVersionJson> =
-            response.json().expect("Failed to parse Fabric loader versions");
-        println!("{:#?}", result);  
+        let result: Vec<FabricLoaderVersionJson> = response
+            .json()
+            .expect("Failed to parse Fabric loader versions");
+        println!("{:#?}", result);
     }
 }

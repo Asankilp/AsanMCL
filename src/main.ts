@@ -72,7 +72,7 @@ type MessageSchema = typeof zhs
 const app = createApp(App);
 const pinia = createPinia();
 const i18n = createI18n<[MessageSchema], 'zhs' | 'en'>({
-  locale: 'zhs',
+  locale: 'en',
   messages: {
     'zhs': zhs,
     'en': en

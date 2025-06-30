@@ -8,10 +8,10 @@ mod util;
 use auth::command::*;
 use config::command::*;
 use game::command::*;
+use game::modloader::version::command::*;
 use jre::command::*;
 use mojang::command::*;
 use util::command::*;
-use game::modloader::version::command::*;
 
 use crate::util::init::init_launcher;
 
@@ -50,7 +50,6 @@ pub fn run() {
             download_files,
             cancel_download,
             get_fabric_loader_versions_by_game_version,
-            create_reqwest_client,
             update_reqwest_client,
         ])
         .run(tauri::generate_context!())

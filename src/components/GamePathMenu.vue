@@ -10,7 +10,7 @@
         v-for="(path, pathName) in config.gamePath"
         :key="pathName"
         @click="onSwitch(path, pathName)"
-        :title="pathName"
+        :title="$t(pathName)"
         :subtitle="path"
       >
         <template v-slot:prepend>
@@ -36,21 +36,21 @@
         <template v-slot:prepend>
           <v-icon>mdi-folder-plus</v-icon>
         </template>
-        <v-list-item-title>添加游戏目录</v-list-item-title>
+        <v-list-item-title>{{ $t('game.dir.add_game_dir') }}</v-list-item-title>
       </v-list-item>
     </v-list>
   </v-menu>
   <!-- 添加目录名称对话框 -->
   <v-dialog v-model="showNameDialog" persistent max-width="400">
     <v-card>
-      <v-card-title>请输入该目录的名称</v-card-title>
+      <v-card-title>{{ $t('game.dir.enter_dir_name') }}</v-card-title>
       <v-card-text>
-        <v-text-field v-model="newGamePathName" label="目录名称" autofocus @keyup.enter="confirmAddGamePath" />
+        <v-text-field v-model="newGamePathName" :label="$t('game.dir.dir_name')" autofocus @keyup.enter="confirmAddGamePath" />
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="confirmAddGamePath">确定</v-btn>
-        <v-btn text @click="cancelAddGamePath">取消</v-btn>
+        <v-btn color="primary" @click="confirmAddGamePath">{{ $t('general.confirm') }}</v-btn>
+        <v-btn text @click="cancelAddGamePath">{{ $t('general.cancel') }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -62,10 +62,12 @@ import { open, ask } from '@tauri-apps/plugin-dialog'
 import { invoke } from '@tauri-apps/api/core'
 import { useLauncherConfigStore } from '../composables/useConfig'
 import { useSnackbar } from '../composables/useSnackbar'
+import { useI18n } from 'vue-i18n'
 const { showError } = useSnackbar()
 
 const launcherConfigStore = useLauncherConfigStore()
 const config = launcherConfigStore.config
+const { t } = useI18n()
 
 const emits = defineEmits<{
   (e: 'switch', path: string, pathName: string): void
@@ -85,7 +87,7 @@ const onAdd = async () => {
     const gamePath = await open({
       directory: true,
       multiple: false,
-      title: '选择游戏目录'
+      title: t('game.dir.select_game_dir')
     })
     if (!gamePath) return
     pendingGamePath.value = gamePath as string
@@ -102,7 +104,7 @@ const confirmAddGamePath = async () => {
   if (config) {
     if (!config.gamePath) config.gamePath = {}
     if (Object.prototype.hasOwnProperty.call(config.gamePath, name)) {
-      showError('该名称已存在')
+      showError(t('general.name_existed'))
       return
     }
     config.gamePath[name] = pendingGamePath.value
@@ -126,10 +128,10 @@ const onDelete = async (pathName: string) => {
   if (!config?.gamePath) return
   const keys = Object.keys(config.gamePath)
   if (keys.length <= 1) {
-    showError('至少需要保留一个游戏目录')
+    showError(t('game.dir.at_least_one_directory'))
     return
   }
-  const confirmed = await ask(`确定要移除游戏目录 "${pathName}" 吗？此操作不会删除该目录下的文件。`, { title: '移除确认', kind: 'warning' })
+  const confirmed = await ask(t('game.dir.confirm_remove_game_dir_hint', { path: t(pathName) }), { title: t('general.confirm_remove'), kind: 'warning' })
   if (!confirmed) return
   delete config.gamePath[pathName]
   if (config.lastGamePath === pathName) {

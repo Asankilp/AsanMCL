@@ -21,7 +21,10 @@
     "cancel": "取消",
     "save": "保存",
     "username": "用户名",
-    "password": "密码"
+    "password": "密码",
+    "confirm": "确认",
+    "name_existed": "该名称已存在",
+    "confirm_remove": "确认移除"
   },
   "profile": {
     "profiles": "游戏配置",
@@ -51,5 +54,17 @@
       "bmclapi": "BMCLAPI"
     },
     "select_jre_directory_title": "选择包含 bin 目录的 JRE 安装位置"
+  },
+  "game": {
+    "dir": {
+      "add_game_dir": "添加游戏目录",
+      "current_dir": "当前目录",
+      "official_launcher_dir": "官方启动器目录",
+      "enter_dir_name": "请输入该目录的名称",
+      "dir_name": "目录名称",
+      "select_game_dir": "选择游戏目录",
+      "at_least_one_directory": "至少要保留一个游戏目录",
+      "confirm_remove_game_dir_hint": "确定要移除游戏目录 \"{path}\" 吗？此操作不会删除该目录下的文件。"
+    }
   }
 }

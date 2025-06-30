@@ -6,7 +6,7 @@
       <v-spacer></v-spacer>
       <!-- 游戏目录切换菜单组件 -->
       <GamePathMenu :launcherConfig="launcherConfigStore.config" @switch="switchGamePath"
-        @update:launcherConfig="(val: LauncherConfig) => launcherConfigStore.config = val" @refreshVersions="refreshVersions" />
+        @refreshVersions="refreshVersions" />
       <v-btn icon color="grey lighten-1" @click="showAddVersionDialog = true">
         <v-icon left>mdi-plus</v-icon>
       </v-btn>
@@ -46,8 +46,8 @@
         </v-list-item>
       </v-list>
 
-      <AddVersionDialog v-model="showAddVersionDialog" @close="showAddVersionDialog = false" v-if="launcherConfigStore.config"
-        :launcher-config="launcherConfigStore.config" />
+      <AddVersionDialog v-model="showAddVersionDialog" @close="showAddVersionDialog = false"
+        v-if="launcherConfigStore.config" :launcher-config="launcherConfigStore.config" />
     </v-main>
   </v-container>
 </template>
@@ -55,7 +55,6 @@
 <script setup lang="ts">
 import { invoke } from '@tauri-apps/api/core'
 import { ref, onMounted } from 'vue'
-import { LauncherConfig } from '../types/config/launcher'
 import { LocalVersionInfo, VersionType } from '../types/version'
 import { useSnackbar } from '../composables/useSnackbar'
 import GamePathMenu from '../components/GamePathMenu.vue'

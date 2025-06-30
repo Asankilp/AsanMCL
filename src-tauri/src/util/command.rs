@@ -122,10 +122,3 @@ pub fn cancel_download(id: String) -> Result<(), String> {
 pub async fn update_reqwest_client(config: LauncherConfig) -> () {
     super::reqwest_client::update_reqwest_client(&config).await;
 }
-
-#[tauri::command]
-pub async fn create_reqwest_client(config: LauncherConfig) -> Result<(), String> {
-    super::reqwest_client::create_reqwest_client(&config)
-        .map(|_| ())
-        .map_err(|e| e.to_string())
-}
