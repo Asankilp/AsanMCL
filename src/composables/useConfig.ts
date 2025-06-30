@@ -10,7 +10,9 @@ export const useLauncherConfigStore = defineStore('launcherconfig', () => {
   // 加载配置
   const loadConfig = async () => {
     try {
-      config.value = await invoke<LauncherConfig>('get_launcher_config_command')
+      const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
+      config.value = launcherConfig
+      await invoke('update_reqwest_client', { config: launcherConfig })
     } catch (error) {
       console.error('Failed to load launcher config:', error)
     }

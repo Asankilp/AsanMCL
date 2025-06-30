@@ -5,10 +5,10 @@ use std::{collections::HashMap, path::PathBuf};
 use tauri::{AppHandle, Emitter};
 use tokio::sync::watch;
 
+use crate::config::model::LauncherConfig;
 use crate::util::downloader::download_with_progress;
 use crate::util::model::{DownloadError, DownloadProgress};
 use crate::util::{game::init_game_path, init::init_launcher};
-
 // 全局存储下载任务的取消句柄
 static DOWNLOAD_CANCEL_MAP: Lazy<Mutex<HashMap<String, watch::Sender<bool>>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
@@ -116,4 +116,16 @@ pub fn cancel_download(id: String) -> Result<(), String> {
     } else {
         Err("未找到对应下载任务".to_string())
     }
+}
+
+#[tauri::command]
+pub async fn update_reqwest_client(config: LauncherConfig) -> () {
+    super::reqwest_client::update_reqwest_client(&config).await;
+}
+
+#[tauri::command]
+pub async fn create_reqwest_client(config: LauncherConfig) -> Result<(), String> {
+    super::reqwest_client::create_reqwest_client(&config)
+        .map(|_| ())
+        .map_err(|e| e.to_string())
 }

@@ -31,6 +31,15 @@
                   {{ option.text }}
                 </v-btn>
               </v-btn-group>
+
+              <v-divider class="my-4"></v-divider>
+
+              <h3 class="text-h6 mb-2">代理服务器</h3>
+              <v-switch v-model="proxyEnabled" label="启用代理服务器" color="primary" inset class="mt-2" />
+              <v-text-field v-model="proxyHost" label="代理服务器地址（如 http://127.0.0.1:7890）" :disabled="!proxyEnabled" class="mb-2" />
+              <v-switch v-model="proxyAuthEnabled" label="启用身份验证" color="primary" inset class="mt-2" :disabled="!proxyEnabled" />
+              <v-text-field v-model="proxyUsername" label="用户名" :disabled="!proxyEnabled || !proxyAuthEnabled" class="mb-2" />
+              <v-text-field v-model="proxyPassword" label="密码" :type="showProxyPassword ? 'text' : 'password'" :append-icon="showProxyPassword ? 'mdi-eye-off' : 'mdi-eye'" @click:append="showProxyPassword = !showProxyPassword" :disabled="!proxyEnabled || !proxyAuthEnabled" class="mb-2" />
             </v-form>
           </v-window-item>
 
@@ -149,6 +158,26 @@ const downloadSourceOptions = [
   { label: 'BMCLAPI', value: DownloadSource.BmclApi },
 ]
 const downloadSource = ref(DownloadSource.Official)
+
+// 代理服务器设置
+const proxyEnabled = ref(launcherConfigStore.config.enableProxy ?? false)
+const proxyHost = ref(launcherConfigStore.config.proxy.host ?? '')
+const proxyAuthEnabled = ref(launcherConfigStore.config.proxy.enableAuth ?? false)
+const proxyUsername = ref(launcherConfigStore.config.proxy.username ?? '')
+const proxyPassword = ref(launcherConfigStore.config.proxy.password ?? '')
+const showProxyPassword = ref(false)
+
+watch([proxyEnabled, proxyHost, proxyAuthEnabled, proxyUsername, proxyPassword], async ([enabled, host, auth, user, pass]) => {
+  if (launcherConfigStore.config) {
+    launcherConfigStore.config.enableProxy = enabled
+    launcherConfigStore.config.proxy.host = host
+    launcherConfigStore.config.proxy.enableAuth = auth
+    launcherConfigStore.config.proxy.username = user
+    launcherConfigStore.config.proxy.password = pass
+    launcherConfigStore.saveConfig()
+    await invoke('update_reqwest_client', { config: launcherConfigStore.config })
+  }
+})
 
 // 监听下载源变化
 watch(downloadSource, async (newSource) => {

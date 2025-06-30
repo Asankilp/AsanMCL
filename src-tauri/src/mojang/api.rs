@@ -1,21 +1,18 @@
 use crate::{config::model::DownloadSource, game::version::model::VersionManifest};
+use crate::util::reqwest_client::REQWEST_CLIENT;
 
 use super::model::{
     CapeData, GameOwnershipResponse, MinecraftProfile, PlayerUuidResponse, SkinData,
 };
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
-pub struct MinecraftClient {
-    client: reqwest::Client,
-}
+pub struct MinecraftClient;
 
 const MOJANG_LAUNCHERMETA_ROOT: &str = "https://launchermeta.mojang.com";
 const BMCLAPI_LAUNCHERMETA_ROOT: &str = "https://bmclapi2.bangbang93.com";
 
 impl MinecraftClient {
     pub fn new() -> Self {
-        Self {
-            client: reqwest::Client::new(),
-        }
+        Self {}
     }
 
     /// 获取 Minecraft 玩家信息
@@ -28,9 +25,14 @@ impl MinecraftClient {
             AUTHORIZATION,
             HeaderValue::from_str(&format!("Bearer {}", access_token))?,
         );
-
-        let response = self
-            .client
+        let client = {
+            let guard = REQWEST_CLIENT.lock().await;
+            match &*guard {
+                Some(c) => c.clone(),
+                None => return Err("HTTP客户端未初始化".into()),
+            }
+        };
+        let response = client
             .get("https://api.minecraftservices.com/minecraft/profile")
             .headers(headers)
             .send()
@@ -58,9 +60,14 @@ impl MinecraftClient {
             AUTHORIZATION,
             HeaderValue::from_str(&format!("Bearer {}", access_token))?,
         );
-
-        let response = self
-            .client
+        let client = {
+            let guard = REQWEST_CLIENT.lock().await;
+            match &*guard {
+                Some(c) => c.clone(),
+                None => return Err("HTTP客户端未初始化".into()),
+            }
+        };
+        let response = client
             .get("https://api.minecraftservices.com/entitlements/mcstore")
             .headers(headers)
             .send()
@@ -102,8 +109,14 @@ impl MinecraftClient {
         &self,
         username: &str,
     ) -> Result<String, Box<dyn std::error::Error>> {
-        let response = self
-            .client
+        let client = {
+            let guard = REQWEST_CLIENT.lock().await;
+            match &*guard {
+                Some(c) => c.clone(),
+                None => return Err("HTTP客户端未初始化".into()),
+            }
+        };
+        let response = client
             .get(&format!(
                 "https://api.mojang.com/users/profiles/minecraft/{}",
                 username
@@ -162,13 +175,21 @@ pub async fn get_version_manifest(
         ),
     };
     println!("Fetching version manifest from: {}", url);
-    let response = reqwest::get(&url)
+    let client = {
+        let guard = REQWEST_CLIENT.lock().await;
+        match &*guard {
+            Some(c) => c.clone(),
+            None => return Err("HTTP客户端未初始化".to_string()),
+        }
+    };
+    let response = client
+        .get(&url)
+        .send()
         .await
         .map_err(|e| format!("Failed to fetch version manifest: {}", e))?;
     if !response.status().is_success() {
         return Err(format!("Failed to fetch version manifest: {}", response.status()).into());
     }
-
     let manifest: VersionManifest = response
         .json()
         .await

@@ -50,6 +50,8 @@ pub fn run() {
             download_files,
             cancel_download,
             get_fabric_loader_versions_by_game_version,
+            create_reqwest_client,
+            update_reqwest_client,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

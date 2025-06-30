@@ -1,4 +1,3 @@
-use reqwest::Client;
 use std::fs::File;
 use std::io::Write;
 use std::panic::{catch_unwind, AssertUnwindSafe};
@@ -6,7 +5,7 @@ use std::path::PathBuf;
 use std::time::Instant;
 use tokio::sync::watch;
 use uuid::Uuid;
-
+use crate::util::reqwest_client::REQWEST_CLIENT;
 /// 下载文件并实时返回进度（百分比），支持 302 跳转，可取消。
 ///
 /// # 参数
@@ -30,12 +29,12 @@ where
     F: FnMut(String, f64, f64) + Send + 'static, // 新增速度参数
 {
     let id = Uuid::new_v4().to_string();
-    let client = match Client::builder()
-        .redirect(reqwest::redirect::Policy::limited(10))
-        .build()
-    {
-        Ok(c) => c,
-        Err(e) => return Err(format!("HTTP客户端初始化失败: {}", e).into()),
+    let client = {
+        let guard = REQWEST_CLIENT.lock().await;
+        match &*guard {
+            Some(c) => c.clone(),
+            None => return Err("HTTP客户端未初始化".into()),
+        }
     };
     if let Err(_) = catch_unwind(AssertUnwindSafe(|| {
         progress_callback(id.clone(), -1.0, 0.0)

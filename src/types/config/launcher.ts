@@ -20,8 +20,7 @@ export enum ColorTheme {
 // 代理配置
 export interface ProxyConfig {
     type: ProxyType;
-    host: string;
-    port: number;
+    host?: string;
     enableAuth: boolean;
     username?: string;
     password?: string;
@@ -42,8 +41,7 @@ export interface LauncherConfig {
 // 默认值
 export const defaultProxyConfig = (): ProxyConfig => ({
     type: ProxyType.Http,
-    host: '',
-    port: 0,
+    host: undefined,
     enableAuth: false,
     username: undefined,
     password: undefined

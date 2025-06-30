@@ -1,5 +1,6 @@
 use crate::config::model::DownloadSource;
 use crate::game::modloader::version::models::fabric::{FabricLoaderVersionJson, FabricSupportedGameVersion};
+use crate::util::reqwest_client::REQWEST_CLIENT;
 
 // #[derive(serde::Deserialize)]
 // pub struct BmclApiError {
@@ -14,8 +15,14 @@ pub async fn get_fabric_supported_game_versions(
         DownloadSource::Official => "https://meta.fabricmc.net/v2/versions/game",
         DownloadSource::BmclApi => "https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/game",
     };
-    let response = reqwest::get(url).await.map_err(|e| e.to_string())?;
-
+    let client = {
+        let guard = REQWEST_CLIENT.lock().await;
+        match &*guard {
+            Some(c) => c.clone(),
+            None => return Err("HTTP客户端未初始化".to_string()),
+        }
+    };
+    let response = client.get(url).send().await.map_err(|e| e.to_string())?;
     let versions: Vec<FabricSupportedGameVersion> =
         response.json().await.map_err(|e| e.to_string())?;
 
@@ -33,7 +40,14 @@ pub async fn get_fabric_loader_versions_by_game_version(game_version: String, do
         DownloadSource::Official => format!("https://meta.fabricmc.net/v1/versions/loader/{}", game_version),
         DownloadSource::BmclApi => format!("https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/loader/{}", game_version), // BMCLAPI 不支持 v1 格式
     };
-    let response = reqwest::get(url).await.map_err(|e| e.to_string())?;
+    let client = {
+        let guard = REQWEST_CLIENT.lock().await;
+        match &*guard {
+            Some(c) => c.clone(),
+            None => return Err("HTTP客户端未初始化".to_string()),
+        }
+    };
+    let response = client.get(&url).send().await.map_err(|e| e.to_string())?;
     let versions: Vec<FabricLoaderVersionJson> = response.json().await.map_err(|e| e.to_string())?;
     let versions_list = versions
         .into_iter()
@@ -45,7 +59,14 @@ pub async fn get_fabric_loader_versions_by_game_version(game_version: String, do
 
 pub async fn get_forge_supported_game_versions() -> Result<Vec<String>, String> {
     let url = "https://bmclapi2.bangbang93.com/forge/minecraft";
-    let response = reqwest::get(url).await.map_err(|e| e.to_string())?;
+    let client = {
+        let guard = REQWEST_CLIENT.lock().await;
+        match &*guard {
+            Some(c) => c.clone(),
+            None => return Err("HTTP客户端未初始化".to_string()),
+        }
+    };
+    let response = client.get(url).send().await.map_err(|e| e.to_string())?;
     let versions: Vec<String> = response.json().await.map_err(|e| e.to_string())?;
     Ok(versions)
 }

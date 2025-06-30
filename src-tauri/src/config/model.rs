@@ -42,9 +42,7 @@ pub enum ColorTheme {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ProxyConfig {
-    pub r#type: ProxyType,
-    pub host: String,
-    pub port: u16,
+    pub host: Option<String>,
     pub enable_auth: bool,
     pub username: Option<String>,
     pub password: Option<String>,
@@ -93,9 +91,7 @@ fn default_color_theme() -> ColorTheme {
 
 fn default_proxy_config() -> ProxyConfig {
     ProxyConfig {
-        r#type: ProxyType::Http,
-        host: String::new(),
-        port: 0,
+        host: None,
         enable_auth: false,
         username: None,
         password: None,
