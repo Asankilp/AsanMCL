@@ -1,4 +1,4 @@
-import { i18n } from "../main";
+import { appLocale } from "../main";
 
 /**
  * 根据版本号获取更新主题。
@@ -8,7 +8,7 @@ import { i18n } from "../main";
 export async function getMajorUpdateThemeById(versionId: string): Promise<string> {
   try {
     // 动态加载 major_updates.json（Vite 静态资源）
-    const locale = i18n?.global?.locale ?? 'en';
+    const locale = appLocale.value
     const url = new URL(`../assets/data/major_updates/${locale}.json`, import.meta.url).toString();
     const res = await fetch(url);
     if (!res.ok) return '';

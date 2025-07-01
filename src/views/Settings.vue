@@ -132,7 +132,7 @@ import { useAppTheme } from '../composables/useTheme'
 import { useSnackbar } from '../composables/useSnackbar'
 import { useLauncherConfigStore } from '../composables/useConfig'
 import { useI18n } from 'vue-i18n'
-import { i18n } from '../main'
+import { appLocale } from '../main'
 
 // 当前激活的选项卡
 const activeTab = ref('launcher')
@@ -206,7 +206,8 @@ watch(downloadSource, async (newSource) => {
 })
 
 watch(language, async (newLanguage) => {
-  i18n.global.locale = newLanguage as typeof i18n.global.locale
+  appLocale.value = newLanguage
+  location.reload()
   try {
     if (launcherConfigStore.config) {
       launcherConfigStore.config.language = newLanguage

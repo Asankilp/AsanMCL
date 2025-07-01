@@ -54,7 +54,6 @@ import { listen } from '@tauri-apps/api/event'
 import { DownloadError, DownloadProgress } from './types/event'
 import { useDownloadDialogStore } from './store/downloadDialog'
 import { useI18n } from 'vue-i18n'
-import { i18n } from './main'
 
 const router = useRouter()
 const drawer = ref(true)
@@ -116,7 +115,7 @@ const setLanguage = async () => {
   const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
   if (launcherConfig.language) {
     // 设置 i18n 的语言
-    i18n.global.locale = launcherConfig.language as typeof i18n.global.locale
+    // i18n.global.locale = launcherConfig.language as typeof i18n.global.locale
   }
 }
 
