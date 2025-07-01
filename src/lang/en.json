@@ -10,7 +10,31 @@
     "offline": "Offline Account",
     "external": "External Account",
     "account_existed": "This account is existed",
-    "account_delete_success": "Account delete successfully"
+    "account_delete_success": "Account delete successfully",
+    "option": {
+      "microsoft": "Microsoft",
+      "offline": "Offline",
+      "external": "External"
+    },
+    "player_name": "Player Name",
+    "player_name_required": "Please enter the player name",
+    "offline_uuid": "UUID (Optional)",
+    "offline_uuid_invalid": "Incorrect UUID format",
+    "offline_uuid_placeholder": "If left blank, it will be automatically generated",
+    "login": "Login",
+    "create": "Create Account",
+    "login_with_microsoft": "Login with Microsoft",
+    "login_with_microsoft_hint": "By logging in with a Microsoft account you can:\n- Access online servers\n- Use skins/capes",
+    "microsoft_login_unavailable": "Microsoft login is not available on this build",
+    "user_code_hint": "Please click the button below to open the authorization page and enter the code:",
+    "open_authorization_page_hint": "The authorization page has been opened in the browser",
+    "open_authorization_page": "Open the authorization page",
+    "copy_code_hint": "Click the code above to copy it to your clipboard",
+    "waiting_for_authorization": "Waiting for authorization to complete...",
+    "login_success": "Login successful",
+    "login_failed": "Login failed",
+    "get_player_info_failed": "Failed to get player data",
+    "get_player_info_failed_but_login_success": "Login successful but player data loading failed"
   },
   "home": {
     "welcome": "Welcome",
@@ -29,7 +53,12 @@
     "close": "Close",
     "next_step": "Next",
     "load_failed": "Load Failed",
-    "search": "Search"
+    "search": "Search",
+    "more_options": "More Options",
+    "username_required": "Please enter the username",
+    "email": "Email Address",
+    "copy_to_clipboard_success": "Copied to clipboard",
+    "copy_to_clipboard_failed": "Copy failed"
   },
   "profile": {
     "profiles": "Profiles",
@@ -87,5 +116,10 @@
       "select_specific_mod_loader_version": "Select version of {modLoader}",
       "select_all_checked_mod_loaders_version": "Please select all checked mod loader versions"
     }
+  },
+  "version": {
+    "version_list": "Version List",
+    "no_version": "No Version",
+    "add_version_hint": "Please click the plus sign in the upper right corner to add"
   }
 }

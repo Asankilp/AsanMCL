@@ -1,8 +1,8 @@
 <template>
-  <v-alert type="info" variant="tonal" :text="'使用 Microsoft 账户登录可以：\n- 进入正版服务器\n- 使用皮肤/披风'" class="mb-4"></v-alert>
+  <v-alert type="info" variant="tonal" :text="$t('account.login_with_microsoft_hint')" class="mb-4"></v-alert>
   <v-btn color="primary" block prepend-icon="mdi-microsoft" variant="elevated" @click="handleMicrosoftLogin"
     :loading="isLoading">
-    使用 Microsoft 账户登录
+    {{ t('account.login_with_microsoft') }}
   </v-btn>
 </template>
 
@@ -13,9 +13,10 @@ import { LoginEvent } from '../types/event'
 import { Channel, invoke } from '@tauri-apps/api/core'
 import { MinecraftProfile } from '../types/mojang'
 import { AccountInfo, AccountType } from '../types/config/account'
+import { useI18n } from 'vue-i18n'
 
 const { showSuccess, showError } = useSnackbar()
-
+const { t } = useI18n()
 const emit = defineEmits<{
   (e: 'login-success', data: AccountInfo): void
   (e: 'show-user-code', data: { authUrl: string, userCode: string, close?: boolean }): void
@@ -28,7 +29,7 @@ const handleMicrosoftLogin = async () => {
   try {
     // 显示加载状态
     if (await invoke<boolean>('check_microsoft_login_availability') === false) {
-      showError('Microsoft 登录在此构建不可用')
+      showError(t('account.microsoft_login_unavailable'))
       return
     }
     isLoading.value = true
@@ -64,7 +65,7 @@ const handleMicrosoftLogin = async () => {
               capes: profile.capes
             })
 
-            showSuccess('登录成功！')
+            showSuccess(t('account.login_success'))
             // 成功后关闭代码对话框
             emit('show-user-code', {
               authUrl: '',
@@ -81,7 +82,7 @@ const handleMicrosoftLogin = async () => {
             })
           } catch (err) {
             console.error('获取玩家信息失败:', err)
-            showError('获取玩家信息失败，但登录已成功')
+            showError(t('account.get_player_info_failed_but_login_success'))
             // 成功后关闭代码对话框
             emit('show-user-code', {
               authUrl: '',
@@ -99,7 +100,7 @@ const handleMicrosoftLogin = async () => {
           }
         } catch (error) {
           console.error('获取玩家信息失败:', error)
-          showError('获取玩家信息失败：' + (error instanceof Error ? error.message : '未知错误'))
+          showError(t('account.get_player_info_failed') + ':' + (error instanceof Error ? error.message : '未知错误'))
         }
       }
     }
@@ -109,7 +110,7 @@ const handleMicrosoftLogin = async () => {
 
   } catch (error) {
     console.error('登录失败:', error)
-    showError('登录失败：' + (error instanceof Error ? error.message : '未知错误'))
+    showError(t('account.login_failed') + ':' + (error instanceof Error ? error.message : '未知错误'))
     // 失败后关闭代码对话框
     emit('show-user-code', {
       authUrl: '',

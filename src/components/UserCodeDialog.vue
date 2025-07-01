@@ -1,9 +1,9 @@
 <template>
   <v-dialog :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" max-width="400px" persistent>
     <v-card>
-      <v-card-title class="text-h6">Microsoft 账户登录</v-card-title>
+      <v-card-title class="text-h6">{{ $t('account.login_with_microsoft') }}</v-card-title>
       <v-card-text class="text-center">
-        <p class="mb-4">请访问以下网址并输入代码：</p>
+        <p class="mb-4">{{ $t('account.user_code_hint') }}</p>
         <v-btn
           block
           color="primary"
@@ -11,21 +11,21 @@
           :href="authUrl"
           target="_blank"
           rel="noopener noreferrer"
-          @click="showSuccess('已在浏览器中打开授权页面')"
+          @click="showSuccess($t('account.open_authorization_page_hint'))"
         >
-          打开授权页面
+          {{ $t('account.open_authorization_page') }}
         </v-btn>
         <v-card variant="outlined" class="mb-4 pa-4 cursor-pointer" @click="copyToClipboard(userCode)">
           <p class="text-h5 font-weight-bold">{{ userCode }}</p>
           <v-icon icon="mdi-content-copy" size="small" class="ms-2"></v-icon>
         </v-card>
-        <p class="text-caption">点击上方的代码可复制到剪贴板</p>
-        <p class="text-caption mt-2">正在等待授权完成...</p>
+        <p class="text-caption">{{ $t('account.copy_code_hint') }}</p>
+        <p class="text-caption mt-2">{{ $t('account.waiting_for_authorization') }}</p>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="error" variant="text" @click="handleCancel">
-          取消
+          {{ $t('general.cancel') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -33,11 +33,12 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { useSnackbar } from '../composables/useSnackbar'
 import { writeText } from '@tauri-apps/plugin-clipboard-manager';
 
 const { showSuccess, showError } = useSnackbar()
-
+const { t } = useI18n()
 defineProps<{
   modelValue: boolean
   authUrl: string
@@ -53,10 +54,10 @@ const emit = defineEmits<{
 const copyToClipboard = async (text: string) => {
   try {
     await writeText(text)
-    showSuccess('已复制到剪贴板')
+    showSuccess(t('general.copy_to_clipboard_success'))
   } catch (err) {
     console.error('Failed to copy text:', err)
-    showError('复制失败')
+    showError(t('general.copy_to_clipboard_failed'))
   }
 }
 

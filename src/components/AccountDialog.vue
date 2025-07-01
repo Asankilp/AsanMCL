@@ -6,16 +6,18 @@
         <v-tabs v-model="activeTab" color="primary" align-tabs="center">
           <v-tab value="microsoft">
             <v-icon start>mdi-microsoft</v-icon>
-            Microsoft
+            {{ $t('account.option.microsoft') }}
           </v-tab>
           <v-tab value="offline">
             <v-icon start>mdi-account-off</v-icon>
-            离线模式
+            {{ $t('account.option.offline') }}
           </v-tab>
           <v-tab value="custom">
             <v-icon start>mdi-account-cog</v-icon>
-            自定义
-          </v-tab> </v-tabs> <v-window v-model="activeTab" class="mt-4">
+            {{ $t('account.option.external') }}
+          </v-tab>
+        </v-tabs>
+        <v-window v-model="activeTab" class="mt-4">
           <!-- Microsoft 登录 -->
           <v-window-item value="microsoft">
             <microsoft-login-dialog ref="microsoftLoginRef" @login-success="handleLoginSuccess"
@@ -25,12 +27,12 @@
           <!-- 离线模式 -->
           <v-window-item value="offline">
             <v-form ref="offlineForm" v-model="offlineFormValid">
-              <v-text-field v-model="offlineData.playerName" label="玩家名称" :rules="[v => !!v || '请输入玩家名称']" required
+              <v-text-field v-model="offlineData.playerName" :label="$t('account.player_name')" :rules="[v => !!v || $t('account.player_name_required')]" required
                 variant="outlined" class="mb-4" hide-details="auto"></v-text-field>
 
-              <v-text-field v-model="offlineData.uuid" label="UUID (可选)" variant="outlined" placeholder="不填将自动生成"
+              <v-text-field v-model="offlineData.uuid" :label="$t('account.offline_uuid')" variant="outlined" :placeholder="$t('account.offline_uuid_placeholder')"
                 :rules="[
-                  v => !v || /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{32})$/i.test(v) || 'UUID 格式不正确'
+                  v => !v || /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{32})$/i.test(v) || $t('account.offline_uuid_invalid')
                 ]" hide-details="auto"></v-text-field>
             </v-form>
           </v-window-item>
@@ -38,15 +40,15 @@
           <!-- 自定义账户 -->
           <v-window-item value="custom">
             <v-form ref="customForm" v-model="customFormValid">
-              <v-text-field v-model="customData.username" label="用户名" :rules="[v => !!v || '请输入用户名']" required
+              <v-text-field v-model="customData.username" :label="$t('general.username')" :rules="[v => !!v || $t('general.username_required')]" required
                 variant="outlined" class="mb-4" hide-details="auto"></v-text-field>
 
-              <v-text-field v-model="customData.email" label="邮箱" type="email" :rules="[
+              <v-text-field v-model="customData.email" :label="$t('general.email')" type="email" :rules="[
                 v => !!v || '请输入邮箱',
                 v => /.+@.+\..+/.test(v) || '请输入有效的邮箱地址'
               ]" required variant="outlined" class="mb-4" hide-details="auto"></v-text-field>
 
-              <v-text-field v-model="customData.password" label="密码" :type="showPassword ? 'text' : 'password'"
+              <v-text-field v-model="customData.password" :label="$t('general.password')" :type="showPassword ? 'text' : 'password'"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click:append="showPassword = !showPassword"
                 :rules="[v => !!v || '请输入密码']" required variant="outlined" hide-details="auto"></v-text-field>
             </v-form>
@@ -56,7 +58,7 @@
 
       <v-card-actions>
         <v-spacer></v-spacer> <v-btn color="error" variant="text" @click="handleCancel">
-          取消
+          {{ $t('general.cancel') }}
         </v-btn>
         <v-btn color="primary" variant="tonal" @click="handleSubmit" @loading="loading" :disabled="!isFormValid">
           {{ submitButtonText }}
@@ -84,9 +86,10 @@ import AccountInfoDialog from './AccountInfoDialog.vue'
 import { load } from '@tauri-apps/plugin-store'
 import { AccountInfo, AccountType } from '../types/config/account'
 import { v4 as uuidv4, parse as uuidParse } from 'uuid';
+import { useI18n } from 'vue-i18n'
 
 const microsoftLoginRef = ref<InstanceType<typeof MicrosoftLoginDialog> | null>(null)
-
+const { t } = useI18n()
 // Microsoft 登录相关的状态
 const showUserCode = ref(false)
 const authUrl = ref('')
@@ -115,7 +118,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   loading: false,
   maxWidth: '500px',
-  title: '添加新账户'
+  title: 'Add Account',
 })
 
 const emit = defineEmits<{
@@ -161,13 +164,13 @@ const isFormValid = computed(() => {
 const submitButtonText = computed(() => {
   switch (activeTab.value) {
     case 'microsoft':
-      return '开始登录'
+      return t('account.login')
     case 'offline':
-      return '创建账户'
+      return t('account.create')
     case 'custom':
-      return '确认'
+      return t('general.confirm')
     default:
-      return '确认'
+      return t('general.confirm')
   }
 })
 

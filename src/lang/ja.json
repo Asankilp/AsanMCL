@@ -14,7 +14,31 @@
     "offline": "オフラインアカウント",
     "external": "外部アカウント",
     "account_existed": "このアカウントはすでに存在します",
-    "account_delete_success": "アカウントの削除に成功しました"
+    "account_delete_success": "アカウントの削除に成功しました",
+    "option": {
+      "microsoft": "Microsoft",
+      "offline": "オフライン",
+      "external": "外部ログイン"
+    },
+    "player_name": "プレイヤーの名前",
+    "player_name_required": "プレイヤーの名前を入力してください",
+    "offline_uuid": "UUID（オプショナル）",
+    "offline_uuid_invalid": "UUID形式が正しくありません",
+    "offline_uuid_placeholder": "空白のままにしておくと自動的に生成されます",
+    "login": "ログイン",
+    "create": "アカウントを作成",
+    "login_with_microsoft": "Microsoftでログイン",
+    "login_with_microsoft_hint": "Microsoftアカウントでログインすると、次のことが可能になります:\n- オンラインサーバーにアクセス\n- スキン/ケープを使用",
+    "microsoft_login_unavailable": "このビルドではMicrosoftログインは利用できません",
+    "user_code_hint": "以下のボタンをクリックして認証ページを開き、コードを入力してください：",
+    "open_authorization_page_hint": "ブラウザで認証ページが開かれました",
+    "open_authorization_page": "認証ページを開く",
+    "copy_code_hint": "上記のコードをクリックすると、クリップボードにコピーされます",
+    "waiting_for_authorization": "認証が完了するのを待っています...",
+    "login_success": "ログインに成功しました",
+    "login_failed": "ログインに失敗しました",
+    "get_player_info_failed": "プレイヤーデータを取得できませんでした",
+    "get_player_info_failed_but_login_success": "ログインには成功しましたが、プレイヤーデータの取得に失敗しました"
   },
   "general": {
     "delete": "削除",
@@ -29,7 +53,12 @@
     "close": "閉じる",
     "next_step": "次へ",
     "load_failed": "読み込みに失敗しました",
-    "search": "検索"
+    "search": "検索",
+    "more_options": "その他のオプション",
+    "username_required": "ユーザー名を入力してください",
+    "email": "メールアドレス",
+    "copy_to_clipboard_success": "クリップボードにコピーしました",
+    "copy_to_clipboard_failed": "コピーに失敗しました"
   },
   "profile": {
     "profiles": "ゲームプロフィール",
@@ -87,5 +116,10 @@
       "select_specific_mod_loader_version": "{modLoader} のバージョンを選択",
       "select_all_checked_mod_loaders_version": "すべて選択されたModLoaderのバージョンを選択してください"
     }
+  },
+  "version": {
+    "version_list": "バージョンリスト",
+    "no_version": "バージョンはありません",
+    "add_version_hint": "右上のプラスアイコンをクリックして追加してください"
   }
 }

@@ -2,7 +2,7 @@
   <v-container class="pa-0 fill-height" fluid>
     <!-- 顶部工具栏 -->
     <v-app-bar flat>
-      <v-toolbar-title class="text-h6">版本列表</v-toolbar-title>
+      <v-toolbar-title class="text-h6">{{ $t('version.version_list') }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <!-- 游戏目录切换菜单组件 -->
       <GamePathMenu :launcherConfig="launcherConfigStore.config" @switch="switchGamePath"
@@ -18,7 +18,7 @@
         <v-list-item v-for="version in versions" :key="version.name" :title="version.name" rounded="lg">
           <template v-slot:prepend>
             <v-avatar size="40" rounded="lg">
-              <img width="40" height="40" :src="getVersionIcon(version.info.type ?? VersionType.Other)" alt="版本图标">
+              <img width="40" height="40" :src="getVersionIcon(version.info.type ?? VersionType.Other)" alt="icon">
             </v-avatar>
           </template>
 
@@ -32,7 +32,7 @@
                 </template>
                 <v-list>
                   <v-list-item @click="handleMoreOptions(version)">
-                    <v-list-item-title>更多选项</v-list-item-title>
+                    <v-list-item-title>{{ $t('general.more_options') }}</v-list-item-title>
                   </v-list-item>
                 </v-list>
               </v-menu>
@@ -41,8 +41,8 @@
         </v-list-item>
 
         <v-list-item v-if="versions.length === 0" class="text-center">
-          <v-list-item-title>暂无版本</v-list-item-title>
-          <v-list-item-subtitle>请添加或下载新版本</v-list-item-subtitle>
+          <v-list-item-title>{{ $t('version.no_version') }}</v-list-item-title>
+          <v-list-item-subtitle>{{ $t('version.add_version_hint') }}</v-list-item-subtitle>
         </v-list-item>
       </v-list>
 

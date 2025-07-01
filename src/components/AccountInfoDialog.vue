@@ -52,7 +52,7 @@
           variant="text"
           @click="emit('update:modelValue', false)"
         >
-          确定
+          {{ $t('general.confirm') }}
         </v-btn>
       </v-card-actions>
     </v-card>
