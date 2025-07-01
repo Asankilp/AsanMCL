@@ -12,6 +12,7 @@ import '@mdi/font/css/materialdesignicons.css';
 import { createPinia } from "pinia";
 import { useAccountConfigStore, useLauncherConfigStore } from "./composables/useConfig";
 import zhHans from './lang/zh-hans.json'
+import zhHant from './lang/zh-hant.json'
 import en from './lang/en.json'
 import ja from './lang/ja.json'
 import { createI18n } from 'vue-i18n'
@@ -73,10 +74,11 @@ const init = async () => {
   appLocale.value = launcherConfigStore.config.language || 'en';
 
   type MessageSchema = typeof en;
-  const i18n = createI18n<[MessageSchema], 'en' | 'zh-hans' | 'ja'>({
+  const i18n = createI18n<[MessageSchema], 'en' | 'zh-hans' | 'zh-hant' | 'ja'>({
     locale: appLocale.value,
     messages: {
       'zh-hans': zhHans,
+      'zh-hant': zhHant,
       'en': en,
       'ja': ja
     }
@@ -85,7 +87,7 @@ const init = async () => {
 
   // 监听 appLocale 的变化并同步到 i18n
   appLocale.value && watch(appLocale, (newLocale) => {
-    i18n.global.locale = newLocale as 'en' | 'zh-hans' | 'ja';
+    i18n.global.locale = newLocale as 'en' | 'zh-hans' | 'zh-hant' | 'ja';
   });
 
   app.mount("#app");

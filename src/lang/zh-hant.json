@@ -1,0 +1,125 @@
+{
+  "home": {
+    "welcome": "歡迎使用 Minecraft 啟動器",
+    "home": "主頁"
+  },
+  "account": {
+    "add_account": "新增帳戶",
+    "my_accounts": "我的帳戶",
+    "no_account": "暫無帳戶",
+    "add_account_hint": "點擊右上角的加號新增帳戶",
+    "confirm_delete_hint": "確定要刪除此帳戶嗎？此操作無法復原。",
+    "confirm_delete": "確認刪除",
+    "microsoft": "Microsoft 帳戶",
+    "offline": "離線帳戶",
+    "external": "外部帳戶",
+    "account_existed": "該帳戶已存在",
+    "account_delete_success": "帳戶刪除成功",
+    "option": {
+      "microsoft": "Microsoft",
+      "offline": "離線登入",
+      "external": "外部登入"
+    },
+    "player_name": "玩家名稱",
+    "player_name_required": "請輸入玩家名稱",
+    "offline_uuid": "UUID（選填）",
+    "offline_uuid_invalid": "UUID 格式不正確",
+    "offline_uuid_placeholder": "若不填將自動生成",
+    "login": "登入",
+    "create": "建立帳戶",
+    "login_with_microsoft": "使用 Microsoft 帳戶登入",
+    "login_with_microsoft_hint": "使用 Microsoft 帳戶登入可以：\n- 進入正版伺服器\n- 使用皮膚/披風",
+    "microsoft_login_unavailable": "Microsoft 登入在此版本不可用",
+    "user_code_hint": "請點擊下方按鈕開啟授權頁面並輸入代碼：",
+    "open_authorization_page_hint": "已在瀏覽器中開啟授權頁面",
+    "open_authorization_page": "開啟授權頁面",
+    "copy_code_hint": "點擊上方的代碼可複製到剪貼簿",
+    "waiting_for_authorization": "正在等待授權完成...",
+    "login_success": "登入成功",
+    "login_failed": "登入失敗",
+    "get_player_info_failed": "取得玩家資訊失敗",
+    "get_player_info_failed_but_login_success": "取得玩家資訊失敗，但登入成功"
+  },
+  "general": {
+    "delete": "刪除",
+    "cancel": "取消",
+    "save": "儲存",
+    "username": "使用者名稱",
+    "password": "密碼",
+    "confirm": "確認",
+    "name_existed": "該名稱已存在",
+    "confirm_remove": "確認移除",
+    "back": "返回",
+    "close": "關閉",
+    "next_step": "下一步",
+    "load_failed": "載入失敗",
+    "search": "搜尋",
+    "more_options": "更多選項",
+    "username_required": "請輸入使用者名稱",
+    "email": "電子郵件地址",
+    "copy_to_clipboard_success": "已複製到剪貼簿",
+    "copy_to_clipboard_failed": "複製失敗"
+  },
+  "profile": {
+    "profiles": "遊戲設定",
+    "no_profile": "暫無設定",
+    "add_profile_hint": "請點擊右上角加號新增"
+  },
+  "setting": {
+    "setting": "設定",
+    "launcher_setting": "啟動器設定",
+    "jre_list": "JRE 清單",
+    "general": "基本",
+    "close_after_launch": "啟動遊戲後關閉啟動器",
+    "download": "下載",
+    "download_source": "下載來源",
+    "color_theme": "色彩主題",
+    "proxy": "代理",
+    "enable_proxy": "啟用代理",
+    "proxy_host": "代理伺服器位址（如 http://127.0.0.1:1145）",
+    "enable_proxy_auth": "啟用身份驗證",
+    "color_themes": {
+      "follow_system": "跟隨系統",
+      "light": "淺色",
+      "dark": "深色"
+    },
+    "download_sources": {
+      "official": "官方來源",
+      "bmclapi": "BMCLAPI"
+    },
+    "select_jre_directory_title": "選擇包含 bin 目錄的 JRE 安裝位置",
+    "language": "語言"
+  },
+  "game": {
+    "dir": {
+      "add_game_dir": "新增遊戲目錄",
+      "current_dir": "目前目錄",
+      "official_launcher_dir": "官方啟動器目錄",
+      "enter_dir_name": "請輸入該目錄的名稱",
+      "dir_name": "目錄名稱",
+      "select_game_dir": "選擇遊戲目錄",
+      "at_least_one_directory": "至少要保留一個遊戲目錄",
+      "confirm_remove_game_dir_hint": "確定要移除遊戲目錄 \"{path}\" 嗎？此操作不會刪除該目錄下的檔案。"
+    },
+    "version": {
+      "add_version": "新增版本",
+      "type": {
+        "release": "正式版",
+        "snapshot": "快照版",
+        "old_beta": "舊Beta版",
+        "old_alpha": "舊Alpha版"
+      },
+      "search_version": "搜尋版本號",
+      "version_name": "版本名稱",
+      "enter_version_name_hint": "請輸入版本名稱",
+      "version_existed": "該版本名稱已存在",
+      "select_specific_mod_loader_version": "選擇 {modLoader} 版本",
+      "select_all_checked_mod_loaders_version": "請選擇所有已勾選的模組載入器版本"
+    }
+  },
+  "version": {
+    "version_list": "版本清單",
+    "no_version": "暫無版本",
+    "add_version_hint": "請點擊右上角加號新增遊戲版本"
+  }
+}
