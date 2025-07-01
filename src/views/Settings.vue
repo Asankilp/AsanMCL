@@ -15,6 +15,8 @@
             <v-form class="mt-4">
               <h3 class="text-h6 mb-2">{{ $t('setting.general') }}</h3>
               <v-switch v-model="closeAfterLaunch" :label="$t('setting.close_after_launch')" color="primary" inset class="mt-4"></v-switch>
+              <v-select v-model="language" :items="languageOptions" :label="$t('setting.language')" class="mt-4"
+                item-title="label" item-value="value" />
 
               <v-divider class="my-4"></v-divider>
 
@@ -130,6 +132,7 @@ import { useAppTheme } from '../composables/useTheme'
 import { useSnackbar } from '../composables/useSnackbar'
 import { useLauncherConfigStore } from '../composables/useConfig'
 import { useI18n } from 'vue-i18n'
+import { i18n } from '../main'
 
 // 当前激活的选项卡
 const activeTab = ref('launcher')
@@ -160,6 +163,16 @@ const downloadSourceOptions = [
 ]
 const downloadSource = ref(DownloadSource.Official)
 
+const language = ref(launcherConfigStore.config.language ?? 'en')
+const languageOptions = [
+  { label: 'English', value: 'en' },
+  { label: '简体中文', value: 'zh-hans' },
+  { label: '繁體中文', value: 'zh-hant' },
+  { label: '日本語', value: 'ja' },
+  
+]
+
+
 // 代理服务器设置
 const proxyEnabled = ref(launcherConfigStore.config.enableProxy ?? false)
 const proxyHost = ref(launcherConfigStore.config.proxy.host ?? '')
@@ -185,6 +198,18 @@ watch(downloadSource, async (newSource) => {
   try {
     if (launcherConfigStore.config) {
       launcherConfigStore.config.downloadSource = newSource
+    }
+    launcherConfigStore.saveConfig()
+  } catch (error: string | any) {
+    showError(error)
+  }
+})
+
+watch(language, async (newLanguage) => {
+  i18n.global.locale = newLanguage as typeof i18n.global.locale
+  try {
+    if (launcherConfigStore.config) {
+      launcherConfigStore.config.language = newLanguage
     }
     launcherConfigStore.saveConfig()
   } catch (error: string | any) {

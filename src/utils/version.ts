@@ -8,7 +8,8 @@ import { i18n } from "../main";
 export async function getMajorUpdateThemeById(versionId: string): Promise<string> {
   try {
     // 动态加载 major_updates.json（Vite 静态资源）
-    const url = new URL(`../assets/data/major_updates/${i18n.global.locale}.json`, import.meta.url).toString();
+    const locale = i18n?.global?.locale ?? 'en';
+    const url = new URL(`../assets/data/major_updates/${locale}.json`, import.meta.url).toString();
     const res = await fetch(url);
     if (!res.ok) return '';
     const data = await res.json();

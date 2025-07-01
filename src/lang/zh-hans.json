@@ -58,7 +58,8 @@
       "official": "官方源",
       "bmclapi": "BMCLAPI"
     },
-    "select_jre_directory_title": "选择包含 bin 目录的 JRE 安装位置"
+    "select_jre_directory_title": "选择包含 bin 目录的 JRE 安装位置",
+    "language": "语言"
   },
   "game": {
     "dir": {

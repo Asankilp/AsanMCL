@@ -58,7 +58,8 @@
       "official": "公式ソース",
       "bmclapi": "BMCLAPI"
     },
-    "select_jre_directory_title": "binディレクトリを含むJREインストール先を選択"
+    "select_jre_directory_title": "binディレクトリを含むJREインストール先を選択",
+    "language": "言語"
   },
   "game": {
     "dir": {

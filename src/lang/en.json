@@ -58,7 +58,8 @@
       "official": "Official",
       "bmclapi": "BMCLAPI"
     },
-    "select_jre_directory_title": "Select the JRE installation location that contains the bin directory"
+    "select_jre_directory_title": "Select the JRE installation location that contains the bin directory",
+    "language": "Language"
   },
   "game": {
     "dir": {

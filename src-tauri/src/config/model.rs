@@ -2,7 +2,7 @@ use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{config::util::get_default_game_paths, jre::model::JreInfo};
+use crate::{config::util::get_default_game_paths, jre::model::JreInfo, util::init::get_launcher_language_tag};
 
 #[derive(Serialize, Deserialize)]
 pub struct JreConfig {
@@ -58,6 +58,8 @@ pub struct ProxyConfig {
 pub struct LauncherConfig {
     #[serde(default = "default_last_game_path")]
     pub last_game_path: String,
+    #[serde(default = "default_language")]
+    pub language: String,
     pub selected_account: Option<String>,
     #[serde(default = "default_false")]
     pub close_after_launch: bool,
@@ -101,11 +103,17 @@ fn default_proxy_config() -> ProxyConfig {
 fn default_game_paths() -> HashMap<String, PathBuf> {
     get_default_game_paths()
 }
+
+fn default_language() -> String {
+    get_launcher_language_tag()
+}
+
 impl Default for LauncherConfig {
     fn default() -> Self {
         LauncherConfig {
             last_game_path: default_last_game_path(),
             selected_account: None,
+            language: default_language(),
             close_after_launch: false,
             color_theme: default_color_theme(),
             download_source: default_download_source(),

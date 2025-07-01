@@ -68,27 +68,28 @@ const vuetify = createVuetify({
 // handleThemeChange(mediaQuery);
 // mediaQuery.addEventListener('change', handleThemeChange);
 
-type MessageSchema = typeof zhHans
+type MessageSchema = typeof en
 
 const app = createApp(App);
 const pinia = createPinia();
-export const i18n = createI18n<[MessageSchema], 'zh-hans' | 'en' | 'ja'>({
-  locale: 'zh-hans',
+
+app.use(vuetify);
+app.use(router);
+app.use(pinia);
+
+const launcherConfigStore = useLauncherConfigStore();
+const accountConfigStore = useAccountConfigStore();
+launcherConfigStore.loadConfig()
+accountConfigStore.loadConfig()
+export const i18n = createI18n<[MessageSchema], 'en' | 'zh-hans' | 'ja'>({
+  locale: 'en',
   messages: {
     'zh-hans': zhHans,
     'en': en,
     'ja': ja
   }
 })
-
-
-app.use(vuetify);
-app.use(router);
-app.use(pinia);
 app.use(i18n)
-const launcherConfigStore = useLauncherConfigStore();
-const accountConfigStore = useAccountConfigStore();
-launcherConfigStore.loadConfig()
-accountConfigStore.loadConfig()
+
 
 app.mount("#app");

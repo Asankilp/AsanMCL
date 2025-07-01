@@ -54,6 +54,7 @@ import { listen } from '@tauri-apps/api/event'
 import { DownloadError, DownloadProgress } from './types/event'
 import { useDownloadDialogStore } from './store/downloadDialog'
 import { useI18n } from 'vue-i18n'
+import { i18n } from './main'
 
 const router = useRouter()
 const drawer = ref(true)
@@ -102,11 +103,21 @@ const { showError } = useSnackbar()
 onMounted(async () => {
   loadTheme()
   loadAvatar()
+  setLanguage()
+
 })
 
 const loadAvatar = async () => {
   const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
   currentUser.value.avatar = await invoke<string>('get_player_avatar_url', { uuid: launcherConfig.selectedAccount })
+}
+
+const setLanguage = async () => {
+  const launcherConfig = await invoke<LauncherConfig>('get_launcher_config_command')
+  if (launcherConfig.language) {
+    // 设置 i18n 的语言
+    i18n.global.locale = launcherConfig.language as typeof i18n.global.locale
+  }
 }
 
 // 提供 loadAvatar 方法给子组件

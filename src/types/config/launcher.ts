@@ -29,6 +29,7 @@ export interface ProxyConfig {
 // 启动器配置
 export interface LauncherConfig {
     lastGamePath: string;
+    language: string;
     selectedAccount?: string; // 选中的账号
     closeAfterLaunch: boolean;
     colorTheme: ColorTheme;
@@ -48,7 +49,8 @@ export const defaultProxyConfig = (): ProxyConfig => ({
 });
 
 export const defaultLauncherConfig = (): LauncherConfig => ({
-    lastGamePath: '当前目录',
+    lastGamePath: 'game.dir.current_dir',
+    language: 'en',
     closeAfterLaunch: false,
     colorTheme: ColorTheme.FollowSystem,
     downloadSource: DownloadSource.Official,
