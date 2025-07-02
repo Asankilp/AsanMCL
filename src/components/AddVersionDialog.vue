@@ -160,7 +160,7 @@ import { useLauncherConfigStore } from '../composables/useConfig'
 import { useI18n } from 'vue-i18n'
 
 const launcherConfigStore = useLauncherConfigStore()
-const { showError } = useSnackbar()
+const { showError, showSuccess } = useSnackbar()
 const { t } = useI18n()
 const props = defineProps({
     modelValue: Boolean,
@@ -331,7 +331,12 @@ async function confirmModLoaders() {
         showError(t('general.load_failed'))
         return
     }
-    const installResult = await installGameVersion(selectedVanillaVersionId.value, versionName.value, modLoaderVersions.value, launcherConfigStore.config.downloadSource, remoteVersions.value)
+    try {
+        await installGameVersion(selectedVanillaVersionId.value, versionName.value, modLoaderVersions.value, launcherConfigStore.config.downloadSource, remoteVersions.value)
+        showSuccess(t('general.install_success'))
+    } catch (error: string | any) {
+        showError(error)
+    }
     showStep2.value = false
     dialogVisible.value = false
     // emit 选择结果

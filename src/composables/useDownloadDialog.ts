@@ -3,14 +3,17 @@ import { DownloadProgress } from '../types/event'
 
 interface DownloadDialogState {
   items: DownloadProgress[]
-  visible: boolean
 }
 
 export const useDownloadDialogStore = defineStore('downloadDialog', {
   state: (): DownloadDialogState => ({
     items: [],
-    visible: false,
   }),
+  getters: {
+    visible(state): boolean {
+      return state.items.length > 0
+    }
+  },
   actions: {
     addOrUpdateItem(item: DownloadProgress) {
       const idx = this.items.findIndex(i => i.id === item.id)
@@ -19,17 +22,12 @@ export const useDownloadDialogStore = defineStore('downloadDialog', {
       } else {
         this.items.push(item)
       }
-      // 自动移除已完成的任务
-      this.items = this.items.filter(i => i.progress < 100)
-      this.visible = this.items.length > 0
     },
     removeItem(id: string) {
       this.items = this.items.filter(i => i.id !== id)
-      this.visible = this.items.length > 0
     },
     clear() {
       this.items = []
-      this.visible = false
     },
     // 供外部监听对话框开关
     onVisibleChange(cb: (visible: boolean) => void) {

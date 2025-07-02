@@ -58,7 +58,8 @@
     "username_required": "請輸入使用者名稱",
     "email": "電子郵件地址",
     "copy_to_clipboard_success": "已複製到剪貼簿",
-    "copy_to_clipboard_failed": "複製失敗"
+    "copy_to_clipboard_failed": "複製失敗",
+    "install_success": "安裝成功"
   },
   "profile": {
     "profiles": "遊戲設定",

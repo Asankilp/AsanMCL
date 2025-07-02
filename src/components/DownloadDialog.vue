@@ -36,7 +36,6 @@
 import { storeToRefs } from 'pinia'
 import { useDownloadDialogStore } from '../composables/useDownloadDialog'
 import { invoke } from '@tauri-apps/api/core'
-import { watch } from 'vue'
 const store = useDownloadDialogStore()
 const { items, visible } = storeToRefs(store)
 
@@ -56,12 +55,6 @@ function formatSpeed(speed: number) {
   }
 }
 
-// 自动关闭对话框：当 items 变为空时关闭
-watch(items, (val) => {
-  if (val.length === 0) {
-    store.visible = false
-  }
-})
 </script>
 
 <style scoped>

@@ -58,7 +58,8 @@
     "username_required": "Please enter the username",
     "email": "Email Address",
     "copy_to_clipboard_success": "Copied to clipboard",
-    "copy_to_clipboard_failed": "Copy failed"
+    "copy_to_clipboard_failed": "Copy failed",
+    "install_success": "Install successfully"
   },
   "profile": {
     "profiles": "Profiles",

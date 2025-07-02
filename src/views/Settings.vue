@@ -239,7 +239,6 @@ watch(closeAfterLaunch, async (newValue) => {
 
 // 组件挂载时加载配置
 onMounted(() => {
-  console.log(launcherConfigStore.config)
   colorTheme.value = launcherConfigStore.config.colorTheme
   downloadSource.value = launcherConfigStore.config.downloadSource
 })

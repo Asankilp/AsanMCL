@@ -6,7 +6,8 @@ import { DownloadSource } from "../types/config/launcher";
 import { invoke } from "@tauri-apps/api/core";
 import { ClientJson, VersionInfo, VersionManifest } from "../types/version";
 import { downloadFiles, downloadFilesWithoutOverwrite, getLibrariesToDownloadByClientJsons } from "./download";
-const launcherConfigStore = useLauncherConfigStore();
+import { useDownloadDialogStore } from "../composables/useDownloadDialog";
+const downloadDialogStore = useDownloadDialogStore();
 /**
  * 根据版本号获取更新主题。
  * @param versionId 版本号字符串
@@ -34,69 +35,74 @@ export function getVersionInfoInManifestById(versionId: string, versionManifest:
   return versionInfo;
 }
 
-export async function installGameVersion(vanillaVersionId: string, versionName: string, modLoaders: Object, downloadSource: DownloadSource, version_manifest: VersionManifest): Promise<boolean> {
-  const isInstallForgeAndLiteLoader = "forge" in modLoaders && "liteloader" in modLoaders
-  const isInstallForgeAndOptifine = "forge" in modLoaders && "optifine" in modLoaders
-  const gamePath = getCurrentGamePath()
-  const versionsPath = await path.join(gamePath, 'versions')
-  const librariesPath = await path.join(gamePath, 'libraries')
-  const gameVersionDestPath = await path.join(versionsPath, versionName, `${versionName}.json`)
-  var vanillaJsonDownloadUrl = getVersionInfoInManifestById(vanillaVersionId, version_manifest).url
-  var filesToDownload: { [key: string]: string } = {}
-  var clientJsons: ClientJson[] = []
-  var clientJsonPathsToRead: string[] = []
-  if ("fabric" in modLoaders) { // 安装 Fabric
-    const fabricVersion = modLoaders['fabric']
-    const vanillaVersionDestPath = await path.join(versionsPath, vanillaVersionId, `${vanillaVersionId}.json`)
+export async function installGameVersion(
+  vanillaVersionId: string,
+  versionName: string,
+  modLoaders: Record<string, string>,
+  downloadSource: DownloadSource,
+  version_manifest: VersionManifest
+): Promise<boolean> {
+  const gamePath = getCurrentGamePath();
+  const versionsPath = await path.join(gamePath, 'versions');
+  const librariesPath = await path.join(gamePath, 'libraries');
+  const gameVersionDestPath = await path.join(versionsPath, versionName, `${versionName}.json`);
+  const vanillaJsonDownloadUrl = getVersionInfoInManifestById(vanillaVersionId, version_manifest).url;
+  let filesToDownload: { [key: string]: string } = {};
+  let clientJsonPathsToRead: string[] = [];
+
+  // 处理 Fabric
+  if (modLoaders.fabric) {
+    const fabricVersion = modLoaders['fabric'];
+    const vanillaVersionDestPath = await path.join(versionsPath, vanillaVersionId, `${vanillaVersionId}.json`);
+    let fabricJsonDownloadUrl = '';
     switch (downloadSource) {
       case DownloadSource.Official:
-        var fabricJsonDownloadUrl = `https://meta.fabricmc.net/v2/versions/loader/${vanillaVersionId}/${fabricVersion}/profile/json`
-        break
+        fabricJsonDownloadUrl = `https://meta.fabricmc.net/v2/versions/loader/${vanillaVersionId}/${fabricVersion}/profile/json`;
+        break;
       case DownloadSource.BmclApi:
-        var fabricJsonDownloadUrl = `https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/loader/${vanillaVersionId}/${fabricVersion}/profile/json`
-        var vanillaJsonDownloadUrl = vanillaJsonDownloadUrl.replace('piston-meta.mojang.com', 'bmclapi2.bangbang93.com');
-        break
+        fabricJsonDownloadUrl = `https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/loader/${vanillaVersionId}/${fabricVersion}/profile/json`;
+        break;
     }
-    try {
-      filesToDownload[fabricJsonDownloadUrl] = gameVersionDestPath
-      clientJsonPathsToRead.push(gameVersionDestPath)
-      if (!await isPathExists(vanillaVersionDestPath)) {
-        console.log(`Vanilla version file not found, downloading: ${vanillaVersionDestPath}`);
-        filesToDownload[vanillaJsonDownloadUrl] = vanillaVersionDestPath
-        clientJsonPathsToRead.push(vanillaVersionDestPath)
-      }
-      await downloadFilesWithoutOverwrite(filesToDownload)
-      for (const clientJsonPath of clientJsonPathsToRead) {
-        const clientJson = await readLocalJson<ClientJson>(clientJsonPath)
-        if (clientJson) {
-          clientJsons.push(clientJson)
-        }
-      }
-      const libsToDownload = await getLibrariesToDownloadByClientJsons(clientJsons, librariesPath)
-      console.log(libsToDownload)
-      if (libsToDownload) {
-        await downloadFilesWithoutOverwrite(libsToDownload)
-      }
-
-    } catch (error) {
-      console.error("安装游戏版本时出错:", error);
-      return false
+    // BMCLAPI 替换 vanilla json url
+    const vanillaUrl = downloadSource === DownloadSource.BmclApi
+      ? vanillaJsonDownloadUrl.replace('piston-meta.mojang.com', 'bmclapi2.bangbang93.com')
+      : vanillaJsonDownloadUrl;
+    filesToDownload[fabricJsonDownloadUrl] = gameVersionDestPath;
+    clientJsonPathsToRead.push(gameVersionDestPath);
+    if (!await isPathExists(vanillaVersionDestPath)) {
+      filesToDownload[vanillaUrl] = vanillaVersionDestPath;
+      clientJsonPathsToRead.push(vanillaVersionDestPath);
     }
-    return true
-  } else if (Object.keys(modLoaders).length == 0) { // 仅安装原版
-    try {
-      filesToDownload[vanillaJsonDownloadUrl] = gameVersionDestPath
-      clientJsonPathsToRead.push(gameVersionDestPath)
-      await downloadFiles(filesToDownload)
-      const clientJson = await readLocalJson<ClientJson>(gameVersionDestPath)
-      clientJsons.push(clientJson)
-      const libsToDownload = await getLibrariesToDownloadByClientJsons(clientJsons, librariesPath)
-      if (libsToDownload) {
-        await downloadFilesWithoutOverwrite(libsToDownload)
-      }
-    } catch {
-      return false
-    }
+  } else {
+    // 仅原版
+    filesToDownload[vanillaJsonDownloadUrl] = gameVersionDestPath;
+    clientJsonPathsToRead.push(gameVersionDestPath);
   }
-  return true
+
+  try {
+    // 下载 json 文件
+    if (Object.keys(filesToDownload).length > 0) {
+      if (modLoaders.fabric) {
+        await downloadFilesWithoutOverwrite(filesToDownload);
+      } else {
+        await downloadFiles(filesToDownload);
+      }
+    }
+    // 读取所有 clientJson
+    const clientJsons: ClientJson[] = [];
+    for (const clientJsonPath of clientJsonPathsToRead) {
+      const clientJson = await readLocalJson<ClientJson>(clientJsonPath);
+      if (clientJson) clientJsons.push(clientJson);
+    }
+    // 下载所有库
+    const libsToDownload = await getLibrariesToDownloadByClientJsons(clientJsons, librariesPath);
+    if (libsToDownload) {
+      await downloadFilesWithoutOverwrite(libsToDownload);
+    }
+    downloadDialogStore.clear();
+    return true;
+  } catch (error) {
+    console.error("安装游戏版本时出错:", error);
+    return false;
+  }
 }

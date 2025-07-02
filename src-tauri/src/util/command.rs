@@ -55,6 +55,7 @@ pub async fn download_files(app: AppHandle, files: HashMap<String, PathBuf>) -> 
                                 progress: percent,
                                 speed: speed,
                             };
+                            println!("下载进度: {:?}", payload);
                             let _ = app.emit("download-progress", payload);
                         }
                     },

@@ -123,6 +123,7 @@ const setLanguage = async () => {
 provide('loadAvatar', loadAvatar)
 
 listen<DownloadProgress>('download-progress', (progress) => {
+  console.log('下载进度:', progress)
   downloadDialogStore.addOrUpdateItem({
     id: progress.payload.id,
     path: progress.payload.path,

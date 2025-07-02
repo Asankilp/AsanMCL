@@ -62,10 +62,13 @@ import GamePathMenu from '../components/GamePathMenu.vue'
 import AddVersionDialog from '../components/AddVersionDialog.vue'
 import { getVersionIcon } from '../utils/icon'
 import { useLauncherConfigStore } from '../composables/useConfig'
+import { onBeforeRouteLeave } from 'vue-router'
+import { useDownloadDialogStore } from '../composables/useDownloadDialog'
 const { showError } = useSnackbar()
 
 const versions = ref<LocalVersionInfo[]>([])
 const launcherConfigStore = useLauncherConfigStore()
+const downloadDialogStore = useDownloadDialogStore()
 const showAddVersionDialog = ref(false)
 
 
@@ -115,6 +118,10 @@ onMounted(async () => {
   } catch (error: string | any) {
     showError(error)
   }
+})
+
+onBeforeRouteLeave(() => {
+  downloadDialogStore.clear()
 })
 </script>
 
