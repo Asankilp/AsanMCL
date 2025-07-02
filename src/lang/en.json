@@ -88,7 +88,8 @@
       "bmclapi": "BMCLAPI"
     },
     "select_jre_directory_title": "Select the JRE installation location that contains the bin directory",
-    "language": "Language"
+    "language": "Language",
+    "proxy_hint": "The proxy will not be enabled if the server address format is invalid."
   },
   "game": {
     "dir": {
@@ -114,7 +115,9 @@
       "enter_version_name_hint": "Please enter the version name",
       "version_existed": "This version name is existed",
       "select_specific_mod_loader_version": "Select version of {modLoader}",
-      "select_all_checked_mod_loaders_version": "Please select all checked mod loader versions"
+      "select_all_checked_mod_loaders_version": "Please select all checked mod loader versions",
+      "version_name_conflict_with_fabric": "Please change the version name to one that differs from the vanilla version ID",
+      "add_fabric_hint": "When adding the Fabric version, the selected vanilla Minecraft version will be automatically added as well."
     }
   },
   "version": {

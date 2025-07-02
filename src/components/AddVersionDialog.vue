@@ -7,28 +7,28 @@
             <v-card-text style="max-height: 800px; overflow-y: auto;">
                 <v-row align="center" class="mb-2" no-gutters>
                     <v-row align="center" no-gutters style="flex:0 0 auto; width:auto;">
-                        <v-checkbox v-model="selectedTypes" :label="$t('game.version.type.release')" :value="VersionType.Release" density="compact"
-                            hide-details class="mr-2" />
-                        <v-checkbox v-model="selectedTypes" :label="$t('game.version.type.snapshot')" :value="VersionType.Snapshot" density="compact"
-                            hide-details class="mr-2" />
-                        <v-checkbox v-model="selectedTypes" :label="$t('game.version.type.old_beta')" :value="VersionType.OldBeta"
-                            density="compact" hide-details class="mr-2" />
-                        <v-checkbox v-model="selectedTypes" :label="$t('game.version.type.old_alpha')" :value="VersionType.OldAlpha"
-                            density="compact" hide-details />
+                        <v-checkbox v-model="selectedTypes" :label="$t('game.version.type.release')"
+                            :value="VersionType.Release" density="compact" hide-details class="mr-2" />
+                        <v-checkbox v-model="selectedTypes" :label="$t('game.version.type.snapshot')"
+                            :value="VersionType.Snapshot" density="compact" hide-details class="mr-2" />
+                        <v-checkbox v-model="selectedTypes" :label="$t('game.version.type.old_beta')"
+                            :value="VersionType.OldBeta" density="compact" hide-details class="mr-2" />
+                        <v-checkbox v-model="selectedTypes" :label="$t('game.version.type.old_alpha')"
+                            :value="VersionType.OldAlpha" density="compact" hide-details />
                     </v-row>
                     <v-spacer />
-                    <v-text-field v-model="searchText" :label="$t('general.search')" prepend-inner-icon="mdi-magnify" clearable
-                        density="compact" style="max-width:500px;" />
+                    <v-text-field v-model="searchText" :label="$t('general.search')" prepend-inner-icon="mdi-magnify"
+                        clearable density="compact" style="max-width:500px;" />
                 </v-row>
                 <v-row justify="center" v-if="loading">
                     <v-progress-circular indeterminate color="primary" size="40" />
                 </v-row>
                 <v-alert v-else-if="errorMsg" type="error" class="mb-4">{{ errorMsg }}</v-alert>
-                <v-radio-group v-else v-model="selectedVersionId">
+                <v-radio-group v-else v-model="selectedVanillaVersionId">
                     <v-list>
                         <v-list-item v-for="version in filteredVersions" :key="version.id"
-                            :active="selectedVersionId === version.id" @click="selectedVersionId = version.id"
-                            style="cursor:pointer;">
+                            :active="selectedVanillaVersionId === version.id"
+                            @click="selectedVanillaVersionId = version.id" style="cursor:pointer;">
                             <template v-slot:prepend>
                                 <v-avatar rounded="lg" size="40" class="mr-2">
                                     <img :src="getVersionIcon(version.type)" width="40" height="40" alt="icon" />
@@ -39,7 +39,7 @@
                                 {{ version.id }}
                                 <span v-if="versionThemes[version.id]"
                                     style="font-size: 12px; color: #888; margin-left: 8px;">{{
-                                    versionThemes[version.id] }}</span>
+                                        versionThemes[version.id] }}</span>
                             </v-list-item-title>
                             <v-list-item-subtitle>{{ version.releaseTime }}</v-list-item-subtitle>
                         </v-list-item>
@@ -49,7 +49,9 @@
             <v-card-actions>
                 <v-spacer />
                 <v-btn text @click="dialogVisible = false; $emit('close')">{{ $t('general.close') }}</v-btn>
-                <v-btn color="primary" :disabled="!selectedVersionId" @click="showStep2 = true">{{ $t('general.next_step') }}</v-btn>
+                <v-btn color="primary" :disabled="!selectedVanillaVersionId" @click="showStep2 = true">{{
+                    $t('general.next_step')
+                    }}</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -60,7 +62,8 @@
             <v-card-title>{{ $t('game.version.add_version') }}</v-card-title>
             <v-card-text>
                 <v-row dense class="flex-column">
-                    <v-text-field v-model="versionName" :label="$t('game.version.version_name')" :rules="versionNameRules" ref="versionNameField" />
+                    <v-text-field v-model="versionName" :label="$t('game.version.version_name')"
+                        :rules="versionNameRules" ref="versionNameField" />
                     <!-- Minecraft 卡片 -->
                     <v-col cols="12">
                         <v-card>
@@ -69,10 +72,10 @@
                                     <img :src="getProfileIconUrl('grassblock')" width="40" height="40" alt="icon" />
                                 </v-avatar>
                                 <v-checkbox v-model="selectedModLoaders" :value="'minecraft'" :disabled="true"
-                                    :ripple="false" hide-details class="mr-2" />
+                                    aria-checked="true" :ripple="false" hide-details class="mr-2" />
                                 Minecraft
                             </v-card-title>
-                            <v-card-subtitle>{{ selectedVersionId }}</v-card-subtitle>
+                            <v-card-subtitle>{{ selectedVanillaVersionId }}</v-card-subtitle>
                         </v-card>
                     </v-col>
                     <v-col cols="12" v-for="mod in modLoaders" :key="mod.key">
@@ -87,13 +90,18 @@
                                 <v-checkbox v-model="selectedModLoaders" :value="mod.key" hide-details class="mr-2"
                                     @click.stop
                                     :disabled="modLoaderLoading[mod.key] || !!modLoaderVersionErrorMap[mod.key] || (!selectedModLoaders.includes(mod.key) && selectedModLoaders.some(k => modLoaders.map(m => m.key).includes(k)))" />
-                                <span :style="!selectedModLoaders.includes(mod.key) ? 'color:#aaa;' : ''">{{ mod.label }}</span>
+                                <span :style="!selectedModLoaders.includes(mod.key) ? 'color:#aaa;' : ''">{{ mod.label
+                                    }}</span>
                                 <v-spacer />
                                 <v-progress-circular v-if="modLoaderLoading[mod.key]" indeterminate color="primary"
                                     size="20" class="ml-2" />
                             </v-card-title>
-                            <v-card-subtitle v-if="modLoaderVersions[mod.key]">{{ modLoaderVersions[mod.key] }}</v-card-subtitle>
-                            <v-alert v-if="modLoaderVersionErrorMap[mod.key]" type="error" dense class="mt-1 mb-0">{{ modLoaderVersionErrorMap[mod.key] }}</v-alert>
+                            <v-card-subtitle v-if="modLoaderVersions[mod.key]">{{ modLoaderVersions[mod.key]
+                                }}</v-card-subtitle>
+                            <v-alert v-if="modLoaderVersionErrorMap[mod.key]" type="error" dense class="mt-1 mb-0">{{
+                                modLoaderVersionErrorMap[mod.key] }}</v-alert>
+                            <v-alert v-if="mod.key == 'fabric' && selectedModLoaders.includes('fabric')" type="info">{{
+                                $t('game.version.add_fabric_hint') }}</v-alert>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -101,7 +109,9 @@
             <v-card-actions>
                 <v-spacer />
                 <v-btn text @click="showStep2 = false">{{ $t('general.back') }}</v-btn>
-                <v-btn color="primary" @click="confirmModLoaders" :disabled="!versionNameRules.every(rule => rule(versionName) === true)">{{ $t('general.confirm') }}</v-btn>
+                <v-btn color="primary" @click="confirmModLoaders"
+                    :disabled="!versionNameRules.every(rule => rule(versionName) === true)">{{ $t('general.confirm')
+                    }}</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -130,7 +140,8 @@
             <v-card-actions>
                 <v-spacer />
                 <v-btn text @click="showModLoaderVersionDialog = false">{{ $t('general.cancel') }}</v-btn>
-                <v-btn color="primary" :disabled="!modLoaderVersionSelected" @click="selectModLoaderVersion">{{ $t('general.confirm') }}</v-btn>
+                <v-btn color="primary" :disabled="!modLoaderVersionSelected" @click="selectModLoaderVersion">{{
+                    $t('general.confirm') }}</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -172,7 +183,7 @@ const dialogVisible = computed({
 const loading = ref(false)
 const errorMsg = ref('')
 const remoteVersions = ref<VersionManifest>()
-const selectedVersionId = ref<string | null>(null)
+const selectedVanillaVersionId = ref<string | null>(null)
 const searchText = ref('')
 const selectedTypes = ref([VersionType.Release])
 const versionThemes = ref<Record<string, string>>({})
@@ -210,7 +221,7 @@ watch(filteredVersions, async (versions) => {
 }, { immediate: true })
 
 function confirmSelect() {
-    if (selectedVersionId.value) {
+    if (selectedVanillaVersionId.value) {
         // emit('add', selectedVersionId.value)
         dialogVisible.value = false
         emit('close')
@@ -234,9 +245,11 @@ const versionName = ref<string>('')
 const versionNameField = ref()
 
 const versionNameRules = [
-  (v: string) => !!v || t('game.version.enter_version_name_hint'),
-  (v: string) => !existedLocalVersions.value.some(ver => ver.name === v) || t('game.version.version_existed')
-]
+    (v: string) => !!v || t('game.version.enter_version_name_hint'),
+    (v: string) => !existedLocalVersions.value.some(ver => ver.name === v) || t('game.version.version_existed'),
+    (v: string) =>
+        !(selectedModLoaders.value.includes('fabric') && v === selectedVanillaVersionId.value)
+        || t('game.version.version_name_conflict_with_fabric')]
 
 async function fetchModLoaderVersions(modLoader: string, versionId: string | null) {
     modLoaderLoading.value[modLoader] = true
@@ -262,11 +275,11 @@ async function fetchModLoaderVersions(modLoader: string, versionId: string | nul
 
 
 watch(showStep2, (val) => {
-    versionName.value = selectedVersionId.value ?? ''
+    versionName.value = selectedVanillaVersionId.value ?? ''
     if (val) {
         // 每次都重新拉取所有modLoader的版本
         ['forge', 'fabric', 'neoforge'].forEach((modLoader) => {
-            fetchModLoaderVersions(modLoader, selectedVersionId.value)
+            fetchModLoaderVersions(modLoader, selectedVanillaVersionId.value)
         })
         // 自动触发版本名称校验
         nextTick(() => {
@@ -278,13 +291,20 @@ watch(showStep2, (val) => {
     }
 })
 
+watch(selectedModLoaders, () => {
+    nextTick(() => {
+        // 触发版本名称校验
+        versionNameField.value?.validate?.()
+    })
+})
+
 async function openModLoaderVersion(modLoader: string) {
     currentModLoader = modLoader
     modLoaderVersionTitle.value = t('game.version.select_specific_mod_loader_version', { modLoader: modLoader.charAt(0).toUpperCase() + modLoader.slice(1) })
     modLoaderVersionSelected.value = modLoaderVersions.value[modLoader] || null
     modLoaderVersionLoading.value = modLoaderLoading.value[modLoader]
     if (!modLoaderVersionListMap.value[modLoader] || modLoaderVersionListMap.value[modLoader].length === 0) {
-        await fetchModLoaderVersions(modLoader, selectedVersionId.value)
+        await fetchModLoaderVersions(modLoader, selectedVanillaVersionId.value)
     }
     modLoaderVersionList.value = modLoaderVersionListMap.value[modLoader]
     modLoaderVersionLoading.value = false
@@ -302,6 +322,7 @@ function confirmModLoaders() {
     // 关闭所有对话框
     console.log(selectedModLoaders.value)
     console.log(modLoaderVersions.value)
+    console.log(selectedVanillaVersionId.value)
     if (selectedModLoaders.value.length != Object.keys(modLoaderVersions.value).length + 1) {
         showError(t('game.version.select_all_checked_mod_loaders_version'))
         return
@@ -310,11 +331,11 @@ function confirmModLoaders() {
     dialogVisible.value = false
     // emit 选择结果
     emit('confirm', {
-        versionId: selectedVersionId.value,
+        versionId: selectedVanillaVersionId.value,
         modLoaders: selectedModLoaders.value,
         modLoaderVersions: { ...modLoaderVersions.value }
     })
-    selectedVersionId.value = null
+    selectedVanillaVersionId.value = null
     selectedModLoaders.value = ['minecraft']
     modLoaderVersions.value = {}
 }
@@ -335,7 +356,7 @@ watch(selectedModLoaders, (val) => {
     }
 })
 
-onMounted(async () => { 
+onMounted(async () => {
     existedLocalVersions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath: launcherConfigStore.config.gamePath[launcherConfigStore.config.lastGamePath] })
 })
 </script>
@@ -350,6 +371,7 @@ onMounted(async () => {
 .card-clickable:hover {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
+
 .disabled-card {
     pointer-events: none;
     opacity: 0.6;

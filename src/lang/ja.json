@@ -88,7 +88,8 @@
       "bmclapi": "BMCLAPI"
     },
     "select_jre_directory_title": "binディレクトリを含むJREインストール先を選択",
-    "language": "言語"
+    "language": "言語",
+    "proxy_hint": "プロキシサーバーのアドレス形式が正しくない場合、プロキシは有効になりません。"
   },
   "game": {
     "dir": {
@@ -114,7 +115,9 @@
       "enter_version_name_hint": "バージョン名を入力してください",
       "version_existed": "このバージョン名はすでに存在します",
       "select_specific_mod_loader_version": "{modLoader} のバージョンを選択",
-      "select_all_checked_mod_loaders_version": "すべて選択されたModLoaderのバージョンを選択してください"
+      "select_all_checked_mod_loaders_version": "すべて選択されたModLoaderのバージョンを選択してください",
+      "version_name_conflict_with_fabric": "バージョン名をバニラ版のバージョン番号と異なる名前に変更してください",
+      "add_fabric_hint": "Fabricバージョンを追加すると、選択されたMinecraftのバニラ版バージョンも自動的に追加されます。"
     }
   },
   "version": {

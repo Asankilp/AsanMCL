@@ -37,6 +37,7 @@
               <v-divider class="my-4"></v-divider>
 
               <h3 class="text-h6 mb-2">{{ $t('setting.proxy') }}</h3>
+              <v-alert type="info">{{ $t('setting.proxy_hint') }}</v-alert>
               <v-switch v-model="proxyEnabled" :label="$t('setting.enable_proxy')" color="primary" inset class="mt-2" />
               <v-text-field v-model="proxyHost" :label="$t('setting.proxy_host')" :disabled="!proxyEnabled" class="mb-2" />
               <v-switch v-model="proxyAuthEnabled" :label="$t('setting.enable_proxy_auth')" color="primary" inset class="mt-2" :disabled="!proxyEnabled" />

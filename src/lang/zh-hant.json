@@ -88,7 +88,8 @@
       "bmclapi": "BMCLAPI"
     },
     "select_jre_directory_title": "選擇包含 bin 目錄的 JRE 安裝位置",
-    "language": "語言"
+    "language": "語言",
+    "proxy_hint": "若代理伺服器位址格式不正確，將不會啟用代理功能。"
   },
   "game": {
     "dir": {
@@ -114,7 +115,9 @@
       "enter_version_name_hint": "請輸入版本名稱",
       "version_existed": "該版本名稱已存在",
       "select_specific_mod_loader_version": "選擇 {modLoader} 版本",
-      "select_all_checked_mod_loaders_version": "請選擇所有已勾選的模組載入器版本"
+      "select_all_checked_mod_loaders_version": "請選擇所有已勾選的模組載入器版本",
+      "version_name_conflict_with_fabric": "請將版本名稱更改為與原版版本號不同的名稱",
+      "add_fabric_hint": "新增Fabric版本時，將自動一併加入已選取的Minecraft原版版本。"
     }
   },
   "version": {
