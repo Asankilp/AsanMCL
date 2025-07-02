@@ -1,5 +1,6 @@
 use futures::FutureExt;
 use once_cell::sync::Lazy;
+use serde_json::Value;
 use std::sync::Mutex;
 use std::{collections::HashMap, path::PathBuf};
 use tauri::{AppHandle, Emitter};
@@ -121,4 +122,17 @@ pub fn cancel_download(id: String) -> Result<(), String> {
 #[tauri::command]
 pub async fn update_reqwest_client(config: LauncherConfig) -> () {
     super::reqwest_client::update_reqwest_client(&config).await;
+}
+
+#[tauri::command]
+pub fn is_path_exists(path: PathBuf) -> bool {
+    path.exists()
+}
+
+#[tauri::command]
+pub async fn read_local_json(path: PathBuf) -> Result<Value, String> {
+    let content = tokio::fs::read_to_string(&path)
+        .await
+        .map_err(|e| format!("读取文件失败: {}", e))?;
+    serde_json::from_str(&content).map_err(|e| format!("解析 JSON 失败: {}", e))
 }

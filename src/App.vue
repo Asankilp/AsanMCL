@@ -52,7 +52,7 @@ import { LauncherConfig } from './types/config/launcher'
 import DownloadDialog from './components/DownloadDialog.vue'
 import { listen } from '@tauri-apps/api/event'
 import { DownloadError, DownloadProgress } from './types/event'
-import { useDownloadDialogStore } from './store/downloadDialog'
+import { useDownloadDialogStore } from './composables/useDownloadDialog'
 import { useI18n } from 'vue-i18n'
 
 const router = useRouter()

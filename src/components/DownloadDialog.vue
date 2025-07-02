@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { useDownloadDialogStore } from '../store/downloadDialog'
+import { useDownloadDialogStore } from '../composables/useDownloadDialog'
 import { invoke } from '@tauri-apps/api/core'
 import { watch } from 'vue'
 const store = useDownloadDialogStore()

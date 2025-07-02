@@ -47,7 +47,8 @@
       </v-list>
 
       <AddVersionDialog v-model="showAddVersionDialog" @close="showAddVersionDialog = false"
-        v-if="launcherConfigStore.config" :launcher-config="launcherConfigStore.config" />
+        v-if="launcherConfigStore.config" :launcher-config="launcherConfigStore.config"
+        @confirm="onAddVersionConfirm" />
     </v-main>
   </v-container>
 </template>
@@ -100,6 +101,12 @@ const refreshVersions = async (gamePath: string) => {
   } else {
     versions.value = []
   }
+}
+
+const onAddVersionConfirm = () => {
+  // 添加版本后刷新当前目录下的版本列表
+  const gamePath = launcherConfigStore.config.gamePath[launcherConfigStore.config.lastGamePath]
+  refreshVersions(gamePath)
 }
 
 onMounted(async () => {

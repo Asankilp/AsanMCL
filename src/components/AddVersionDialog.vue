@@ -153,7 +153,7 @@ import { invoke } from '@tauri-apps/api/core'
 import { LocalVersionInfo, VersionManifest, VersionType } from '../types/version'
 import { LauncherConfig } from '../types/config/launcher'
 import { getProfileIconUrl, getVersionIcon } from '../utils/icon'
-import { getMajorUpdateThemeById } from '../utils/version'
+import { getMajorUpdateThemeById, installGameVersion } from '../utils/version'
 import { ProfileIcon } from '../types/profile'
 import { useSnackbar } from '../composables/useSnackbar'
 import { useLauncherConfigStore } from '../composables/useConfig'
@@ -183,7 +183,7 @@ const dialogVisible = computed({
 const loading = ref(false)
 const errorMsg = ref('')
 const remoteVersions = ref<VersionManifest>()
-const selectedVanillaVersionId = ref<string | null>(null)
+const selectedVanillaVersionId = ref<string>("")
 const searchText = ref('')
 const selectedTypes = ref([VersionType.Release])
 const versionThemes = ref<Record<string, string>>({})
@@ -318,7 +318,7 @@ function selectModLoaderVersion() {
     }
 }
 
-function confirmModLoaders() {
+async function confirmModLoaders() {
     // 关闭所有对话框
     console.log(selectedModLoaders.value)
     console.log(modLoaderVersions.value)
@@ -327,6 +327,11 @@ function confirmModLoaders() {
         showError(t('game.version.select_all_checked_mod_loaders_version'))
         return
     }
+    if (!remoteVersions.value) {
+        showError(t('general.load_failed'))
+        return
+    }
+    const installResult = await installGameVersion(selectedVanillaVersionId.value, versionName.value, modLoaderVersions.value, launcherConfigStore.config.downloadSource, remoteVersions.value)
     showStep2.value = false
     dialogVisible.value = false
     // emit 选择结果
@@ -335,7 +340,7 @@ function confirmModLoaders() {
         modLoaders: selectedModLoaders.value,
         modLoaderVersions: { ...modLoaderVersions.value }
     })
-    selectedVanillaVersionId.value = null
+    selectedVanillaVersionId.value = ""
     selectedModLoaders.value = ['minecraft']
     modLoaderVersions.value = {}
 }
