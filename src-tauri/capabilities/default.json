@@ -10,6 +10,7 @@
     "opener:default",
     "clipboard-manager:allow-write-text",
     "dialog:default",
-    "store:default"
+    "store:default",
+    "os:default"
   ]
 }

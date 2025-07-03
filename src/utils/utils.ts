@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useLauncherConfigStore } from "../composables/useConfig";
-
+import { platform, type as osType, arch as osArch } from "@tauri-apps/plugin-os";
 const launcherConfigStore = useLauncherConfigStore();
 
 /**
@@ -94,5 +94,36 @@ export async function readLocalJson<T>(path: string): Promise<T> {
     } catch (error) {
         console.error(`读取本地 JSON 文件 ${path} 时出错:`, error);
         throw error;
+    }
+}
+
+export function getOsType(): "windows" | "linux" | "osx" {
+    const currentOsType = osType();
+    if (currentOsType === "windows") return "windows";
+    if (currentOsType === "macos") return "osx";
+    if (currentOsType === "linux") return "linux";
+    throw new Error("Unsupported OS: " + currentOsType);
+}
+
+export function getArchBits(): 32 | 64 {
+    const arch = osArch();
+    switch (arch) {
+        case 'x86':
+        case 'arm':
+        case 'mips':
+        case 'powerpc':
+            return 32;
+
+        case 'x86_64':
+        case 'aarch64':
+        case 'mips64':
+        case 'powerpc64':
+        case 'riscv64':
+        case 's390x':
+        case 'sparc64':
+            return 64;
+
+        default:
+            throw new Error(`Unknown architecture: ${arch}`);
     }
 }

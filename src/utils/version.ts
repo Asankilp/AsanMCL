@@ -3,8 +3,9 @@ import { appLocale } from "../main";
 import { getCurrentGamePath, isPathExists, readLocalJson } from "./utils";
 import { DownloadSource } from "../types/config/launcher";
 import { ClientJson, VersionInfo, VersionManifest } from "../types/version";
-import { downloadFiles, downloadFilesWithoutOverwrite, getLibrariesToDownloadByClientJsons } from "./download";
+import { downloadFiles, downloadFilesWithoutOverwrite } from "./download";
 import { useDownloadDialogStore } from "../composables/useDownloadDialog";
+import { getLibrariesToDownloadByClientJsons } from "./library";
 const downloadDialogStore = useDownloadDialogStore();
 /**
  * 根据版本号获取更新主题。

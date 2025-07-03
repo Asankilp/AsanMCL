@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use serde_json::ser;
 use std::{collections::HashMap, path::PathBuf};
 
 #[derive(Debug, Serialize, Deserialize, Default)]
@@ -154,7 +153,7 @@ pub struct Rule {
 pub struct OsRule {
     /// 操作系统名称，可为 "windows"、"osx"、"linux"
     pub name: Option<String>,
-    /// 操作系统版本
+    /// 操作系统版本，通过System.getProperty("os.version")获取
     pub version: Option<String>,
     /// 架构类型
     pub arch: Option<String>,
