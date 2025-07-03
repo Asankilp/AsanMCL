@@ -1,8 +1,8 @@
 <template>
   <v-dialog v-model="visible" max-width="420" persistent no-click-animation :scrim="true">
-    <v-card>
+    <v-card class="download-dialog-card">
       <v-card-title class="text-h6">下载任务</v-card-title>
-      <v-card-text>
+      <v-card-text class="download-dialog-content">
         <div v-if="items.length === 0" class="empty">暂无下载任务</div>
         <div v-else>
           <div v-for="item in items" :key="item.id" class="download-item">
@@ -24,7 +24,7 @@
           </div>
         </div>
       </v-card-text>
-      <v-card-actions v-if="items.length > 0">
+      <v-card-actions v-if="items.length > 0" class="download-dialog-actions">
         <v-spacer />
         <v-btn size="small" color="error" variant="text" @click="cancelAll">取消</v-btn>
       </v-card-actions>
@@ -58,6 +58,19 @@ function formatSpeed(speed: number) {
 </script>
 
 <style scoped>
+.download-dialog-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
+  max-height: 70vh;
+}
+.download-dialog-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+.download-dialog-actions {
+  flex-shrink: 0;
+}
 .download-item {
   margin-bottom: 22px;
   display: flex;

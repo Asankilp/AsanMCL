@@ -59,7 +59,8 @@
     "email": "メールアドレス",
     "copy_to_clipboard_success": "クリップボードにコピーしました",
     "copy_to_clipboard_failed": "コピーに失敗しました",
-    "install_success": "インストールに成功しました"
+    "install_success": "インストールに成功しました",
+    "install_failed": "インストールに失敗しました"
   },
   "profile": {
     "profiles": "ゲームプロフィール",

@@ -5,7 +5,7 @@
       <v-toolbar-title class="text-h6">{{ $t('version.version_list') }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <!-- 游戏目录切换菜单组件 -->
-      <GamePathMenu :launcherConfig="launcherConfigStore.config" @switch="switchGamePath"
+      <GamePathMenu @switch="switchGamePath"
         @refreshVersions="refreshVersions" />
       <v-btn icon color="grey lighten-1" @click="showAddVersionDialog = true">
         <v-icon left>mdi-plus</v-icon>

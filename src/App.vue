@@ -122,27 +122,27 @@ const setLanguage = async () => {
 // 提供 loadAvatar 方法给子组件
 provide('loadAvatar', loadAvatar)
 
-listen<DownloadProgress>('download-progress', (progress) => {
-  console.log('下载进度:', progress)
-  downloadDialogStore.addOrUpdateItem({
-    id: progress.payload.id,
-    path: progress.payload.path,
-    progress: progress.payload.progress,
-    speed: progress.payload.speed
-  })
-}
-)
-listen<DownloadError>('download-error', (error) => {
-  if (error.payload.error != "\"canceled\""){
-    showError(`下载发生错误：${error.payload.error}`)
-  }
-  // 下载失败后，取消所有下载任务并清空任务列表
-  for (const item of downloadDialogStore.items) {
-    invoke('cancel_download', { id: item.id })
-  }
-  downloadDialogStore.clear()
-}
-)
+// listen<DownloadProgress>('download-progress', (progress) => {
+//   console.log('下载进度:', progress)
+//   downloadDialogStore.addOrUpdateItem({
+//     id: progress.payload.id,
+//     path: progress.payload.path,
+//     progress: progress.payload.progress,
+//     speed: progress.payload.speed
+//   })
+// }
+// )
+// listen<DownloadError>('download-error', (error) => {
+//   if (error.payload.error != "\"canceled\""){
+//     showError(`下载发生错误：${error.payload.error}`)
+//   }
+//   // 下载失败后，取消所有下载任务并清空任务列表
+//   for (const item of downloadDialogStore.items) {
+//     invoke('cancel_download', { id: item.id })
+//   }
+//   downloadDialogStore.clear()
+// }
+// )
 </script>
 
 <style>

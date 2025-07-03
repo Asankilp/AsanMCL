@@ -193,6 +193,7 @@ watch(() => props.modelValue, async (val) => {
     if (val) {
         loading.value = true
         errorMsg.value = ''
+        existedLocalVersions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath: launcherConfigStore.config.gamePath[launcherConfigStore.config.lastGamePath] })
         try {
             remoteVersions.value = await invoke<VersionManifest>('get_version_manifest', { downloadSource: props.launcherConfig.downloadSource })
         } catch (e: any) {
@@ -332,8 +333,12 @@ async function confirmModLoaders() {
         return
     }
     try {
-        await installGameVersion(selectedVanillaVersionId.value, versionName.value, modLoaderVersions.value, launcherConfigStore.config.downloadSource, remoteVersions.value)
-        showSuccess(t('general.install_success'))
+        const downloadResult = await installGameVersion(selectedVanillaVersionId.value, versionName.value, modLoaderVersions.value, launcherConfigStore.config.downloadSource, remoteVersions.value)
+        if (downloadResult){
+            showSuccess(t('general.install_success'))
+        } else {
+            showError(t('general.install_failed'))
+        }
     } catch (error: string | any) {
         showError(error)
     }
@@ -366,9 +371,9 @@ watch(selectedModLoaders, (val) => {
     }
 })
 
-onMounted(async () => {
-    existedLocalVersions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath: launcherConfigStore.config.gamePath[launcherConfigStore.config.lastGamePath] })
-})
+// onMounted(async () => {
+//     existedLocalVersions.value = await invoke<LocalVersionInfo[]>('get_local_versions_command', { gamePath: launcherConfigStore.config.gamePath[launcherConfigStore.config.lastGamePath] })
+// })
 </script>
 
 

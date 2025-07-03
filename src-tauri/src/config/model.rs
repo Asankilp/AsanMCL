@@ -2,7 +2,10 @@ use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{config::util::get_default_game_paths, jre::model::JreInfo, util::init::get_launcher_language_tag};
+use crate::{
+    config::util::get_default_game_paths, jre::model::JreInfo,
+    util::init::get_launcher_language_tag,
+};
 
 #[derive(Serialize, Deserialize)]
 pub struct JreConfig {

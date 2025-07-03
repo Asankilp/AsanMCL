@@ -1,9 +1,7 @@
 import { path } from "@tauri-apps/api";
-import { useLauncherConfigStore } from "../composables/useConfig";
 import { appLocale } from "../main";
 import { getCurrentGamePath, isPathExists, readLocalJson } from "./utils";
 import { DownloadSource } from "../types/config/launcher";
-import { invoke } from "@tauri-apps/api/core";
 import { ClientJson, VersionInfo, VersionManifest } from "../types/version";
 import { downloadFiles, downloadFilesWithoutOverwrite, getLibrariesToDownloadByClientJsons } from "./download";
 import { useDownloadDialogStore } from "../composables/useDownloadDialog";
@@ -83,9 +81,9 @@ export async function installGameVersion(
     // 下载 json 文件
     if (Object.keys(filesToDownload).length > 0) {
       if (modLoaders.fabric) {
-        await downloadFilesWithoutOverwrite(filesToDownload);
+        await downloadFilesWithoutOverwrite(filesToDownload, true);
       } else {
-        await downloadFiles(filesToDownload);
+        await downloadFiles(filesToDownload, true);
       }
     }
     // 读取所有 clientJson

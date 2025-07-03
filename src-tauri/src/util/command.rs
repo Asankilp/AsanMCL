@@ -1,8 +1,10 @@
 use futures::FutureExt;
 use once_cell::sync::Lazy;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::sync::Mutex;
 use std::{collections::HashMap, path::PathBuf};
+use tauri::ipc::Channel;
 use tauri::{AppHandle, Emitter};
 use tokio::sync::watch;
 
@@ -24,25 +26,43 @@ pub fn init_launcher_command() -> () {
     init_launcher()
 }
 
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", tag = "event", content = "data")]
+pub enum DownloadEvent {
+    Progress {
+        id: String,
+        path: PathBuf,
+        progress: f64,
+        speed: f64,
+    },
+    Error {
+        error: String,
+    },
+    Finished,
+}
+
 #[tauri::command]
-pub async fn download_files(app: AppHandle, files: HashMap<String, PathBuf>) -> Result<(), String> {
+pub async fn download_files(
+    on_event: Channel<DownloadEvent>,
+    files: HashMap<String, PathBuf>,
+) -> Result<(), String> {
     use futures::future;
     let mut handles = Vec::new();
     for (url, save_path) in files {
-        let app = app.clone();
+        let on_event = on_event.clone();
         let (cancel_tx, cancel_rx) = match watch::channel(false) {
             (tx, rx) => (tx, rx),
         };
         let save_path_clone = save_path.clone();
         let cancel_tx_clone = cancel_tx.clone();
         handles.push(tokio::spawn({
-            let app_clone_for_error = app.clone();
+            let event_clone_for_error = on_event.clone();
             async move {
                 let result = std::panic::AssertUnwindSafe(download_with_progress(
                     &url,
                     save_path,
                     {
-                        let app = app.clone();
+                        let on_event = on_event.clone();
                         move |id, percent, speed| {
                             if percent >= 0.0 {
                                 let mut map = DOWNLOAD_CANCEL_MAP.lock().unwrap();
@@ -56,7 +76,12 @@ pub async fn download_files(app: AppHandle, files: HashMap<String, PathBuf>) -> 
                                 speed: speed,
                             };
                             println!("下载进度: {:?}", payload);
-                            let _ = app.emit("download-progress", payload);
+                            let _ = on_event.send(DownloadEvent::Progress {
+                                id: id.clone(),
+                                path: save_path_clone.clone(),
+                                progress: percent,
+                                speed: speed,
+                            });
                         }
                     },
                     &cancel_rx,
@@ -70,17 +95,15 @@ pub async fn download_files(app: AppHandle, files: HashMap<String, PathBuf>) -> 
                         Ok::<(), Box<dyn std::error::Error + Send + Sync>>(())
                     }
                     Ok(Err(_e)) => {
-                        let payload = DownloadError {
+                        let _ = event_clone_for_error.send(DownloadEvent::Error {
                             error: format!("{:?}", _e),
-                        };
-                        let _ = app_clone_for_error.emit("download-error", payload);
+                        });
                         Err(_e)
                     }
                     Err(_e) => {
-                        let payload = DownloadError {
+                        let _ = event_clone_for_error.send(DownloadEvent::Error {
                             error: format!("{:?}", _e),
-                        };
-                        let _ = app_clone_for_error.emit("download-error", payload);
+                        });
                         Err(Box::new(std::io::Error::new(
                             std::io::ErrorKind::Other,
                             format!("{:?}", _e),
@@ -102,6 +125,7 @@ pub async fn download_files(app: AppHandle, files: HashMap<String, PathBuf>) -> 
     }
     if errors.is_empty() {
         println!("所有下载任务已完成");
+        let _ = on_event.send(DownloadEvent::Finished);
         Ok(())
     } else {
         Err(format!("部分下载任务失败: {}", errors.join("; ")))

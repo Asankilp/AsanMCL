@@ -59,7 +59,8 @@
     "email": "邮箱地址",
     "copy_to_clipboard_success": "已复制到剪贴板",
     "copy_to_clipboard_failed": "复制失败",
-    "install_success": "安装成功"
+    "install_success": "安装成功",
+    "install_failed": "安装失败"
   },
   "profile": {
     "profiles": "游戏配置",

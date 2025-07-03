@@ -24,3 +24,23 @@ export interface DownloadProgress {
 export interface DownloadError {
   error: string;
 }
+
+export type DownloadEvent =
+  | {
+    event: 'progress';
+    data: {
+      id: string;
+      path: string;
+      progress: number;
+      speed: number;
+    };
+  }
+  | {
+    event: 'error';
+    data: {
+      error: string;
+    };
+  }
+  | {
+    event: 'finished';
+  }

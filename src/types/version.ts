@@ -199,6 +199,8 @@ export interface ClientJson {
     complianceLevel?: number;
     /** 启动参数 */
     arguments?: Arguments;
+    /** 启动参数（1.13以前） */
+    minecraftArguments?: string;
     /** 资产索引信息 */
     assetIndex?: AssetIndex;
     /** 资产版本 */

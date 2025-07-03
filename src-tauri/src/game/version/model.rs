@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use serde_json::ser;
 use std::{collections::HashMap, path::PathBuf};
 
 #[derive(Debug, Serialize, Deserialize, Default)]
@@ -89,6 +90,9 @@ pub struct ClientJson {
     pub compliance_level: Option<u32>,
     /// 启动参数
     pub arguments: Option<Arguments>,
+    #[serde(rename = "minecraftArguments")]
+    /// 启动参数（1.13以前）
+    pub minecraft_arguments: Option<String>,
     #[serde(rename = "assetIndex")]
     /// 资产索引信息
     pub asset_index: Option<AssetIndex>,

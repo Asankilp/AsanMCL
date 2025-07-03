@@ -59,7 +59,8 @@
     "email": "Email Address",
     "copy_to_clipboard_success": "Copied to clipboard",
     "copy_to_clipboard_failed": "Copy failed",
-    "install_success": "Install successfully"
+    "install_success": "Install successfully",
+    "install_failed": "Install failed"
   },
   "profile": {
     "profiles": "Profiles",
