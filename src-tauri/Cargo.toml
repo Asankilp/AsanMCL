@@ -18,7 +18,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["devtools"] }
 reqwest = { version = "0.12.18", features = ["json", "blocking", "stream", "socks"] }
 tokio = { version = "1.45.1", features = ["full"] }
 tauri-plugin-opener = "2"
