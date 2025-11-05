@@ -12,6 +12,7 @@ pub enum VersionType {
     PreRelease,
     Experimental,
     Debug,
+    Unobfuscated,
     Other(String),
 }
 

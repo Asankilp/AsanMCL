@@ -7,6 +7,7 @@ export enum VersionType {
     PreRelease = 'pre_release',
     Experimental = 'experimental',
     Debug = 'debug',
+    Unobfuscated = 'unobfuscated',
     Other = 'other'
 }
 
