@@ -52,7 +52,7 @@ const handleMicrosoftLogin = async () => {
           })
           try {
             const avatarUrl: string = await invoke('get_player_avatar_url', { uuid: profile.id })
-            const skinPreviewUrl: string = await invoke('get_player_skin_preview_url', { uuid: profile.id })
+            const skinPreviewUrl: string = profile.skins[0].url
 
             // 更新玩家信息
             emit('show-account-info', {

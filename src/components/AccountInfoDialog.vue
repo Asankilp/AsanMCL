@@ -6,17 +6,15 @@
         <v-container>
           <v-row>
             <v-col cols="4" class="d-flex flex-column align-center">
-              <v-avatar size="96" class="mb-2">
+<!--               <v-avatar size="96" class="mb-2">
                 <v-img :src="accountInfo.avatarUrl" alt="玩家头像"></v-img>
-              </v-avatar>
-              <v-img
-                v-if="accountInfo.skinPreviewUrl"
-                :src="accountInfo.skinPreviewUrl"
-                width="128"
-                height="128"
-                class="mt-2"
-                alt="皮肤预览"
-              ></v-img>
+              </v-avatar> -->
+              <SkinView3d
+                :skin-url="skinUrl"
+                :width="256"
+                :height="256"
+                :global-light="3"
+              ></SkinView3d>
             </v-col>
             <v-col cols="8">
               <v-list>
@@ -60,9 +58,12 @@
 </template>
 
 <script setup lang="ts">
-import { AccountType } from '../types/config/account';
+import { ref, watch } from 'vue'
+import { SkinView3d } from 'vue-skinview3d'
+import { invoke } from '@tauri-apps/api/core'
+import { AccountType } from '../types/config/account'
 
-defineProps<{
+const props = defineProps<{
   modelValue: boolean
   accountInfo: {
     username: string
@@ -78,4 +79,41 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
 }>()
+
+const skinUrl = ref('')
+
+const resetSkinPreview = () => {
+  skinUrl.value = ''
+}
+
+const fetchSkinPreview = async () => {
+  resetSkinPreview()
+  if (!props.accountInfo.uuid) return
+  try {
+    const url = await invoke<string>('get_player_skin_preview_url', { uuid: props.accountInfo.uuid })
+    skinUrl.value = url ?? ''
+  } catch (error) {
+    console.error('Failed to load skin preview', error)
+  }
+}
+
+watch(
+  () => props.modelValue,
+  (visible) => {
+    if (!visible) {
+      resetSkinPreview()
+      return
+    }
+    fetchSkinPreview()
+  }
+)
+
+watch(
+  () => props.accountInfo.uuid,
+  (uuid, prevUuid) => {
+    if (!props.modelValue || uuid === prevUuid) return
+    fetchSkinPreview()
+  }
+)
+
 </script>

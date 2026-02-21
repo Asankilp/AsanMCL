@@ -1,9 +1,11 @@
+use crate::mojang::model::QueriedMinecraftProfile;
 use crate::util::reqwest_client::REQWEST_CLIENT;
 use crate::{config::model::DownloadSource, game::version::model::VersionManifest};
 
 use super::model::{
     CapeData, GameOwnershipResponse, MinecraftProfile, PlayerUuidResponse, SkinData,
 };
+use base64::{engine::general_purpose::STANDARD, Engine};
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
 pub struct MinecraftClient;
 
@@ -142,6 +144,29 @@ impl MinecraftClient {
     }
 }
 
+pub async fn get_minecraft_profile_by_uuid(
+    uuid: String,
+) -> Result<QueriedMinecraftProfile, String> {
+    let client = {
+        let guard = REQWEST_CLIENT.lock().await;
+        match &*guard {
+            Some(c) => c.clone(),
+            None => return Err("HTTP客户端未初始化".into()),
+        }
+    };
+    let url = format!(
+        "https://sessionserver.mojang.com/session/minecraft/profile/{}",
+        uuid
+    );
+    let response = client.get(&url).send().await.map_err(|e| format!("Failed to get profile: {}", e))?;
+    if !response.status().is_success() {
+        return Err(format!("Failed to fetch profile: {}", response.status()).into());
+    }
+    let profile: QueriedMinecraftProfile = response.json().await.map_err(|e| format!("Failed to parse profile: {}", e))?;
+    //println!("Queried profile for UUID {}: {:?}", uuid, profile);
+    Ok(profile)
+}
+
 /// 生成玩家头像URL
 pub fn get_player_avatar_url(uuid: Option<String>, size: Option<u32>) -> String {
     let clean_uuid = uuid.map_or(String::from("null"), |u| u.replace('-', ""));
@@ -153,12 +178,35 @@ pub fn get_player_avatar_url(uuid: Option<String>, size: Option<u32>) -> String 
 }
 
 /// 生成玩家皮肤预览URL
-pub fn get_player_skin_preview_url(uuid: &str) -> String {
+pub async fn get_player_skin_preview_url(uuid: &str) -> String {
     let clean_uuid = uuid.replace('-', "");
-    format!(
-        "https://crafatar.com/renders/body/{}?overlay=true",
-        clean_uuid
-    )
+    let profile = get_minecraft_profile_by_uuid(clean_uuid).await;
+    match profile {
+        Ok(profile) => {
+            let textures = STANDARD.decode(&profile.properties[0].value);
+            if let Ok(decoded) = textures {
+                if let Ok(json_str) = String::from_utf8(decoded) {
+                    if let Ok(texture_data) =
+                        serde_json::from_str::<super::model::DecodedTextureProperty>(&json_str)
+                    {
+                        //println!("Decoded texture data for UUID {}: {:?}", uuid, texture_data);
+                        if let Some(skin) = texture_data.textures.skin {
+                            //println!("Skin URL: {}", skin.url);
+                            return skin.url;
+                        } else {
+                            eprintln!("No skin found for UUID {}", uuid);
+                            return String::new();
+                        }
+                    }
+                }
+            }
+            String::new()
+        }
+        Err(e) => {
+            eprintln!("Failed to get skin preview URL for UUID {}: {}", uuid, e);
+            String::new()
+        }
+    }
 }
 
 pub async fn get_version_manifest(

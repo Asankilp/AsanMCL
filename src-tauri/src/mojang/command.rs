@@ -55,8 +55,8 @@ pub fn get_player_avatar_url(uuid: Option<String>, size: Option<u32>) -> String 
 }
 
 #[tauri::command]
-pub fn get_player_skin_preview_url(uuid: String) -> String {
-    super::api::get_player_skin_preview_url(&uuid)
+pub async fn get_player_skin_preview_url(uuid: String) -> String {
+    super::api::get_player_skin_preview_url(&uuid).await
 }
 
 #[tauri::command]

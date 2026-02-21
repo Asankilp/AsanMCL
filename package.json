@@ -27,6 +27,7 @@
     "vue": "^3.5.13",
     "vue-i18n": "11",
     "vue-router": "^4.5.1",
+    "vue-skinview3d": "^0.3.1",
     "vuetify": "^3.8.7"
   },
   "devDependencies": {

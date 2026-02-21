@@ -206,7 +206,8 @@ const showAccountInfo = async (account: AccountInfo) => {
     uuid: account.uuid,
     type: account.accountType,
     avatarUrl: getAvatarUrl(account.uuid),
-    skinPreviewUrl: await invoke('get_player_skin_preview_url', { uuid: account.uuid }), 
+    skinPreviewUrl: '',
+    // skinPreviewUrl: await invoke('get_player_skin_preview_url', { uuid: account.uuid }), 
     skins: [],
     capes: []
   }
