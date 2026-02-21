@@ -76,6 +76,7 @@ const init = async () => {
   type MessageSchema = typeof en;
   const i18n = createI18n<[MessageSchema], 'en' | 'zh-hans' | 'zh-hant' | 'ja'>({
     locale: appLocale.value,
+    fallbackLocale: 'en',
     messages: {
       'zh-hans': zhHans,
       'zh-hant': zhHant,

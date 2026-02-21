@@ -30,10 +30,6 @@
                   <v-list-item-title>账户类型</v-list-item-title>
                   <v-list-item-subtitle>{{ accountInfo.type }}</v-list-item-subtitle>
                 </v-list-item>
-                <v-list-item>
-                  <v-list-item-title>皮肤模型</v-list-item-title>
-                  <v-list-item-subtitle>{{ skinModelLabel }}</v-list-item-subtitle>
-                </v-list-item>
                 <v-list-item v-if="accountInfo.skins?.length">
                   <v-list-item-title>皮肤数量</v-list-item-title>
                   <v-list-item-subtitle>{{ accountInfo.skins.length }}</v-list-item-subtitle>
@@ -100,8 +96,6 @@ const skinViewerOptions = computed(() => {
   const model: 'slim' | 'default' = skinModel.value === 'slim' ? 'slim' : 'default'
   return { model }
 })
-
-const skinModelLabel = computed(() => skinModel.value === 'slim' ? t('account.skin.model.slim') : t('account.skin.model.classic'))
 
 const resetPreviewUrls = () => {
   skinUrl.value = ''
