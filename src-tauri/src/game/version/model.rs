@@ -127,6 +127,9 @@ pub struct Arguments {
 #[serde(untagged)]
 pub enum Arg {
     Value(String),
+    DividedValue {
+        value: Vec<String>,
+    },
     Conditional {
         rules: Vec<Rule>,
         value: ValueOrList,

@@ -53,8 +53,12 @@ export interface VersionManifest {
 // 值或列表类型
 export type ValueOrList = string | string[];
 
+export type DividedValue = {
+    value: string[];
+}
+
 // 参数类型
-export type Arg = string | {
+export type Arg = string | DividedValue | {
     rules: Rule[];
     value: ValueOrList;
 };
