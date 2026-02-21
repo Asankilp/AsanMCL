@@ -1,8 +1,36 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct SingleUrl {
+pub struct TextureData {
     pub url: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<TextureMetadata>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TextureMetadata {
+    #[serde(default)]
+    pub model: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SkinPreviewInfo {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub skin_url: Option<String>,
+    pub skin_model: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cape_url: Option<String>,
+}
+
+impl Default for SkinPreviewInfo {
+    fn default() -> Self {
+        Self {
+            skin_url: None,
+            skin_model: String::from("classic"),
+            cape_url: None,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -34,10 +62,10 @@ pub struct QueriedMinecraftProfile {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DecodedTextureData {
     #[serde(rename = "SKIN")]
-    pub skin: Option<SingleUrl>,
+    pub skin: Option<TextureData>,
     #[serde(rename = "CAPE")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub cape: Option<SingleUrl>,
+    pub cape: Option<TextureData>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

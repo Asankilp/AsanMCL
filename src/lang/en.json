@@ -34,7 +34,13 @@
     "login_success": "Login successful",
     "login_failed": "Login failed",
     "get_player_info_failed": "Failed to get player data",
-    "get_player_info_failed_but_login_success": "Login successful but player data loading failed"
+    "get_player_info_failed_but_login_success": "Login successful but player data loading failed",
+    "skin": {
+      "model": {
+        "slim": "Slim",
+        "classic": "Classic"
+      }
+    }
   },
   "home": {
     "welcome": "Welcome",

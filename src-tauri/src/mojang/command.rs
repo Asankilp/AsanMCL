@@ -2,7 +2,7 @@ use crate::config::model::DownloadSource;
 use crate::game::version::model::VersionManifest;
 
 use super::api::*;
-use super::model::{CapeData, MinecraftProfile, SkinData};
+use super::model::{CapeData, MinecraftProfile, SkinData, SkinPreviewInfo};
 
 #[tauri::command]
 pub async fn get_minecraft_profile(access_token: String) -> Result<MinecraftProfile, String> {
@@ -55,7 +55,7 @@ pub fn get_player_avatar_url(uuid: Option<String>, size: Option<u32>) -> String 
 }
 
 #[tauri::command]
-pub async fn get_player_skin_preview_url(uuid: String) -> String {
+pub async fn get_player_skin_preview_url(uuid: String) -> SkinPreviewInfo {
     super::api::get_player_skin_preview_url(&uuid).await
 }
 

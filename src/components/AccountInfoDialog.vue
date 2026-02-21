@@ -1,22 +1,22 @@
 <template>
-  <v-dialog :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" max-width="600">
+  <v-dialog :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" max-width="720">
     <v-card>
       <v-card-title class="text-h6">账户信息</v-card-title>
       <v-card-text>
         <v-container>
           <v-row>
-            <v-col cols="4" class="d-flex flex-column align-center">
-<!--               <v-avatar size="96" class="mb-2">
-                <v-img :src="accountInfo.avatarUrl" alt="玩家头像"></v-img>
-              </v-avatar> -->
+            <v-col cols="5" md="4" class="d-flex justify-center align-start mb-4 mb-md-0">
               <SkinView3d
+                class="account-skin-preview"
                 :skin-url="skinUrl"
+                :cape-url="capeUrl"
                 :width="256"
-                :height="256"
+                :height="360"
                 :global-light="3"
+                :skin-options="skinViewerOptions"
               ></SkinView3d>
             </v-col>
-            <v-col cols="8">
+            <v-col cols="7" md="8">
               <v-list>
                 <v-list-item>
                   <v-list-item-title>用户名</v-list-item-title>
@@ -29,6 +29,10 @@
                 <v-list-item>
                   <v-list-item-title>账户类型</v-list-item-title>
                   <v-list-item-subtitle>{{ accountInfo.type }}</v-list-item-subtitle>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>皮肤模型</v-list-item-title>
+                  <v-list-item-subtitle>{{ skinModelLabel }}</v-list-item-subtitle>
                 </v-list-item>
                 <v-list-item v-if="accountInfo.skins?.length">
                   <v-list-item-title>皮肤数量</v-list-item-title>
@@ -58,10 +62,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { SkinView3d } from 'vue-skinview3d'
 import { invoke } from '@tauri-apps/api/core'
 import { AccountType } from '../types/config/account'
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+
+type SkinPreviewInfo = {
+  skinUrl?: string | null
+  skinModel?: string | null
+  capeUrl?: string | null
+}
 
 const props = defineProps<{
   modelValue: boolean
@@ -81,19 +93,32 @@ const emit = defineEmits<{
 }>()
 
 const skinUrl = ref('')
+const capeUrl = ref('')
+const skinModel = ref<'classic' | 'slim'>('classic')
 
-const resetSkinPreview = () => {
+const skinViewerOptions = computed(() => {
+  const model: 'slim' | 'default' = skinModel.value === 'slim' ? 'slim' : 'default'
+  return { model }
+})
+
+const skinModelLabel = computed(() => skinModel.value === 'slim' ? t('account.skin.model.slim') : t('account.skin.model.classic'))
+
+const resetPreviewUrls = () => {
   skinUrl.value = ''
+  capeUrl.value = ''
+  skinModel.value = 'classic'
 }
 
-const fetchSkinPreview = async () => {
-  resetSkinPreview()
+const fetchPreviewUrls = async () => {
+  resetPreviewUrls()
   if (!props.accountInfo.uuid) return
   try {
-    const url = await invoke<string>('get_player_skin_preview_url', { uuid: props.accountInfo.uuid })
-    skinUrl.value = url ?? ''
+    const preview = await invoke<SkinPreviewInfo>('get_player_skin_preview_url', { uuid: props.accountInfo.uuid })
+    skinUrl.value = preview?.skinUrl ?? ''
+    capeUrl.value = preview?.capeUrl ?? ''
+    skinModel.value = preview?.skinModel === 'slim' ? 'slim' : 'classic'
   } catch (error) {
-    console.error('Failed to load skin preview', error)
+    console.error('Failed to load skin/cape preview', error)
   }
 }
 
@@ -101,10 +126,10 @@ watch(
   () => props.modelValue,
   (visible) => {
     if (!visible) {
-      resetSkinPreview()
+      resetPreviewUrls()
       return
     }
-    fetchSkinPreview()
+    fetchPreviewUrls()
   }
 )
 
@@ -112,8 +137,21 @@ watch(
   () => props.accountInfo.uuid,
   (uuid, prevUuid) => {
     if (!props.modelValue || uuid === prevUuid) return
-    fetchSkinPreview()
+    fetchPreviewUrls()
   }
 )
 
 </script>
+
+<style scoped>
+.account-skin-preview {
+  z-index: 1;
+}
+
+.cape-link {
+  word-break: break-all;
+  color: inherit;
+  text-decoration: underline;
+}
+
+</style>

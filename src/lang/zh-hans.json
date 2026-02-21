@@ -38,7 +38,13 @@
     "login_success": "登录成功",
     "login_failed": "登录失败",
     "get_player_info_failed": "获取玩家信息失败",
-    "get_player_info_failed_but_login_success": "获取玩家信息失败，但登录成功"
+    "get_player_info_failed_but_login_success": "获取玩家信息失败，但登录成功",
+    "skin": {
+      "model": {
+        "slim": "纤细",
+        "classic": "经典"
+      }
+    }
   },
   "general": {
     "delete": "删除",

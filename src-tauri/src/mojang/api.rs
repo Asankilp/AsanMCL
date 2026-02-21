@@ -4,6 +4,7 @@ use crate::{config::model::DownloadSource, game::version::model::VersionManifest
 
 use super::model::{
     CapeData, GameOwnershipResponse, MinecraftProfile, PlayerUuidResponse, SkinData,
+    SkinPreviewInfo,
 };
 use base64::{engine::general_purpose::STANDARD, Engine};
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
@@ -177,36 +178,53 @@ pub fn get_player_avatar_url(uuid: Option<String>, size: Option<u32>) -> String 
     )
 }
 
-/// 生成玩家皮肤预览URL
-pub async fn get_player_skin_preview_url(uuid: &str) -> String {
+/// 生成玩家皮肤与披风预览信息（披风可能不存在）
+pub async fn get_player_skin_preview_url(uuid: &str) -> SkinPreviewInfo {
     let clean_uuid = uuid.replace('-', "");
-    let profile = get_minecraft_profile_by_uuid(clean_uuid).await;
-    match profile {
+    let mut preview = SkinPreviewInfo::default();
+
+    match get_minecraft_profile_by_uuid(clean_uuid).await {
         Ok(profile) => {
-            let textures = STANDARD.decode(&profile.properties[0].value);
-            if let Ok(decoded) = textures {
-                if let Ok(json_str) = String::from_utf8(decoded) {
-                    if let Ok(texture_data) =
-                        serde_json::from_str::<super::model::DecodedTextureProperty>(&json_str)
-                    {
-                        //println!("Decoded texture data for UUID {}: {:?}", uuid, texture_data);
-                        if let Some(skin) = texture_data.textures.skin {
-                            //println!("Skin URL: {}", skin.url);
-                            return skin.url;
-                        } else {
-                            eprintln!("No skin found for UUID {}", uuid);
-                            return String::new();
+            if let Some(property) = profile.properties.first() {
+                if let Ok(decoded) = STANDARD.decode(&property.value) {
+                    if let Ok(json_str) = String::from_utf8(decoded) {
+                        if let Ok(texture_data) =
+                            serde_json::from_str::<super::model::DecodedTextureProperty>(&json_str)
+                        {
+                            if let Some(skin) = texture_data.textures.skin {
+                                preview.skin_url = Some(skin.url);
+                                if let Some(metadata) = skin.metadata {
+                                    let normalized = metadata.model.to_lowercase();
+                                    preview.skin_model = match normalized.as_str() {
+                                        "slim" => String::from("slim"),
+                                        "default" | "classic" => String::from("classic"),
+                                        other if other.is_empty() => String::from("classic"),
+                                        _ => String::from("classic"),
+                                    };
+                                }
+                            } else {
+                                eprintln!("No skin found for UUID {}", uuid);
+                            }
+
+                            if let Some(cape) = texture_data.textures.cape {
+                                preview.cape_url = Some(cape.url);
+                            }
                         }
                     }
                 }
+            } else {
+                eprintln!("No texture properties found for UUID {}", uuid);
             }
-            String::new()
         }
         Err(e) => {
-            eprintln!("Failed to get skin preview URL for UUID {}: {}", uuid, e);
-            String::new()
+            eprintln!(
+                "Failed to get skin preview information for UUID {}: {}",
+                uuid, e
+            );
         }
     }
+
+    preview
 }
 
 pub async fn get_version_manifest(
